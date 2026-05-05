@@ -103,6 +103,7 @@ body.revealed .card:active {
 
 /* ── Trait Marks (Conditional overlays for download) ── */
 .card-trait-mark {
+  display: none; /* Hidden by default */
   position: absolute;
   background: rgba(0, 0, 0, 0.4);
   color: #fff;
@@ -113,6 +114,11 @@ body.revealed .card:active {
   pointer-events: none;
   font-family: var(--font-body);
   white-space: nowrap;
+}
+
+/* Show only during download capture */
+body.capturing .card-trait-mark {
+  display: block;
 }
 /* Randomly place them a bit for natural look */
 .mark-dent {

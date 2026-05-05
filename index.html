@@ -506,6 +506,7 @@
       dlBtn.addEventListener("click", async (e) => {
         e.stopPropagation(); // Don't trigger reveal
         dlBtn.style.display = "none";
+        document.body.classList.add("capturing");
         
         const tag = document.getElementById("export-tag");
         if (tag) {
@@ -533,6 +534,7 @@
         }
         
         dlBtn.style.display = "flex";
+        document.body.classList.remove("capturing");
         if (tag) {
           tag.classList.remove("show");
           tag.style.transition = "";
