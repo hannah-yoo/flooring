@@ -8,14 +8,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Faux Flooring and Name Archive</title>
+  <title>Faux Flooring and Names</title>
   <meta name="description"
     content="An archive of fake wood-grain flooring units collected from Korean residential and commercial product lines." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@400;700&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -44,12 +42,13 @@
     </div>
     <div class="tag-body">
       <div class="tag-row">
-        <p>This archive explores the aesthetic gap between the luxury names given to commercial flooring and their synthetic reality.</p>
+        <p>This archive explores the aesthetic gap between the luxury names given to commercial flooring and their
+          synthetic reality.</p>
       </div>
       <div class="tag-row">
         <strong>Credits</strong>
         <span>
-          Flooring Data: LX Hausys, KCC, etc.<br>
+          Flooring Data: LX Hausys, KCC.<br>
           Images: <a href="https://commons.wikimedia.org/" target="_blank">Wikimedia Commons</a>
         </span>
       </div>
@@ -108,11 +107,24 @@
         if (data.query?.pages) {
           const validPages = Object.values(data.query.pages)
             .filter(p => p.thumbnail?.source || p.original?.source);
-          
+
           if (validPages.length > 0) {
-            // Shuffle to get varied results
-            validPages.sort(() => Math.random() - 0.5);
-            return validPages.slice(0, limit).map(p => p.thumbnail?.source || p.original?.source);
+            // Prioritize GIFs if available
+            const gifs = validPages.filter(p => p.original?.source?.toLowerCase().endsWith('.gif'));
+            const others = validPages.filter(p => !p.original?.source?.toLowerCase().endsWith('.gif'));
+
+            // Shuffle both
+            gifs.sort(() => Math.random() - 0.5);
+            others.sort(() => Math.random() - 0.5);
+
+            // Combine with GIFs first
+            const combined = [...gifs, ...others];
+
+            return combined.slice(0, limit).map(p => {
+              // If it's a gif, use original source for animation
+              if (p.original?.source?.toLowerCase().endsWith('.gif')) return p.original.source;
+              return p.thumbnail?.source || p.original?.source;
+            });
           }
         }
       } catch (err) { console.error("Wiki API error:", err); }
@@ -140,7 +152,7 @@
 
       const imageAttachments = f[FIELDS.image];
       let aspectRatio = 1.0;
-      
+
       if (imageAttachments && imageAttachments.length > 0) {
         const att = imageAttachments[0];
         if (att.width && att.height) {
@@ -195,7 +207,7 @@
             urls.forEach(url => {
               const cImg = document.createElement("img");
               cImg.src = url;
-              cImg.style.cssText = `width:100%; height:${100/urls.length}%; object-fit:cover; display:block;`;
+              cImg.style.cssText = `width:100%; height:${100 / urls.length}%; object-fit:cover; display:block;`;
               cImg.draggable = false;
               textLayer.appendChild(cImg);
             });
@@ -238,12 +250,17 @@
     function toggleGlobalReveal() {
       isGlobalRevealed = !isGlobalRevealed;
       const cards = Array.from(document.querySelectorAll(".card"));
-      
+
       cards.forEach((card, i) => {
         setTimeout(() => {
-          if (isGlobalRevealed) card.classList.add("is-revealed");
-          else card.classList.remove("is-revealed");
-        }, i * 12); 
+          if (isGlobalRevealed) {
+            card.classList.add("is-revealed");
+            // Add stable class after the 0.7s sweep transition finishes
+            setTimeout(() => card.classList.add("is-stable"), 700);
+          } else {
+            card.classList.remove("is-revealed", "is-stable");
+          }
+        }, i * 12);
       });
 
       const hint = document.getElementById("click-hint");
@@ -307,9 +324,9 @@
           </div>
           <div class="tag-body">
             <div class="tag-row"><strong>평균 두께</strong> <span>${avgThick}</span></div>
-            <div class="tag-row"><strong>주요 푹신함</strong> <span>${modeSoft}</span></div>
-            <div class="tag-row"><strong>주요 밀도</strong> <span>${modeDens}</span></div>
-            <div class="tag-row"><strong>주요 시리즈</strong> <span>${modeSeri}</span></div>
+            <div class="tag-row"><strong>푹신함</strong> <span>${modeSoft}</span></div>
+            <div class="tag-row"><strong>밀도</strong> <span>${modeDens}</span></div>
+            <div class="tag-row"><strong>메인 시리즈</strong> <span>${modeSeri}</span></div>
           </div>
         `;
       }
@@ -336,7 +353,7 @@
       grid.addEventListener("pointerdown", e => {
         if (e.pointerType === "mouse" && e.button !== 0) return;
         if (e.target.closest("#info-toggle") || e.target.closest("#info-panel") || e.target.closest("#download-btn")) return;
-        
+
         const card = e.target.closest(".card");
         if (!card) return;
 
@@ -400,7 +417,7 @@
     async function init() {
       const grid = document.getElementById("grid");
       const loading = document.getElementById("loading");
-      
+
       // Info Panel logic
       const infoBtn = document.getElementById("info-toggle");
       const infoPanel = document.getElementById("info-panel");
@@ -431,7 +448,7 @@
         e.stopPropagation();
         dlBtn.style.display = "none";
         infoBtn.style.display = "none";
-        
+
         const tag = document.getElementById("export-tag");
         if (tag) {
           tag.classList.add("show");
@@ -456,7 +473,7 @@
           console.error("Screenshot failed:", err);
           alert("다운로드 중 오류가 발생했습니다.");
         }
-        
+
         dlBtn.style.display = "flex";
         infoBtn.style.display = "flex";
         if (tag) {
