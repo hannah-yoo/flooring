@@ -149,27 +149,25 @@ body.revealed .card:active {
 
 #info-close {
   position: absolute;
-  top: -0.5rem;
-  right: -0.5rem;
-  width: 1.8rem;
-  height: 1.8rem;
-  background: #000;
-  color: #fff;
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 50%;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: auto;
+  height: auto;
+  background: none;
+  color: #333;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   cursor: pointer;
   z-index: 2001;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  transition: all 0.2s;
+  transition: opacity 0.2s;
+  line-height: 1;
 }
 
 #info-close:hover {
-  transform: scale(1.1);
-  background: #333;
+  opacity: 0.6;
 }
 
 /* ── Card image wrap ──────────────────────────────────── */
@@ -265,13 +263,9 @@ body.capturing .card-trait-mark {
   font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
-  color: #000; /* Black text as requested */
-  background: var(--fg); /* Light pill background for visibility */
-  padding: 0.45rem 1rem;
-  border-radius: 2rem;
-  letter-spacing: 0.1em;
+  color: var(--fg); /* Light text for visibility without the pill */
+  letter-spacing: 0.15em;
   animation: hintPulse 3s ease-in-out infinite;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.6);
 }
 
 #click-hint.hidden {
@@ -307,20 +301,20 @@ body.capturing .card-trait-mark {
 #info-toggle {
   bottom: 1.5rem;
   left: 1.5rem;
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 4px; /* Square */
+  width: 2.45rem;
+  height: 2.45rem;
+  border-radius: 0;
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
 }
 
 #download-btn {
   bottom: 1.5rem;
   right: 1.5rem;
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 4px; /* Square */
+  width: 2.45rem;
+  height: 2.45rem;
+  border-radius: 0;
 }
 
 

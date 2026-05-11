@@ -61,7 +61,7 @@
 
   <!-- Download button -->
   <button id="download-btn" title="Download My View" aria-label="Download Viewport">
-    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
       stroke-linejoin="round" viewBox="0 0 24 24">
       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
       <polyline points="7 10 12 15 17 10" />
@@ -193,12 +193,13 @@
       imgWrap.appendChild(textLayer);
 
       // Determine how many images to stack based on aspect ratio
-      // USER REQUEST: allow up to 8 wiki images in a single narrow tile
+      // Initial plan: allow up to 8 wiki images in a single narrow tile
+      // Refined: making thresholds stricter to avoid overcrowding on moderately tall tiles
       let stackCount = 1;
-      if (aspectRatio < 0.2) stackCount = 8;
-      else if (aspectRatio < 0.3) stackCount = 6;
-      else if (aspectRatio < 0.45) stackCount = 4;
-      else if (aspectRatio < 0.65) stackCount = 2;
+      if (aspectRatio < 0.15) stackCount = 8;
+      else if (aspectRatio < 0.22) stackCount = 6;
+      else if (aspectRatio < 0.35) stackCount = 4;
+      else if (aspectRatio < 0.55) stackCount = 2;
 
       const searchName = f[FIELDS.nameEn] || f[FIELDS.nameKo];
       if (searchName) {
