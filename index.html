@@ -75,18 +75,18 @@
     // ─────────────────────────────────────────────────────────────
     const AIRTABLE_TOKEN = "patMrJnngETB8Srn9.2291fafcbf0c5009f6cd1bb0fb76f64a4186e03dc379d4ef282b70acd6ed3dea";
     const AIRTABLE_BASE = "app0gYEl62r82qDqK";
-    const AIRTABLE_TABLE = "css용 시트";
+    const AIRTABLE_TABLE = "CSM용 시트";
 
     const FIELDS = {
       nameKo: "장판 이름 (한글)",
       nameEn: "장판 이름 (영어)",
       image: "사진",
-      unitSize: "나무판 무늬 유닛 1개 크기",
+      unitSize: "나무판 유닛 1개 크기",
       maxRepeat: "똑같은 디자인이 반복되지 않는 최대 크기",
       density: "단위무늬당 유닛 밀도",
-      pattern: "제조사에서 말하는 무늬 특징",
+      pattern: "무늬 특징",
       thickness: "두께",
-      softness: "푹신함? 단단함?",
+      softness: "촉감",
       purpose: "장판의 목적",
       series: "장판 시리즈 이름",
       brand: "출시 회사",
@@ -228,7 +228,7 @@
         { label: "반복 최대", value: f[FIELDS.maxRepeat] },
         { label: "밀도", value: f[FIELDS.density] },
         { label: "두께", value: f[FIELDS.thickness] },
-        { label: "푹신함", value: f[FIELDS.softness] },
+        { label: "촉감", value: f[FIELDS.softness] },
         { label: "무늬 특징", value: f[FIELDS.pattern] },
       ].filter(r => r.value);
 
@@ -325,7 +325,7 @@
           </div>
           <div class="tag-body">
             <div class="tag-row"><strong>평균 두께</strong> <span>${avgThick}</span></div>
-            <div class="tag-row"><strong>푹신함</strong> <span>${modeSoft}</span></div>
+            <div class="tag-row"><strong>촉감</strong> <span>${modeSoft}</span></div>
             <div class="tag-row"><strong>밀도</strong> <span>${modeDens}</span></div>
             <div class="tag-row"><strong>메인 시리즈</strong> <span>${modeSeri}</span></div>
           </div>
@@ -486,6 +486,21 @@
       try {
         const records = await fetchAirtable();
         loading.style.display = "none";
+
+        // Sort: Prioritize high-res series (소리지움, 엑스컴포트, 시니어)
+        const hiResSeries = ["소리지움", "엑스컴포트", "시니어"];
+        records.sort((a, b) => {
+          const aSeries = a.fields[FIELDS.series] || "";
+          const bSeries = b.fields[FIELDS.series] || "";
+          const aIsHiRes = hiResSeries.some(s => aSeries.includes(s));
+          const bIsHiRes = hiResSeries.some(s => bSeries.includes(s));
+          
+          if (aIsHiRes && !bIsHiRes) return -1;
+          if (!aIsHiRes && bIsHiRes) return 1;
+          
+          // Maintain randomness within groups
+          return Math.random() - 0.5;
+        });
 
         records.forEach((record, i) => {
           if (!record.fields[FIELDS.nameEn] && !record.fields[FIELDS.nameKo]) return;
