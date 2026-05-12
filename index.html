@@ -13,7 +13,7 @@
     content="An archive of fake wood-grain flooring units collected from Korean residential and commercial product lines." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -27,18 +27,24 @@
   <div id="loading">loading…</div>
   <div id="error" style="display:none"></div>
 
-  <!-- Click hint -->
-  <div id="click-hint">
-    <span>click anywhere to reveal all</span>
-  </div>
+  <!-- Reveal All button -->
+  <button id="reveal-all-btn" title="Reveal All">reveal all</button>
+
+  <!-- Walking sound -->
+  <audio id="walk-sound" src="assets/walking.m4a" preload="auto"></audio>
 
   <!-- Info Toggle & Panel -->
-  <button id="info-toggle">info</button>
+  <button id="info-toggle" aria-label="Info">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="12" y1="16" x2="12" y2="11"/>
+      <line x1="12" y1="8" x2="12.01" y2="8"/>
+    </svg>
+  </button>
   <div id="info-panel">
-    <button id="info-close" aria-label="Close panel">&times;</button>
+    <button id="info-close" aria-label="Close panel" style="color:#fff;">&times;</button>
     <div class="tag-header">
       <span class="tag-title">ABOUT ARCHIVE</span>
-      <span class="tag-id">INFORMATION</span>
     </div>
     <div class="tag-body">
       <div class="tag-row">
@@ -48,7 +54,7 @@
       <div class="tag-row">
         <strong>Credits</strong>
         <span>
-          Flooring Data: LX Hausys, KCC.<br>
+          Flooring Data: <a href="https://www.lxhausys.com" target="_blank">LX Hausys</a>, <a href="https://www.kcc.co.kr" target="_blank">KCC</a>, <a href="https://www.hyundailnc.com" target="_blank">Hyundai L&amp;C</a>.<br>
           Images: <a href="https://commons.wikimedia.org/" target="_blank">Wikimedia Commons</a>
         </span>
       </div>
@@ -84,7 +90,7 @@
       unitSize: "나무판 유닛 1개 너비",
       maxRepeat: "똑같은 디자인이 반복되지 않는 최대 크기",
       density: "단위무늬당 유닛 밀도",
-      pattern: "무늬 특징",
+      pattern: "특징",
       thickness: "두께",
       softness: "촉감",
       purpose: "장판의 목적",
@@ -93,6 +99,31 @@
     };
 
     let isGlobalRevealed = false;
+
+    // Walking sound helper — single play
+    function playWalkSound() {
+      const snd = document.getElementById("walk-sound");
+      if (!snd) return;
+      snd.currentTime = 0;
+      snd.play().catch(() => {});
+    }
+
+    // Walking sound helper — rapid staccato for reveal-all
+    function playWalkSoundRapid(cardCount, totalMs) {
+      const snd = document.getElementById("walk-sound");
+      if (!snd) return;
+      // Fewer plays (max 4), compressed + 300ms buffer
+      const plays = Math.min(4, Math.max(2, Math.floor(cardCount / 8)));
+      const durationMs = totalMs * 0.25 + 600;
+      const interval = durationMs / plays;
+      for (let i = 0; i < plays; i++) {
+        setTimeout(() => {
+          const clone = snd.cloneNode();
+          clone.volume = 0.4;
+          clone.play().catch(() => {});
+        }, i * interval);
+      }
+    }
 
     // ─────────────────────────────────────────────────────────────
     // Fetch multiple images from Wikimedia Commons
@@ -220,22 +251,20 @@
       }
 
       // 3. Hover Overlay (Only visible in revealed state)
+      const nameKo = f[FIELDS.nameKo] || "";
       const rows = [
-        { label: "한국어명", value: f[FIELDS.nameKo] },
         { label: "시리즈", value: f[FIELDS.series] },
         { label: "용도", value: f[FIELDS.purpose] },
-        { label: "유닛 너비", value: f[FIELDS.unitSize] },
-        { label: "반복 최대", value: f[FIELDS.maxRepeat] },
-        { label: "밀도", value: f[FIELDS.density] },
+        { label: "무늬 너비", value: f[FIELDS.unitSize] },
         { label: "두께", value: f[FIELDS.thickness] },
         { label: "촉감", value: f[FIELDS.softness] },
-        { label: "무늬 특징", value: f[FIELDS.pattern] },
+        { label: "특징", value: f[FIELDS.pattern] },
       ].filter(r => r.value);
 
       const overlay = document.createElement("div");
       overlay.className = "card-overlay";
       overlay.innerHTML = `
-        <p class="overlay-title">${name}</p>
+        <p class="overlay-title">${name}${nameKo ? `<span class="overlay-name-ko">${nameKo}</span>` : ""}</p>
         ${f[FIELDS.brand] ? `<p class="overlay-brand">${f[FIELDS.brand]}</p>` : ""}
         ${rows.length > 0 ? `<dl>${rows.map(r => `<dt>${r.label}</dt><dd>${r.value}</dd>`).join("")}</dl>` : ""}
       `;
@@ -246,28 +275,41 @@
     }
 
     // ─────────────────────────────────────────────────────────────
-    // Toggle Reveal (Wave effect or All-at-once)
+    // Toggle a single card (reveal ↔ hide)
     // ─────────────────────────────────────────────────────────────
-    function toggleGlobalReveal() {
-      isGlobalRevealed = !isGlobalRevealed;
+    function revealCard(card) {
+      if (card.classList.contains("is-revealed")) {
+        // Toggle back: hide this tile again
+        card.classList.remove("is-revealed", "is-stable");
+      } else {
+        card.classList.add("is-revealed");
+        setTimeout(() => card.classList.add("is-stable"), 700);
+        playWalkSound();
+      }
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // Reveal All (wave, then button becomes Hide All)
+    // ─────────────────────────────────────────────────────────────
+    function revealAll() {
       const cards = Array.from(document.querySelectorAll(".card"));
-
-      cards.forEach((card, i) => {
-        setTimeout(() => {
-          if (isGlobalRevealed) {
+      const totalMs = cards.length * 25 + 700; // match animation total duration
+      if (!isGlobalRevealed) {
+        cards.forEach((card, i) => {
+          setTimeout(() => {
             card.classList.add("is-revealed");
-            // Add stable class after the 0.7s sweep transition finishes
             setTimeout(() => card.classList.add("is-stable"), 700);
-          } else {
-            card.classList.remove("is-revealed", "is-stable");
-          }
-        }, i * 12);
-      });
-
-      const hint = document.getElementById("click-hint");
-      if (hint) {
-        if (isGlobalRevealed) hint.classList.add("hidden");
-        else hint.classList.remove("hidden");
+          }, i * 25);
+        });
+        playWalkSoundRapid(cards.length, totalMs);
+        isGlobalRevealed = true;
+        const btn = document.getElementById("reveal-all-btn");
+        if (btn) btn.textContent = "hide all";
+      } else {
+        cards.forEach(card => card.classList.remove("is-revealed", "is-stable"));
+        isGlobalRevealed = false;
+        const btn = document.getElementById("reveal-all-btn");
+        if (btn) btn.textContent = "reveal all";
       }
     }
 
@@ -337,71 +379,91 @@
     // Drag Swap
     // ─────────────────────────────────────────────────────────────
     function initDragSwap(grid) {
-      let dragSrc = null; let clone = null;
-      let startX = 0, startY = 0; let cloneOffX = 0, cloneOffY = 0;
+      let dragSrc = null, clone = null;
+      let startX = 0, startY = 0, cloneOffX = 0, cloneOffY = 0;
 
       function createClone(card) {
         const rect = card.getBoundingClientRect();
         const c = card.cloneNode(true);
         c.id = "drag-clone";
-        c.style.cssText = `width:${rect.width}px; height:${rect.height}px; left:${rect.left}px; top:${rect.top}px;`;
+        c.style.cssText = `position:fixed; width:${rect.width}px; height:${rect.height}px; left:${rect.left}px; top:${rect.top}px; pointer-events:none; z-index:999; opacity:0.88; transform:rotate(1.5deg) scale(1.04); box-shadow:0 16px 48px rgba(0,0,0,0.6); overflow:hidden;`;
         const ov = c.querySelector(".card-overlay");
         if (ov) ov.style.opacity = "0";
         document.body.appendChild(c);
         return c;
       }
 
+      // Proper two-node DOM swap
+      function swapCards(a, b) {
+        const aParent = a.parentNode;
+        const bParent = b.parentNode;
+        const aNext = a.nextSibling === b ? b.nextSibling : a.nextSibling;
+        const bNext = b.nextSibling === a ? a.nextSibling : b.nextSibling;
+        if (aParent === bParent) {
+          // same parent — use a placeholder
+          const placeholder = document.createComment("");
+          aParent.insertBefore(placeholder, a);
+          aParent.insertBefore(a, b);
+          aParent.insertBefore(b, placeholder);
+          aParent.removeChild(placeholder);
+        }
+      }
+
       grid.addEventListener("pointerdown", e => {
         if (e.pointerType === "mouse" && e.button !== 0) return;
-        if (e.target.closest("#info-toggle") || e.target.closest("#info-panel") || e.target.closest("#download-btn")) return;
+        if (e.target.closest("#info-toggle") || e.target.closest("#info-panel") ||
+            e.target.closest("#download-btn") || e.target.closest("#reveal-all-btn")) return;
 
         const card = e.target.closest(".card");
         if (!card) return;
 
         startX = e.clientX; startY = e.clientY;
         const rect = card.getBoundingClientRect();
-        cloneOffX = e.clientX - rect.left; cloneOffY = e.clientY - rect.top;
+        cloneOffX = e.clientX - rect.left;
+        cloneOffY = e.clientY - rect.top;
 
         let dragStarted = false;
+
         function onMove(ev) {
-          const dx = ev.clientX - startX; const dy = ev.clientY - startY;
+          const dx = ev.clientX - startX, dy = ev.clientY - startY;
           if (!dragStarted && Math.sqrt(dx * dx + dy * dy) < 6) return;
           if (!dragStarted) {
-            dragStarted = true; dragSrc = card;
-            card.classList.add("card-dragging"); clone = createClone(card);
+            dragStarted = true;
+            dragSrc = card;
+            card.classList.add("card-dragging");
+            clone = createClone(card);
           }
           ev.preventDefault();
           if (clone) {
             clone.style.left = (ev.clientX - cloneOffX) + "px";
-            clone.style.top = (ev.clientY - cloneOffY) + "px";
+            clone.style.top  = (ev.clientY - cloneOffY) + "px";
           }
+          // Highlight target
+          grid.querySelectorAll(".card-ghost").forEach(c => c.classList.remove("card-ghost"));
+          if (clone) clone.style.display = "none";
+          const target = document.elementFromPoint(ev.clientX, ev.clientY)?.closest(".card");
+          if (clone) clone.style.display = "";
+          if (target && target !== dragSrc) target.classList.add("card-ghost");
         }
 
         function onUp(ev) {
           window.removeEventListener("pointermove", onMove);
-          window.removeEventListener("pointerup", onUp);
+          window.removeEventListener("pointerup",   onUp);
           if (dragStarted) {
+            grid.querySelectorAll(".card-ghost").forEach(c => c.classList.remove("card-ghost"));
+            if (clone) clone.style.display = "none";
             const target = document.elementFromPoint(ev.clientX, ev.clientY)?.closest(".card");
-            if (target && target !== dragSrc) {
-              const p = dragSrc.parentNode;
-              const nextTarget = target.nextSibling === dragSrc ? target : target.nextSibling;
-              p.insertBefore(dragSrc, nextTarget);
-            }
+            if (clone) clone.style.display = "";
+            if (target && target !== dragSrc) swapCards(dragSrc, target);
             dragSrc.classList.remove("card-dragging");
             clone?.remove(); clone = null; dragSrc = null;
           } else {
-            // Click any tile triggers Global Reveal
-            toggleGlobalReveal();
+            // Simple click → reveal only this tile
+            revealCard(card);
           }
         }
         window.addEventListener("pointermove", onMove, { passive: false });
-        window.addEventListener("pointerup", onUp);
-      });
-
-      document.body.addEventListener("click", (e) => {
-        if (!e.target.closest(".card") && !e.target.closest("#download-btn") && !e.target.closest("#info-toggle") && !e.target.closest("#info-panel")) {
-          toggleGlobalReveal();
-        }
+        window.addEventListener("pointerup",   onUp);
       });
     }
 
@@ -432,6 +494,15 @@
         e.stopPropagation();
         infoPanel.classList.remove("show");
       };
+
+      // Reveal All button
+      const revealAllBtn = document.getElementById("reveal-all-btn");
+      if (revealAllBtn) {
+        revealAllBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          revealAll();
+        });
+      }
 
       // Download logic
       const dlBtn = document.getElementById("download-btn");
