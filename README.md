@@ -1,2 +1,2 @@
 # texture
-An archive of wood texture printed faux floorings
+An archive of fancy named but visually bland interior materials
