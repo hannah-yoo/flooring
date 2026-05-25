@@ -32,7 +32,54 @@
   <button id="reveal-all-btn" title="Reveal All">reveal all</button>
 
   <!-- Walking sound -->
-  <audio id="walk-sound" src="assets/walking.m4a" preload="auto"></audio>
+  <audio id="walk-sound" src="assets/sound/walking.m4a" preload="auto"></audio>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       Print-only layout (hidden on screen, shown on Ctrl+P)
+       A4: 210mm × 297mm
+       Horizontal divider: y = 140mm (~47% from top)
+       Vertical divider:   x = 105mm (50% of width)
+       Floor zone: x=0, y=140mm, w=105mm, h=105mm (square)
+       ═══════════════════════════════════════════════════════════ -->
+  <div id="print-layout">
+
+    <!-- Single SVG covers full A4 — SVG strokes always print,
+         unlike CSS background-color which browsers may strip.   -->
+    <svg id="print-lines" viewBox="0 0 210 297"
+         xmlns="http://www.w3.org/2000/svg"
+         preserveAspectRatio="none">
+      <!-- Vertical dashed line at top half (x=105, y=0 to y=140) -->
+      <line x1="105" y1="0" x2="105" y2="140"
+            stroke="#000" stroke-width="0.5"
+            stroke-dasharray="10 8"
+            vector-effect="non-scaling-stroke" />
+      <!-- Vertical solid line at bottom half (x=105, y=140 to y=297) -->
+      <line x1="105" y1="140" x2="105" y2="297"
+            stroke="#000" stroke-width="0.5"
+            vector-effect="non-scaling-stroke" />
+      <!-- Horizontal dashed line at y=140 (x=0 to x=210) -->
+      <line x1="0" y1="140" x2="210" y2="140"
+            stroke="#000" stroke-width="0.5"
+            stroke-dasharray="10 8"
+            vector-effect="non-scaling-stroke" />
+      <!-- Diagonal dashed line: centre-intersection (105,140) → right boundary at floor zone bottom height (210,245) -->
+      <line x1="105" y1="140" x2="210" y2="245"
+            stroke="#000" stroke-width="0.5"
+            stroke-dasharray="10 8"
+            vector-effect="non-scaling-stroke" />
+    </svg>
+
+    <!-- Floor zone: square area bottom-left of the divider lines -->
+    <div id="print-floor-zone">
+      <div id="print-floor-grid"></div>
+    </div>
+
+    <!-- Purple zone: doormat area below floor zone -->
+    <div id="print-doormat-zone">
+      <img id="print-doormat-img" src="" alt="Doormat" />
+    </div>
+
+  </div>
 
   <!-- Info Toggle & Panel -->
   <button id="info-toggle" aria-label="Info">
@@ -75,6 +122,139 @@
       <line x1="12" y1="15" x2="12" x2="3" />
     </svg>
   </button>
+
+  <script>
+    // ─────────────────────────────────────────────────────────────
+    // Print: populate floor mosaic before printing, clean up after
+    // ─────────────────────────────────────────────────────────────
+    (function () {
+
+      // ── Step 1: collect visible wood-tile images from the current viewport ──
+      function getVisibleTileSrcs() {
+        const grid = document.getElementById('grid');
+        if (!grid) return [];
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        return Array.from(grid.querySelectorAll('.card'))
+          .filter(card => {
+            const r = card.getBoundingClientRect();
+            return r.top < vh && r.bottom > 0 && r.left < vw && r.right > 0;
+          })
+          .map(card => {
+            const img  = card.querySelector('.card-wood-img');
+            const wrap = card.querySelector('.card-img-wrap');
+            if (!img || !img.src) return null;
+            // Capture the tile's natural aspect ratio (height/width) so planks
+            // stay tall & narrow like real flooring, not square
+            const r = card.getBoundingClientRect();
+            const ar = r.width > 0 ? r.height / r.width : 2.5; // height:width ratio
+            return { src: img.src, alt: img.alt || '', ar };
+          })
+          .filter(Boolean);
+      }
+
+      // ── Step 2: build the flooring mosaic in the print zone ─────────────────
+      // Layout: narrow vertical plank columns (matching the web's masonry look)
+      // with staggered start offsets between columns for a real-flooring feel.
+      function buildFloorGrid(tiles) {
+        const zone   = document.getElementById('print-floor-zone');
+        const gridEl = document.getElementById('print-floor-grid');
+        if (!zone || !gridEl) return;
+        gridEl.innerHTML = '';
+        if (tiles.length === 0) return;
+
+        // Get actual columns count on screen dynamically and double it
+        const grid = document.getElementById('grid');
+        const numCols = grid ? (parseInt(window.getComputedStyle(grid).columnCount) || 8) : 8;
+        const NUM_COLS = numCols * 2;
+
+        // Stagger offsets: fraction of average plank height each column is shifted up.
+        // Mimics how real floor planks are laid offset from each other.
+        const STAGGER = [0, 0.42, 0.18, 0.67, 0.31, 0.52, 0.09, 0.78, 0.23, 0.61];
+
+        // Column width as % of zone width
+        const colW = 100 / NUM_COLS;
+
+        // Average plank height as % of zone height, preserving tile aspect ratio (avg ar ≈ 2.5)
+        const avgPlankH = colW * 2.5;
+
+        gridEl.style.cssText = 'position:relative; width:100%; height:100%; overflow:hidden;';
+
+        for (let col = 0; col < NUM_COLS; col++) {
+          const colLeft = (col * 100 / NUM_COLS).toFixed(4);
+          const colWidthPercent = colW.toFixed(4);
+
+          const colEl = document.createElement('div');
+          // Shift column upward by stagger amount so adjacent columns are offset
+          const topOffset = -(STAGGER[col % STAGGER.length] * avgPlankH);
+          colEl.style.cssText = [
+            'position:absolute',
+            `left:${colLeft}%`,
+            `width:${colWidthPercent}%`,
+            // Extend tall enough to fill zone even with stagger shift
+            `top:${topOffset.toFixed(4)}%`,
+            'bottom:-10%',       // small safety buffer
+            'display:flex',
+            'flex-direction:column',
+            'align-items:stretch',
+            'overflow:visible',  // parent clips
+          ].join(';');
+
+          // Number of planks needed to fill zone (100% + safety buffer) divided by avg plank height
+          const planksNeeded = Math.ceil(130 / avgPlankH) + 2;
+
+          for (let i = 0; i < planksNeeded; i++) {
+            const tile = tiles[(col * 3 + i) % tiles.length];
+
+            // Vary plank height slightly per row for natural, hand-laid look.
+            // Uses the tile's own aspect ratio if available.
+            const arFactor  = tile.ar ? Math.min(tile.ar, 4) : 2.5;
+            const variation = ((col * 5 + i * 7) % 5 - 2) * 1.5; // ±3%
+            const plankH    = (colW * arFactor + variation).toFixed(3);
+
+            const plank = document.createElement('div');
+            plank.style.cssText = `flex-shrink:0; width:100%; height:${plankH}%; overflow:hidden;`;
+
+            const img = document.createElement('img');
+            img.src         = tile.src;
+            img.alt         = tile.alt || '';
+            img.crossOrigin = 'anonymous';
+            img.style.cssText = 'display:block; width:100%; height:100%; object-fit:cover; object-position:center;';
+
+            plank.appendChild(img);
+            colEl.appendChild(plank);
+          }
+
+          gridEl.appendChild(colEl);
+        }
+      }
+
+      window.addEventListener('beforeprint', () => {
+        const tiles = getVisibleTileSrcs();
+        buildFloorGrid(tiles);
+
+        // Randomly pick green or red doormat
+        const doormatImg = document.getElementById('print-doormat-img');
+        if (doormatImg) {
+          const doormats = [
+            'assets/image/green doormat.jpg',
+            'assets/image/red doormat.jpg'
+          ];
+          const chosen = doormats[Math.floor(Math.random() * doormats.length)];
+          doormatImg.src = chosen;
+        }
+      });
+
+      window.addEventListener('afterprint', () => {
+        const gridEl = document.getElementById('print-floor-grid');
+        if (gridEl) { gridEl.innerHTML = ''; gridEl.removeAttribute('style'); }
+
+        const doormatImg = document.getElementById('print-doormat-img');
+        if (doormatImg) { doormatImg.src = ''; }
+      });
+
+    })();
+  </script>
 
   <script>
     // ─────────────────────────────────────────────────────────────
@@ -590,75 +770,8 @@
         console.error(err);
       }
     }
-
-    // ─────────────────────────────────────────────────────────────
-    // Print Preparation
-    // ─────────────────────────────────────────────────────────────
-    function preparePrintLayout() {
-      const printGrid = document.getElementById("print-flooring-grid");
-      if (!printGrid) return;
-      printGrid.innerHTML = "";
-
-      const grid = document.getElementById("grid");
-      const visibleCards = Array.from(grid.querySelectorAll(".card")).filter(card => {
-        const rect = card.getBoundingClientRect();
-        return rect.top < window.innerHeight && rect.bottom > 0;
-      });
-
-      const N = visibleCards.length;
-      if (N === 0) return;
-
-      // Calculate cols and rows to fit into a square grid
-      let cols = Math.ceil(Math.sqrt(N));
-      let rows = Math.ceil(N / cols);
-      if (cols * (rows - 1) >= N) {
-        rows--;
-      }
-
-      printGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-      printGrid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
-
-      visibleCards.forEach(card => {
-        const cell = document.createElement("div");
-        cell.className = "print-grid-cell";
-
-        const imgWrap = card.querySelector(".card-img-wrap");
-        const woodImg = card.querySelector(".card-wood-img");
-
-        if (woodImg && woodImg.style.display !== "none" && woodImg.src) {
-          const img = document.createElement("img");
-          img.src = woodImg.src;
-          cell.appendChild(img);
-        } else if (imgWrap) {
-          cell.style.backgroundColor = imgWrap.style.backgroundColor;
-        }
-        printGrid.appendChild(cell);
-      });
-    }
-
-    window.addEventListener("beforeprint", preparePrintLayout);
-    window.addEventListener("afterprint", () => {
-      const printGrid = document.getElementById("print-flooring-grid");
-      if (printGrid) printGrid.innerHTML = "";
-    });
-
     init();
   </script>
-
-  <!-- Print Layout Container (Hidden on screen) -->
-  <div id="print-container">
-    <svg width="210mm" height="297mm" viewBox="0 0 210 297" style="position: absolute; top: 0; left: 0; width: 210mm; height: 297mm; z-index: 10;">
-      <!-- Top vertical dashed line -->
-      <line x1="105" y1="0" x2="105" y2="148.5" stroke="black" stroke-width="0.5" stroke-dasharray="2 2" />
-      <!-- Middle horizontal dashed line -->
-      <line x1="0" y1="148.5" x2="210" y2="148.5" stroke="black" stroke-width="0.5" stroke-dasharray="2 2" />
-      <!-- Bottom vertical solid line -->
-      <line x1="105" y1="148.5" x2="105" y2="297" stroke="black" stroke-width="0.5" />
-      <!-- Bottom-right diagonal dashed line -->
-      <line x1="105" y1="148.5" x2="210" y2="297" stroke="black" stroke-width="0.5" stroke-dasharray="2 2" />
-    </svg>
-    <div id="print-flooring-grid"></div>
-  </div>
 </body>
 
 </html>

@@ -1,74 +1,112 @@
-/* Print layout styles for A4 Portrait */
+/* ═══════════════════════════════════════════════════════════════
+   print.css — applied only during @media print
+   Linked with media="print" so it never affects screen rendering.
 
-/* Ensure screen layout doesn't interfere */
-#print-container {
-  display: none;
+   A4 layout reference (all in mm):
+     Page size       : 210 × 297
+     Vertical divider: x = 105  (centre)
+     H-line divider  : y = 140  (~47% from top)
+     Floor zone      : x=0, y=140, w=105, h=105  (square)
+     Diagonal        : (105,140) → (210,297)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Page Setup ──────────────────────────────────────────────── */
+@page {
+  size: A4 portrait;
+  margin: 0;
 }
 
-@media print {
-  /* Hide all screen elements */
-  body > *:not(#print-container) {
-    display: none !important;
-  }
+/* ── Hide all web UI elements during print ───────────────────── */
+#info-toggle,
+#info-panel,
+#download-btn,
+#reveal-all-btn,
+#export-tag,
+#loading,
+#error,
+#walk-sound,
+.card-text-layer,
+.card-overlay,
+.card-trait-mark,
+.works,
+#grid,
+body > section {
+  display: none !important;
+}
 
-  html, body {
-    background: #fff !important;
-    color: #000 !important;
-    width: 210mm !important;
-    height: 297mm !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
+/* ── Print canvas root ───────────────────────────────────────── */
+html, body {
+  background: #fff !important;
+  color: #000 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 210mm;
+  height: 297mm;
+  overflow: hidden;
+}
 
-  @page {
-    size: A4 portrait;
-    margin: 0;
-  }
+/* ── The A4 print layout container ──────────────────────────── */
+#print-layout {
+  display: block !important;
+  position: relative;
+  width: 210mm;
+  height: 297mm;
+  overflow: hidden;
+  background: #fff;
+}
 
-  #print-container {
-    display: block !important;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 210mm;
-    height: 297mm;
-    background: #fff;
-    color: #000;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    box-sizing: border-box;
-  }
+/* ── Full-page SVG: vertical + horizontal + diagonal lines ───── */
+/* SVG vector strokes are guaranteed to print (unlike CSS         */
+/* background-color, which browsers may suppress).                */
+#print-lines {
+  display: block !important;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 210mm;
+  height: 297mm;
+  pointer-events: none;
+}
 
-  #print-flooring-grid {
-    position: absolute;
-    left: 0;
-    top: 148.5mm;
-    width: 105mm;
-    height: 105mm;
-    z-index: 5;
-    display: grid;
-    gap: 0;
-    overflow: hidden;
-    background: transparent;
-  }
+/* ── Floor zone: square, starts at the horizontal divider ─────  */
+/*    x: 0–105mm  (left half)                                     */
+/*    y: 140mm–245mm  (105mm tall = square)                       */
+#print-floor-zone {
+  display: block !important;
+  position: absolute;
+  left: 0;
+  top: 140mm;
+  width: 105mm;
+  height: 105mm;
+  overflow: hidden;
+  background: #f0ece6; /* warm fallback if images haven't loaded */
+}
 
-  .print-grid-cell {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+/* Floor grid: JS sets position:relative and builds columns.      */
+/* We only need a base size here; layout is fully JS-driven.      */
+#print-floor-grid {
+  display: block !important;
+  width: 100%;
+  height: 100%;
+}
 
-  .print-grid-cell img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
+/* ── Purple zone: doormat area below floor zone ───────────────  */
+/*    x: 0–105mm  (left half)                                     */
+/*    y: 245mm–297mm  (52mm tall)                                 */
+#print-doormat-zone {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 0;
+  top: 245mm;
+  width: 105mm;
+  height: 52mm;
+  overflow: hidden;
+}
+
+#print-doormat-zone img {
+  display: block !important;
+  width: 50%;
+  height: auto;
 }
