@@ -42,8 +42,6 @@ html, body {
   margin: 0 !important;
   padding: 0 !important;
   width: 210mm;
-  height: 297mm;
-  overflow: hidden;
 }
 
 /* ── The A4 print layout container ──────────────────────────── */
@@ -51,15 +49,29 @@ html, body {
   display: block !important;
   position: relative;
   width: 210mm;
+}
+
+/* ── Individual printed pages ───────────────────────────────── */
+.print-page {
+  display: block !important;
+  position: relative;
+  width: 210mm;
   height: 297mm;
   overflow: hidden;
   background: #fff;
+  page-break-after: always;
+  break-after: page;
+}
+
+.print-page:last-child {
+  page-break-after: avoid;
+  break-after: avoid;
 }
 
 /* ── Full-page SVG: vertical + horizontal + diagonal lines ───── */
 /* SVG vector strokes are guaranteed to print (unlike CSS         */
 /* background-color, which browsers may suppress).                */
-#print-lines {
+.print-lines {
   display: block !important;
   position: absolute;
   left: 0;
@@ -72,14 +84,14 @@ html, body {
 
 /* ── Concrete zone: fills the bottom-right quadrant (yellow area) ───── */
 /*    x: 105mm–210mm (right half)                                       */
-/*    y: 140mm–297mm (starts at horizontal divider)                     */
+/*    y: 148.5mm–297mm (starts at horizontal divider)                     */
 #print-concrete-zone {
   display: block !important;
   position: absolute;
   left: 105mm;
-  top: 140mm;
+  top: 148.5mm;
   width: 105mm;
-  height: 157mm; /* fills the remaining height: 297mm - 140mm */
+  height: 148.5mm; /* fills the remaining height: 297mm - 148.5mm */
   overflow: hidden;
   z-index: 1;
 }
@@ -89,17 +101,38 @@ html, body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: saturate(0.2); /* low saturation */
+  filter: saturate(0.8); /* higher saturation */
+}
+
+/* ── Back page concrete grid: fills the entire back page in a 2x2 grid ── */
+#print-back-concrete-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+}
+
+#print-back-concrete-grid img {
+  display: block !important;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.8); /* higher saturation matching the front */
 }
 
 /* ── Floor zone: square, starts at the horizontal divider ─────  */
 /*    x: 0–105mm  (left half)                                     */
-/*    y: 140mm–245mm  (105mm tall = square)                       */
+/*    y: 148.5mm–253.5mm  (105mm tall = square)                       */
 #print-floor-zone {
   display: block !important;
   position: absolute;
   left: 0;
-  top: 140mm;
+  top: 148.5mm;
   width: 105mm;
   height: 105mm;
   overflow: hidden;
@@ -117,16 +150,16 @@ html, body {
 
 /* ── Purple zone: doormat area below floor zone ───────────────  */
 /*    x: 0–105mm  (left half)                                     */
-/*    y: 245mm–297mm  (52mm tall)                                 */
+/*    y: 253.5mm–297mm  (43.5mm tall)                                 */
 #print-doormat-zone {
   display: flex !important;
   align-items: center;
   justify-content: center;
   position: absolute;
   left: 0;
-  top: 245mm;
+  top: 253.5mm;
   width: 105mm;
-  height: 52mm;
+  height: 43.5mm;
   overflow: hidden;
   z-index: 2;
 }

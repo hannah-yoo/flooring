@@ -50,45 +50,84 @@
        ═══════════════════════════════════════════════════════════ -->
   <div id="print-layout">
 
-    <!-- Single SVG covers full A4 — SVG strokes always print,
-         unlike CSS background-color which browsers may strip.   -->
-    <svg id="print-lines" viewBox="0 0 210 297"
-         xmlns="http://www.w3.org/2000/svg"
-         preserveAspectRatio="none">
-      <!-- Vertical dashed line at top half (x=105, y=0 to y=140) -->
-      <line x1="105" y1="0" x2="105" y2="140"
-            stroke="#000" stroke-width="0.5"
-            stroke-dasharray="10 8"
-            vector-effect="non-scaling-stroke" />
-      <!-- Vertical solid line at bottom half (x=105, y=140 to y=297) -->
-      <line x1="105" y1="140" x2="105" y2="297"
-            stroke="#000" stroke-width="0.5"
-            vector-effect="non-scaling-stroke" />
-      <!-- Horizontal dashed line at y=140 (x=0 to x=210) -->
-      <line x1="0" y1="140" x2="210" y2="140"
-            stroke="#000" stroke-width="0.5"
-            stroke-dasharray="10 8"
-            vector-effect="non-scaling-stroke" />
-      <!-- Diagonal dashed line: centre-intersection (105,140) → right boundary at floor zone bottom height (210,245) -->
-      <line x1="105" y1="140" x2="210" y2="245"
-            stroke="#000" stroke-width="0.5"
-            stroke-dasharray="10 8"
-            vector-effect="non-scaling-stroke" />
-    </svg>
+    <!-- Page 1: Front Side -->
+    <div class="print-page" id="print-page-front">
+      <!-- Single SVG covers full A4 — SVG strokes always print,
+           unlike CSS background-color which browsers may strip.   -->
+      <svg id="print-lines" class="print-lines" viewBox="0 0 210 297"
+           xmlns="http://www.w3.org/2000/svg"
+           preserveAspectRatio="none">
+        <!-- Vertical dashed line at top half (x=105, y=0 to y=148.5) -->
+        <line x1="105" y1="0" x2="105" y2="148.5"
+              stroke="#000" stroke-width="0.5"
+              stroke-dasharray="10 8"
+              vector-effect="non-scaling-stroke" />
+        <!-- Vertical solid line at bottom half (x=105, y=148.5 to y=297) -->
+        <line x1="105" y1="148.5" x2="105" y2="297"
+              stroke="#000" stroke-width="0.5"
+              vector-effect="non-scaling-stroke" />
+        <!-- Horizontal dashed line at y=148.5 (x=0 to x=210) -->
+        <line x1="0" y1="148.5" x2="210" y2="148.5"
+              stroke="#000" stroke-width="0.5"
+              stroke-dasharray="10 8"
+              vector-effect="non-scaling-stroke" />
+        <!-- Diagonal dashed line: centre-intersection (105,148.5) → right boundary at floor zone bottom height (210,253.5) -->
+        <line x1="105" y1="148.5" x2="210" y2="253.5"
+              stroke="#000" stroke-width="0.5"
+              stroke-dasharray="10 8"
+              vector-effect="non-scaling-stroke" />
+      </svg>
 
-    <!-- Floor zone: square area bottom-left of the divider lines -->
-    <div id="print-floor-zone">
-      <div id="print-floor-grid"></div>
+      <!-- Floor zone: square area bottom-left of the divider lines -->
+      <div id="print-floor-zone">
+        <div id="print-floor-grid"></div>
+      </div>
+
+      <!-- Concrete zone: bare concrete area bottom-right of the divider lines -->
+      <div id="print-concrete-zone">
+        <img id="print-concrete-img" src="assets/image/concrete.jpg" alt="Concrete" />
+      </div>
+
+      <!-- Purple zone: doormat area below floor zone -->
+      <div id="print-doormat-zone">
+        <img id="print-doormat-img" src="" alt="Doormat" />
+      </div>
     </div>
 
-    <!-- Concrete zone: bare concrete area bottom-right of the divider lines -->
-    <div id="print-concrete-zone">
-      <img id="print-concrete-img" src="assets/image/concrete.jpg" alt="Concrete" />
-    </div>
+    <!-- Page 2: Back Side -->
+    <div class="print-page" id="print-page-back">
+      <!-- 2x2 Concrete Grid covering the entire page -->
+      <div id="print-back-concrete-grid">
+        <img src="assets/image/concrete.jpg" alt="Concrete" />
+        <img src="assets/image/concrete.jpg" alt="Concrete" />
+        <img src="assets/image/concrete.jpg" alt="Concrete" />
+        <img src="assets/image/concrete.jpg" alt="Concrete" />
+      </div>
 
-    <!-- Purple zone: doormat area below floor zone -->
-    <div id="print-doormat-zone">
-      <img id="print-doormat-img" src="" alt="Doormat" />
+      <!-- SVG matching folding lines on front, mirrored horizontally -->
+      <svg id="print-lines-back" class="print-lines" viewBox="0 0 210 297"
+           xmlns="http://www.w3.org/2000/svg"
+           preserveAspectRatio="none">
+        <!-- Vertical dashed line at top half (x=105, y=0 to y=148.5) -->
+        <line x1="105" y1="0" x2="105" y2="148.5"
+              stroke="#000" stroke-width="0.5"
+              stroke-dasharray="10 8"
+              vector-effect="non-scaling-stroke" />
+        <!-- Vertical solid line at bottom half (x=105, y=148.5 to y=297) -->
+        <line x1="105" y1="148.5" x2="105" y2="297"
+              stroke="#000" stroke-width="0.5"
+              vector-effect="non-scaling-stroke" />
+        <!-- Horizontal dashed line at y=148.5 (x=0 to x=210) -->
+        <line x1="0" y1="148.5" x2="210" y2="148.5"
+              stroke="#000" stroke-width="0.5"
+              stroke-dasharray="10 8"
+              vector-effect="non-scaling-stroke" />
+        <!-- Diagonal dashed line: centre-intersection (105,148.5) → left boundary at floor zone bottom height (0,253.5) [Mirrored] -->
+        <line x1="105" y1="148.5" x2="0" y2="253.5"
+              stroke="#000" stroke-width="0.5"
+              stroke-dasharray="10 8"
+              vector-effect="non-scaling-stroke" />
+      </svg>
     </div>
 
   </div>
@@ -180,6 +219,8 @@
 
         // Column width as % of zone width
         const colW = 100 / NUM_COLS;
+        // Column width in mm (zone width is 105mm)
+        const colW_mm = 105 / NUM_COLS;
 
         // Calculate average aspect ratio of visible tiles, scale it up to be long (aspect ratio 6 to 10)
         let totalAR = 0;
@@ -191,16 +232,16 @@
         // Make the planks as long as possible for a realistic wood plank look
         const arFactor = Math.max(avgAR * 2.8, 8.0);
 
-        // Plank height as % of zone height (which is square)
-        const plankH = colW * arFactor;
+        // Plank height in mm
+        const plankH_mm = colW_mm * arFactor;
 
         gridEl.style.cssText = 'position:relative; width:100%; height:100%; overflow:hidden;';
 
         // Stagger stair offset: 1/4 (0.25) of plank height per column
         const STAIR_STEP = 0.25;
 
-        // We shift columns up by at most 1 plank height, so we need to cover 100% + plankH
-        const planksNeeded = Math.ceil(100 / plankH) + 2;
+        // We shift columns up by at most 1 plank height, so we need to cover 105mm + plankH_mm
+        const planksNeeded = Math.ceil(105 / plankH_mm) + 2;
 
         // Pre-calculate tile selection grid to avoid horizontal, vertical, and diagonal repeats
         const selectedGrid = [];
@@ -297,7 +338,7 @@
           }
         }
 
-        const colHeightPercent = 200; // Fixed column height relative to zone
+        const colHeight_mm = plankH_mm * planksNeeded;
 
         for (let col = 0; col < NUM_COLS; col++) {
           const colLeft = (col * 100 / NUM_COLS).toFixed(4);
@@ -305,14 +346,14 @@
 
           const colEl = document.createElement('div');
           // Linear stagger step to create the stair pattern
-          const topOffset = -((col * STAIR_STEP) % 1) * plankH;
+          const topOffset_mm = -((col * STAIR_STEP) % 1) * plankH_mm;
           
           colEl.style.cssText = [
             'position:absolute',
             `left:${colLeft}%`,
             `width:${colWidthPercent}%`,
-            `top:${topOffset.toFixed(4)}%`,
-            `height:${colHeightPercent}%`,
+            `top:${topOffset_mm.toFixed(4)}mm`,
+            `height:${colHeight_mm.toFixed(4)}mm`,
             'display:flex',
             'flex-direction:column',
             'align-items:stretch',
@@ -323,11 +364,8 @@
             const tileIdx = selectedGrid[col][i];
             const tile = tiles[tileIdx];
 
-            // Uniform height for all planks so the joints line up perfectly in a stair step
-            const plankHPercentOfCol = (plankH * 100 / colHeightPercent).toFixed(4);
-
             const plank = document.createElement('div');
-            plank.style.cssText = `flex-shrink:0; width:100%; height:${plankHPercentOfCol}%; overflow:hidden;`;
+            plank.style.cssText = `flex-shrink:0; width:100%; height:${plankH_mm.toFixed(4)}mm; overflow:hidden;`;
 
             const img = document.createElement('img');
             img.src         = tile.src;

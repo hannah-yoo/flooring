@@ -634,10 +634,11 @@ body.capturing .card-trait-mark {
 /* ── Print-only elements: hidden on screen ───────────────────── */
 /* Revealed exclusively by print.css at @media print.            */
 #print-layout,
-#print-lines,
+.print-lines,
 #print-concrete-zone,
 #print-floor-zone,
 #print-floor-grid,
-#print-doormat-zone {
+#print-doormat-zone,
+#print-back-concrete-grid {
   display: none !important;
 }
