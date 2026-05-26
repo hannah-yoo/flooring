@@ -123,6 +123,18 @@ html, body {
   height: 100%;
   object-fit: cover;
   filter: saturate(0.8); /* higher saturation matching the front */
+  opacity: 0.8; /* lower the opacity to 80% */
+}
+
+/* Mirror adjacent images in the 2x2 grid to make them connect seamlessly */
+#print-back-concrete-grid img:nth-child(2) {
+  transform: scaleX(-1);
+}
+#print-back-concrete-grid img:nth-child(3) {
+  transform: scaleY(-1);
+}
+#print-back-concrete-grid img:nth-child(4) {
+  transform: scale(-1, -1);
 }
 
 /* ── Floor zone: square, starts at the horizontal divider ─────  */

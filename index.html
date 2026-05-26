@@ -193,13 +193,14 @@
           })
           .map(card => {
             const img  = card.querySelector('.card-wood-img');
-            const wrap = card.querySelector('.card-img-wrap');
-            if (!img || !img.src) return null;
+            if (!img) return null;
+            const src = img.getAttribute('src');
+            if (!src || src.trim() === '') return null;
             // Capture the tile's natural aspect ratio (height/width) so planks
             // stay tall & narrow like real flooring, not square
             const r = card.getBoundingClientRect();
             const ar = r.width > 0 ? r.height / r.width : 2.5; // height:width ratio
-            return { src: img.src, alt: img.alt || '', ar };
+            return { src: src, alt: img.alt || '', ar };
           })
           .filter(Boolean);
       }
