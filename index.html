@@ -166,8 +166,6 @@
       }
 
       // ── Step 2: build the flooring mosaic in the print zone ─────────────────
-      // Layout: narrow vertical plank columns (matching the web's masonry look)
-      // with staggered start offsets between columns for a real-flooring feel.
       function buildFloorGrid(tiles) {
         const zone   = document.getElementById('print-floor-zone');
         const gridEl = document.getElementById('print-floor-grid');
@@ -180,25 +178,29 @@
         const numCols = grid ? (parseInt(window.getComputedStyle(grid).columnCount) || 8) : 8;
         const NUM_COLS = numCols * 2;
 
-        // Stagger offsets: fraction of average plank height each column is shifted up.
-        // Mimics how real floor planks are laid offset from each other.
-        const STAGGER = [0, 0.42, 0.18, 0.67, 0.31, 0.52, 0.09, 0.78, 0.23, 0.61];
-
         // Column width as % of zone width
         const colW = 100 / NUM_COLS;
 
-        // Average plank height as % of zone height, preserving tile aspect ratio (avg ar ≈ 2.5)
-        const avgPlankH = colW * 2.5;
+        // Calculate average aspect ratio of visible tiles, scale it up to be long (aspect ratio 6 to 10)
+        let totalAR = 0;
+        tiles.forEach(t => {
+          totalAR += t.ar || 2.5;
+        });
+        const avgAR = tiles.length > 0 ? (totalAR / tiles.length) : 2.5;
+        
+        // Make the planks as long as possible for a realistic wood plank look
+        const arFactor = Math.max(avgAR * 2.8, 8.0);
+
+        // Plank height as % of zone height (which is square)
+        const plankH = colW * arFactor;
 
         gridEl.style.cssText = 'position:relative; width:100%; height:100%; overflow:hidden;';
 
-        const planksNeeded = Math.ceil(130 / avgPlankH) + 2;
+        // Stagger stair offset: 1/4 (0.25) of plank height per column
+        const STAIR_STEP = 0.25;
 
-        // Simple hash function for pseudo-random deterministic seeding based on grid coordinate
-        function seededRandom(x, y) {
-          const val = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453123;
-          return val - Math.floor(val);
-        }
+        // We shift columns up by at most 1 plank height, so we need to cover 100% + plankH
+        const planksNeeded = Math.ceil(100 / plankH) + 2;
 
         // Pre-calculate tile selection grid to avoid horizontal, vertical, and diagonal repeats
         const selectedGrid = [];
@@ -206,93 +208,126 @@
           selectedGrid[col] = [];
         }
 
+        const totalCells = NUM_COLS * planksNeeded;
+        const pool = [];
+        for (let i = 0; i < totalCells; i++) {
+          pool.push(i % tiles.length);
+        }
+
+        // Deterministic LCG seeded random number generator
+        function seededRandomGenerator(seed) {
+          let s = seed;
+          return function() {
+            s = (s * 9301 + 49297) % 233280;
+            return s / 233280;
+          };
+        }
+
+        // Deterministically shuffle the pool using LCG
+        const rand = seededRandomGenerator(12345);
+        for (let i = pool.length - 1; i > 0; i--) {
+          const j = Math.floor(rand() * (i + 1));
+          const temp = pool[i];
+          pool[i] = pool[j];
+          pool[j] = temp;
+        }
+
+        let poolIdx = 0;
         for (let row = 0; row < planksNeeded; row++) {
           for (let col = 0; col < NUM_COLS; col++) {
-            let chosenIdx = 0;
+            let chosenIdx = -1;
+
             if (tiles.length > 1) {
-              const randValue = seededRandom(col, row);
-              const baseSeed = Math.floor(randValue * tiles.length);
-              let found = false;
-              for (let offset = 0; offset < tiles.length; offset++) {
-                const testIdx = (baseSeed + offset) % tiles.length;
-                const isVerticalRepeat = row > 0 && selectedGrid[col][row - 1] === testIdx;
-                const isHorizontalRepeat = col > 0 && selectedGrid[col - 1][row] === testIdx;
-                const isDiagLeftRepeat = col > 0 && row > 0 && selectedGrid[col - 1][row - 1] === testIdx;
-                const isDiagRightRepeat = col < NUM_COLS - 1 && row > 0 && selectedGrid[col + 1][row - 1] === testIdx;
+              // 1. Try to find a tile index in the pool that satisfies all adjacency constraints
+              for (let i = poolIdx; i < pool.length; i++) {
+                const t = pool[i];
+                const isVerticalRepeat = row > 0 && selectedGrid[col][row - 1] === t;
+                const isHorizontalRepeat = col > 0 && selectedGrid[col - 1][row] === t;
+                const isDiagLeftRepeat = col > 0 && row > 0 && selectedGrid[col - 1][row - 1] === t;
+                const isDiagRightRepeat = col < NUM_COLS - 1 && row > 0 && selectedGrid[col + 1][row - 1] === t;
 
                 if (!isVerticalRepeat && !isHorizontalRepeat && !isDiagLeftRepeat && !isDiagRightRepeat) {
-                  chosenIdx = testIdx;
-                  found = true;
+                  chosenIdx = i;
                   break;
                 }
               }
 
-              if (!found) {
-                for (let offset = 0; offset < tiles.length; offset++) {
-                  const testIdx = (baseSeed + offset) % tiles.length;
-                  const isVerticalRepeat = row > 0 && selectedGrid[col][row - 1] === testIdx;
-                  const isHorizontalRepeat = col > 0 && selectedGrid[col - 1][row] === testIdx;
+              // 2. If not found, relax diagonal constraints
+              if (chosenIdx === -1) {
+                for (let i = poolIdx; i < pool.length; i++) {
+                  const t = pool[i];
+                  const isVerticalRepeat = row > 0 && selectedGrid[col][row - 1] === t;
+                  const isHorizontalRepeat = col > 0 && selectedGrid[col - 1][row] === t;
 
                   if (!isVerticalRepeat && !isHorizontalRepeat) {
-                    chosenIdx = testIdx;
-                    found = true;
+                    chosenIdx = i;
                     break;
                   }
                 }
               }
 
-              if (!found && row > 0) {
-                for (let offset = 0; offset < tiles.length; offset++) {
-                  const testIdx = (baseSeed + offset) % tiles.length;
-                  if (selectedGrid[col][row - 1] !== testIdx) {
-                    chosenIdx = testIdx;
-                    found = true;
+              // 3. If still not found, relax horizontal constraint (prevent same-column vertical adjacency)
+              if (chosenIdx === -1) {
+                for (let i = poolIdx; i < pool.length; i++) {
+                  const t = pool[i];
+                  const isVerticalRepeat = row > 0 && selectedGrid[col][row - 1] === t;
+
+                  if (!isVerticalRepeat) {
+                    chosenIdx = i;
                     break;
                   }
                 }
               }
 
-              if (!found) {
-                chosenIdx = baseSeed;
+              // 4. Fallback to the first available index in the pool if all else fails
+              if (chosenIdx === -1) {
+                chosenIdx = poolIdx;
               }
+
+              // Swap pool[poolIdx] with pool[chosenIdx] to commit the choice
+              const temp = pool[poolIdx];
+              pool[poolIdx] = pool[chosenIdx];
+              pool[chosenIdx] = temp;
+
+              selectedGrid[col][row] = pool[poolIdx];
             } else {
-              chosenIdx = 0;
+              selectedGrid[col][row] = 0;
             }
-            selectedGrid[col][row] = chosenIdx;
+            poolIdx++;
           }
         }
+
+        const colHeightPercent = 200; // Fixed column height relative to zone
 
         for (let col = 0; col < NUM_COLS; col++) {
           const colLeft = (col * 100 / NUM_COLS).toFixed(4);
           const colWidthPercent = colW.toFixed(4);
 
           const colEl = document.createElement('div');
-          // Shift column upward by stagger amount so adjacent columns are offset
-          const topOffset = -(STAGGER[col % STAGGER.length] * avgPlankH);
+          // Linear stagger step to create the stair pattern
+          const topOffset = -((col * STAIR_STEP) % 1) * plankH;
+          
           colEl.style.cssText = [
             'position:absolute',
             `left:${colLeft}%`,
             `width:${colWidthPercent}%`,
             `top:${topOffset.toFixed(4)}%`,
-            'bottom:-10%',       // small safety buffer
+            `height:${colHeightPercent}%`,
             'display:flex',
             'flex-direction:column',
             'align-items:stretch',
-            'overflow:visible',  // parent clips
+            'overflow:visible',
           ].join(';');
 
           for (let i = 0; i < planksNeeded; i++) {
             const tileIdx = selectedGrid[col][i];
             const tile = tiles[tileIdx];
 
-            // Vary plank height slightly per row for natural, hand-laid look.
-            // Uses the tile's own aspect ratio if available.
-            const arFactor  = tile.ar ? Math.min(tile.ar, 4) : 2.5;
-            const variation = ((col * 5 + i * 7) % 5 - 2) * 1.5; // ±3%
-            const plankH    = (colW * arFactor + variation).toFixed(3);
+            // Uniform height for all planks so the joints line up perfectly in a stair step
+            const plankHPercentOfCol = (plankH * 100 / colHeightPercent).toFixed(4);
 
             const plank = document.createElement('div');
-            plank.style.cssText = `flex-shrink:0; width:100%; height:${plankH}%; overflow:hidden;`;
+            plank.style.cssText = `flex-shrink:0; width:100%; height:${plankHPercentOfCol}%; overflow:hidden;`;
 
             const img = document.createElement('img');
             img.src         = tile.src;
