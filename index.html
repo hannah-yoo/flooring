@@ -29,7 +29,16 @@
   <div id="error" style="display:none"></div>
 
   <!-- Reveal All button -->
-  <button id="reveal-all-btn" title="Reveal All">reveal all</button>
+  <button id="reveal-all-btn" class="knife-btn" title="Reveal All">
+    <img src="assets/image/knife.png" alt="Cutter" class="knife-img" />
+    <span class="knife-text">reveal all</span>
+  </button>
+
+  <!-- Print button -->
+  <button id="print-btn" class="print-btn-custom" title="Print Flooring">
+    <img src="assets/image/make flooring.png" alt="Make Flooring" class="print-btn-img" />
+    <span class="print-btn-text">Install Flooring</span>
+  </button>
 
   <!-- Walking sound -->
   <audio id="walk-sound" src="assets/sound/walking.m4a" preload="auto"></audio>
@@ -72,6 +81,11 @@
     <!-- Floor zone: square area bottom-left of the divider lines -->
     <div id="print-floor-zone">
       <div id="print-floor-grid"></div>
+    </div>
+
+    <!-- Concrete zone: bare concrete area bottom-right of the divider lines -->
+    <div id="print-concrete-zone">
+      <img id="print-concrete-img" src="assets/image/concrete.jpg" alt="Concrete" />
     </div>
 
     <!-- Purple zone: doormat area below floor zone -->
@@ -180,6 +194,69 @@
 
         gridEl.style.cssText = 'position:relative; width:100%; height:100%; overflow:hidden;';
 
+        const planksNeeded = Math.ceil(130 / avgPlankH) + 2;
+
+        // Pre-calculate tile selection grid to avoid horizontal, vertical, and diagonal repeats
+        const selectedGrid = [];
+        for (let col = 0; col < NUM_COLS; col++) {
+          selectedGrid[col] = [];
+        }
+
+        for (let row = 0; row < planksNeeded; row++) {
+          for (let col = 0; col < NUM_COLS; col++) {
+            let chosenIdx = 0;
+            if (tiles.length > 1) {
+              const baseSeed = (col * 7 + row * 13) % tiles.length;
+              let found = false;
+              for (let offset = 0; offset < tiles.length; offset++) {
+                const testIdx = (baseSeed + offset) % tiles.length;
+                const isVerticalRepeat = row > 0 && selectedGrid[col][row - 1] === testIdx;
+                const isHorizontalRepeat = col > 0 && selectedGrid[col - 1][row] === testIdx;
+                const isDiagLeftRepeat = col > 0 && row > 0 && selectedGrid[col - 1][row - 1] === testIdx;
+                const isDiagRightRepeat = col < NUM_COLS - 1 && row > 0 && selectedGrid[col + 1][row - 1] === testIdx;
+
+                if (!isVerticalRepeat && !isHorizontalRepeat && !isDiagLeftRepeat && !isDiagRightRepeat) {
+                  chosenIdx = testIdx;
+                  found = true;
+                  break;
+                }
+              }
+
+              if (!found) {
+                for (let offset = 0; offset < tiles.length; offset++) {
+                  const testIdx = (baseSeed + offset) % tiles.length;
+                  const isVerticalRepeat = row > 0 && selectedGrid[col][row - 1] === testIdx;
+                  const isHorizontalRepeat = col > 0 && selectedGrid[col - 1][row] === testIdx;
+
+                  if (!isVerticalRepeat && !isHorizontalRepeat) {
+                    chosenIdx = testIdx;
+                    found = true;
+                    break;
+                  }
+                }
+              }
+
+              if (!found && row > 0) {
+                for (let offset = 0; offset < tiles.length; offset++) {
+                  const testIdx = (baseSeed + offset) % tiles.length;
+                  if (selectedGrid[col][row - 1] !== testIdx) {
+                    chosenIdx = testIdx;
+                    found = true;
+                    break;
+                  }
+                }
+              }
+
+              if (!found) {
+                chosenIdx = baseSeed;
+              }
+            } else {
+              chosenIdx = 0;
+            }
+            selectedGrid[col][row] = chosenIdx;
+          }
+        }
+
         for (let col = 0; col < NUM_COLS; col++) {
           const colLeft = (col * 100 / NUM_COLS).toFixed(4);
           const colWidthPercent = colW.toFixed(4);
@@ -191,7 +268,6 @@
             'position:absolute',
             `left:${colLeft}%`,
             `width:${colWidthPercent}%`,
-            // Extend tall enough to fill zone even with stagger shift
             `top:${topOffset.toFixed(4)}%`,
             'bottom:-10%',       // small safety buffer
             'display:flex',
@@ -200,11 +276,9 @@
             'overflow:visible',  // parent clips
           ].join(';');
 
-          // Number of planks needed to fill zone (100% + safety buffer) divided by avg plank height
-          const planksNeeded = Math.ceil(130 / avgPlankH) + 2;
-
           for (let i = 0; i < planksNeeded; i++) {
-            const tile = tiles[(col * 3 + i) % tiles.length];
+            const tileIdx = selectedGrid[col][i];
+            const tile = tiles[tileIdx];
 
             // Vary plank height slightly per row for natural, hand-laid look.
             // Uses the tile's own aspect ratio if available.
@@ -485,12 +559,20 @@
         playWalkSoundRapid(cards.length, totalMs);
         isGlobalRevealed = true;
         const btn = document.getElementById("reveal-all-btn");
-        if (btn) btn.textContent = "hide all";
+        if (btn) {
+          const txt = btn.querySelector(".knife-text");
+          if (txt) txt.textContent = "hide all";
+          else btn.textContent = "hide all";
+        }
       } else {
         cards.forEach(card => card.classList.remove("is-revealed", "is-stable"));
         isGlobalRevealed = false;
         const btn = document.getElementById("reveal-all-btn");
-        if (btn) btn.textContent = "reveal all";
+        if (btn) {
+          const txt = btn.querySelector(".knife-text");
+          if (txt) txt.textContent = "reveal all";
+          else btn.textContent = "reveal all";
+        }
       }
     }
 
@@ -593,7 +675,8 @@
       grid.addEventListener("pointerdown", e => {
         if (e.pointerType === "mouse" && e.button !== 0) return;
         if (e.target.closest("#info-toggle") || e.target.closest("#info-panel") ||
-            e.target.closest("#download-btn") || e.target.closest("#reveal-all-btn")) return;
+            e.target.closest("#download-btn") || e.target.closest("#reveal-all-btn") ||
+            e.target.closest("#print-btn")) return;
 
         const card = e.target.closest(".card");
         if (!card) return;
@@ -685,6 +768,15 @@
         });
       }
 
+      // Print button click
+      const printBtn = document.getElementById("print-btn");
+      if (printBtn) {
+        printBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          window.print();
+        });
+      }
+
       // Download logic
       const dlBtn = document.getElementById("download-btn");
       dlBtn.addEventListener("mouseenter", () => {
@@ -701,6 +793,7 @@
         e.stopPropagation();
         dlBtn.style.display = "none";
         infoBtn.style.display = "none";
+        if (printBtn) printBtn.style.display = "none";
 
         const tag = document.getElementById("export-tag");
         if (tag) {
@@ -729,6 +822,7 @@
 
         dlBtn.style.display = "flex";
         infoBtn.style.display = "flex";
+        if (printBtn) printBtn.style.display = "flex";
         if (tag) {
           tag.classList.remove("show");
           tag.style.transition = "";
