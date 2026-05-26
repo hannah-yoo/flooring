@@ -390,14 +390,14 @@ body.capturing .card-trait-mark {
 /* ── Reveal All Button (Knife design) ────────────────── */
 #reveal-all-btn {
   position: fixed;
-  bottom: 0.5rem;
+  bottom: 1.5rem;
   left: 50%;
   transform: translateX(-50%);
   background: none !important;
   border: none !important;
   padding: 0 !important;
-  width: 146px;
-  height: 88px;
+  width: 73px;
+  height: 44px;
   cursor: pointer;
   z-index: 950;
   display: flex;
@@ -408,7 +408,6 @@ body.capturing .card-trait-mark {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow: hidden; /* clip shimmer overflow */
 }
 #reveal-all-btn.hidden {
   opacity: 0;
@@ -433,71 +432,17 @@ body.capturing .card-trait-mark {
 #reveal-all-btn:hover .knife-img {
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.45));
 }
-.knife-text {
-  position: absolute;
-  color: #fff;
-  font-family: var(--font-main);
-  font-size: 0.78rem;
-  font-weight: 300;
-  letter-spacing: -0.01em;
-  pointer-events: none;
-  left: 61%; /* Moved right a bit */
-  top: 49%;
-  transform: translate(-50%, -50%) rotate(13deg); /* Tilted slightly less to fit handle */
-  white-space: nowrap;
-  z-index: 2;
-}
-
-/* CSS Metallic Shimmer effect on the knife */
-#reveal-all-btn::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -150%;
-  width: 150%;
-  height: 100%;
-  background: linear-gradient(
-    120deg,
-    rgba(255, 255, 255, 0) 30%,
-    rgba(255, 255, 255, 0.3) 40%,
-    rgba(255, 255, 255, 0.6) 50%,
-    rgba(255, 255, 255, 0.3) 60%,
-    rgba(255, 255, 255, 0) 70%
-  );
-  transform: skewX(-20deg);
-  pointer-events: none;
-  mask-image: url('assets/image/knife.png');
-  -webkit-mask-image: url('assets/image/knife.png');
-  mask-size: contain;
-  -webkit-mask-size: contain;
-  mask-repeat: no-repeat;
-  -webkit-mask-repeat: no-repeat;
-  mask-position: center;
-  -webkit-mask-position: center;
-  z-index: 1;
-}
-#reveal-all-btn:hover::after {
-  animation: shimmer 1.5s infinite ease-in-out;
-}
-@keyframes shimmer {
-  0% {
-    left: -150%;
-  }
-  100% {
-    left: 150%;
-  }
-}
 
 /* ── Print Button (Flooring layout design) ───────────── */
 .print-btn-custom {
   position: fixed;
-  bottom: 0.5rem; /* placed lower, aligned with the knife button */
+  bottom: 1.5rem; /* aligned with other bottom buttons */
   left: 1.5rem; /* bottom left corner */
   background: none !important;
   border: none !important;
   padding: 0 !important;
-  width: 146px;
-  height: 88px;
+  width: 73px;
+  height: 44px;
   cursor: pointer;
   z-index: 950;
   display: flex;
@@ -526,19 +471,6 @@ body.capturing .card-trait-mark {
 }
 .print-btn-custom:hover .print-btn-img {
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.45));
-}
-.print-btn-text {
-  position: absolute;
-  color: #fff;
-  font-family: var(--font-main);
-  font-size: 0.78rem;
-  font-weight: 300;
-  letter-spacing: -0.01em;
-  pointer-events: none;
-  left: 50%;
-  top: 75%; /* Moved to the lower part of the button image */
-  transform: translate(-50%, -50%);
-  white-space: nowrap;
 }
 
 

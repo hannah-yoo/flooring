@@ -31,13 +31,11 @@
   <!-- Reveal All button -->
   <button id="reveal-all-btn" class="knife-btn" title="Reveal All">
     <img src="assets/image/knife.png" alt="Cutter" class="knife-img" />
-    <span class="knife-text">reveal all</span>
   </button>
 
   <!-- Print button -->
   <button id="print-btn" class="print-btn-custom" title="Print Flooring">
     <img src="assets/image/make flooring.png" alt="Make Flooring" class="print-btn-img" />
-    <span class="print-btn-text">Install Flooring</span>
   </button>
 
   <!-- Walking sound -->
@@ -196,6 +194,12 @@
 
         const planksNeeded = Math.ceil(130 / avgPlankH) + 2;
 
+        // Simple hash function for pseudo-random deterministic seeding based on grid coordinate
+        function seededRandom(x, y) {
+          const val = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453123;
+          return val - Math.floor(val);
+        }
+
         // Pre-calculate tile selection grid to avoid horizontal, vertical, and diagonal repeats
         const selectedGrid = [];
         for (let col = 0; col < NUM_COLS; col++) {
@@ -206,7 +210,8 @@
           for (let col = 0; col < NUM_COLS; col++) {
             let chosenIdx = 0;
             if (tiles.length > 1) {
-              const baseSeed = (col * 7 + row * 13) % tiles.length;
+              const randValue = seededRandom(col, row);
+              const baseSeed = Math.floor(randValue * tiles.length);
               let found = false;
               for (let offset = 0; offset < tiles.length; offset++) {
                 const testIdx = (baseSeed + offset) % tiles.length;
@@ -559,20 +564,12 @@
         playWalkSoundRapid(cards.length, totalMs);
         isGlobalRevealed = true;
         const btn = document.getElementById("reveal-all-btn");
-        if (btn) {
-          const txt = btn.querySelector(".knife-text");
-          if (txt) txt.textContent = "hide all";
-          else btn.textContent = "hide all";
-        }
+        if (btn) btn.title = "Hide All";
       } else {
         cards.forEach(card => card.classList.remove("is-revealed", "is-stable"));
         isGlobalRevealed = false;
         const btn = document.getElementById("reveal-all-btn");
-        if (btn) {
-          const txt = btn.querySelector(".knife-text");
-          if (txt) txt.textContent = "reveal all";
-          else btn.textContent = "reveal all";
-        }
+        if (btn) btn.title = "Reveal All";
       }
     }
 
