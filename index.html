@@ -14,6 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/bitcount-grid-single/index.css">
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="print.css" media="print" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -21,158 +22,183 @@
 
 <body>
 
-  <section class="works">
-    <div id="grid"></div>
-  </section>
+  <div id="web-layer-wrap">
+    <div id="web-layer">
+      <!-- Trapped air bubbles (들뜬 자국) and floor wrinkles (장판이 일부분 울어서 일어난 주름 자국) -->
+      <div class="bubble-spot" style="top: 15%; left: 20%; transform: rotate(10deg) scale(0.9);"></div>
+      <div class="bubble-spot" style="top: 65%; left: 75%; transform: rotate(-15deg) scale(1.1);"></div>
+      <div class="bubble-spot" style="top: 40%; left: 5%; transform: rotate(45deg) scale(0.75);"></div>
+      <div class="bubble-spot" style="top: 80%; left: 30%; transform: rotate(5deg) scale(1.0);"></div>
+      
+      <div class="wrinkle-mark" style="top: 25%; left: 45%; transform: rotate(-12deg); width: 280px;"></div>
+      <div class="wrinkle-mark" style="top: 55%; left: 15%; transform: rotate(8deg); width: 340px;"></div>
+      <div class="wrinkle-mark" style="top: 72%; left: 60%; transform: rotate(-25deg); width: 220px;"></div>
 
-  <div id="loading">loading…</div>
-  <div id="error" style="display:none"></div>
+      <section class="works">
+      <div id="grid"></div>
+    </section>
 
-  <!-- Reveal All button -->
-  <button id="reveal-all-btn" class="knife-btn" title="Reveal All">
-    <img src="assets/image/knife.png" alt="Cutter" class="knife-img" />
-  </button>
+    <div id="loading">loading…</div>
+    <div id="error" style="display:none"></div>
 
-  <!-- Print button -->
-  <button id="print-btn" class="print-btn-custom" title="Print Flooring">
-    <img src="assets/image/make flooring.png" alt="Make Flooring" class="print-btn-img" />
-  </button>
+    <!-- Reveal All button -->
+    <button id="reveal-all-btn" class="knife-btn" title="Reveal All">
+      <img src="assets/image/knife.png" alt="Cutter" class="knife-img" />
+    </button>
 
-  <!-- Walking sound -->
-  <audio id="walk-sound" src="assets/sound/walking.m4a" preload="auto"></audio>
+    <!-- Print button -->
+    <button id="print-btn" class="print-btn-custom" title="Print Flooring">
+      <img src="assets/image/make flooring.png" alt="Make Flooring" class="print-btn-img" />
+    </button>
 
-  <!-- ═══════════════════════════════════════════════════════════
-       Print-only layout (hidden on screen, shown on Ctrl+P)
-       A4: 210mm × 297mm
-       Horizontal divider: y = 140mm (~47% from top)
-       Vertical divider:   x = 105mm (50% of width)
-       Floor zone: x=0, y=140mm, w=105mm, h=105mm (square)
-       ═══════════════════════════════════════════════════════════ -->
-  <div id="print-layout">
+    <!-- ═══════════════════════════════════════════════════════════
+         Print-only layout (hidden on screen, shown on Ctrl+P)
+         A4: 210mm × 297mm
+         Horizontal divider: y = 140mm (~47% from top)
+         Vertical divider:   x = 105mm (50% of width)
+         Floor zone: x=0, y=140mm, w=105mm, h=105mm (square)
+         ═══════════════════════════════════════════════════════════ -->
+    <div id="print-layout">
 
-    <!-- Page 1: Front Side -->
-    <div class="print-page" id="print-page-front">
-      <!-- Single SVG covers full A4 — SVG strokes always print,
-           unlike CSS background-color which browsers may strip.   -->
-      <svg id="print-lines" class="print-lines" viewBox="0 0 210 297"
-           xmlns="http://www.w3.org/2000/svg"
-           preserveAspectRatio="none">
-        <!-- Vertical dashed line at top half (x=105, y=0 to y=148.5) -->
-        <line x1="105" y1="0" x2="105" y2="148.5"
-              stroke="#000" stroke-width="0.5"
-              stroke-dasharray="10 8"
-              vector-effect="non-scaling-stroke" />
-        <!-- Vertical solid line at bottom half (x=105, y=148.5 to y=297) -->
-        <line x1="105" y1="148.5" x2="105" y2="297"
-              stroke="#000" stroke-width="0.5"
-              vector-effect="non-scaling-stroke" />
-        <!-- Horizontal dashed line at y=148.5 (x=0 to x=210) -->
-        <line x1="0" y1="148.5" x2="210" y2="148.5"
-              stroke="#000" stroke-width="0.5"
-              stroke-dasharray="10 8"
-              vector-effect="non-scaling-stroke" />
-        <!-- Diagonal dashed line: centre-intersection (105,148.5) → right boundary at floor zone bottom height (210,253.5) -->
-        <line x1="105" y1="148.5" x2="210" y2="253.5"
-              stroke="#000" stroke-width="0.5"
-              stroke-dasharray="10 8"
-              vector-effect="non-scaling-stroke" />
+      <!-- Page 1: Front Side -->
+      <div class="print-page" id="print-page-front">
+        <!-- Single SVG covers full A4 — SVG strokes always print,
+             unlike CSS background-color which browsers may strip.   -->
+        <svg id="print-lines" class="print-lines" viewBox="0 0 210 297"
+             xmlns="http://www.w3.org/2000/svg"
+             preserveAspectRatio="none">
+          <!-- Vertical dashed line at top half (x=105, y=0 to y=148.5) -->
+          <line x1="105" y1="0" x2="105" y2="148.5"
+                stroke="#000" stroke-width="0.5"
+                stroke-dasharray="10 8"
+                vector-effect="non-scaling-stroke" />
+          <!-- Vertical solid line at bottom half (x=105, y=148.5 to y=297) -->
+          <line x1="105" y1="148.5" x2="105" y2="297"
+                stroke="#000" stroke-width="0.5"
+                vector-effect="non-scaling-stroke" />
+          <!-- Horizontal dashed line at y=148.5 (x=0 to x=210) -->
+          <line x1="0" y1="148.5" x2="210" y2="148.5"
+                stroke="#000" stroke-width="0.5"
+                stroke-dasharray="10 8"
+                vector-effect="non-scaling-stroke" />
+          <!-- Diagonal dashed line: centre-intersection (105,148.5) → right boundary at floor zone bottom height (210,253.5) -->
+          <line x1="105" y1="148.5" x2="210" y2="253.5"
+                stroke="#000" stroke-width="0.5"
+                stroke-dasharray="10 8"
+                vector-effect="non-scaling-stroke" />
+        </svg>
+
+        <!-- Floor zone: square area bottom-left of the divider lines -->
+        <div id="print-floor-zone">
+          <div id="print-floor-grid"></div>
+        </div>
+
+        <!-- Concrete zone: bare concrete area bottom-right of the divider lines -->
+        <div id="print-concrete-zone">
+          <img id="print-concrete-img" src="assets/image/concrete.jpg" alt="Concrete" />
+        </div>
+
+        <!-- Purple zone: doormat area below floor zone -->
+        <div id="print-doormat-zone">
+          <img id="print-doormat-img" src="" alt="Doormat" />
+        </div>
+      </div>
+
+      <!-- Page 2: Back Side -->
+      <div class="print-page" id="print-page-back">
+        <!-- 2x2 Concrete Grid covering the entire page -->
+        <div id="print-back-concrete-grid">
+          <img src="assets/image/concrete.jpg" alt="Concrete" />
+          <img src="assets/image/concrete.jpg" alt="Concrete" />
+          <img src="assets/image/concrete.jpg" alt="Concrete" />
+          <img src="assets/image/concrete.jpg" alt="Concrete" />
+        </div>
+
+        <!-- SVG matching folding lines on front, mirrored horizontally -->
+        <svg id="print-lines-back" class="print-lines" viewBox="0 0 210 297"
+             xmlns="http://www.w3.org/2000/svg"
+             preserveAspectRatio="none">
+          <!-- Vertical dashed line at top half (x=105, y=0 to y=148.5) -->
+          <line x1="105" y1="0" x2="105" y2="148.5"
+                stroke="#000" stroke-width="0.5"
+                stroke-dasharray="10 8"
+                vector-effect="non-scaling-stroke" />
+          <!-- Vertical solid line at bottom half (x=105, y=148.5 to y=297) -->
+          <line x1="105" y1="148.5" x2="105" y2="297"
+                stroke="#000" stroke-width="0.5"
+                vector-effect="non-scaling-stroke" />
+          <!-- Horizontal dashed line at y=148.5 (x=0 to x=210) -->
+          <line x1="0" y1="148.5" x2="210" y2="148.5"
+                stroke="#000" stroke-width="0.5"
+                stroke-dasharray="10 8"
+                vector-effect="non-scaling-stroke" />
+          <!-- Diagonal dashed line: centre-intersection (105,148.5) → left boundary at floor zone bottom height (0,253.5) [Mirrored] -->
+          <line x1="105" y1="148.5" x2="0" y2="253.5"
+                stroke="#000" stroke-width="0.5"
+                stroke-dasharray="10 8"
+                vector-effect="non-scaling-stroke" />
+        </svg>
+      </div>
+
+    </div>
+
+    <!-- Language Toggle Button -->
+    <button id="lang-toggle" aria-label="Language Toggle">ENG / KOR</button>
+
+    <!-- Info Toggle & Panel -->
+    <button id="info-toggle" aria-label="Info">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="16" x2="12" y2="11"/>
+        <line x1="12" y1="8" x2="12.01" y2="8"/>
       </svg>
-
-      <!-- Floor zone: square area bottom-left of the divider lines -->
-      <div id="print-floor-zone">
-        <div id="print-floor-grid"></div>
+    </button>
+    <div id="info-panel">
+      <button id="info-close" aria-label="Close panel" style="color:#fff;">&times;</button>
+      <div class="tag-header">
+        <span class="tag-title">ABOUT ARCHIVE</span>
       </div>
-
-      <!-- Concrete zone: bare concrete area bottom-right of the divider lines -->
-      <div id="print-concrete-zone">
-        <img id="print-concrete-img" src="assets/image/concrete.jpg" alt="Concrete" />
-      </div>
-
-      <!-- Purple zone: doormat area below floor zone -->
-      <div id="print-doormat-zone">
-        <img id="print-doormat-img" src="" alt="Doormat" />
+      <div class="tag-body">
+        <div class="tag-row">
+          <p>This archive explores the aesthetic gap between the luxury names given to commercial flooring and their
+            synthetic reality.</p>
+        </div>
+        <div class="tag-row">
+          <strong>Credits</strong>
+          <span>
+            Flooring Data: <a href="https://www.lxhausys.com" target="_blank">LX Hausys</a>, <a href="https://www.kcc.co.kr" target="_blank">KCC</a>, <a href="https://www.hyundailnc.com" target="_blank">Hyundai L&amp;C</a>.<br>
+            Images: <a href="https://commons.wikimedia.org/" target="_blank">Wikimedia Commons</a>
+          </span>
+        </div>
+        <div class="tag-row">
+          <strong>Usage</strong>
+          <span>Click tiles to reveal. Drag to reorder. Drag page edges to peel sheet.</span>
+        </div>
       </div>
     </div>
 
-    <!-- Page 2: Back Side -->
-    <div class="print-page" id="print-page-back">
-      <!-- 2x2 Concrete Grid covering the entire page -->
-      <div id="print-back-concrete-grid">
-        <img src="assets/image/concrete.jpg" alt="Concrete" />
-        <img src="assets/image/concrete.jpg" alt="Concrete" />
-        <img src="assets/image/concrete.jpg" alt="Concrete" />
-        <img src="assets/image/concrete.jpg" alt="Concrete" />
-      </div>
-
-      <!-- SVG matching folding lines on front, mirrored horizontally -->
-      <svg id="print-lines-back" class="print-lines" viewBox="0 0 210 297"
-           xmlns="http://www.w3.org/2000/svg"
-           preserveAspectRatio="none">
-        <!-- Vertical dashed line at top half (x=105, y=0 to y=148.5) -->
-        <line x1="105" y1="0" x2="105" y2="148.5"
-              stroke="#000" stroke-width="0.5"
-              stroke-dasharray="10 8"
-              vector-effect="non-scaling-stroke" />
-        <!-- Vertical solid line at bottom half (x=105, y=148.5 to y=297) -->
-        <line x1="105" y1="148.5" x2="105" y2="297"
-              stroke="#000" stroke-width="0.5"
-              vector-effect="non-scaling-stroke" />
-        <!-- Horizontal dashed line at y=148.5 (x=0 to x=210) -->
-        <line x1="0" y1="148.5" x2="210" y2="148.5"
-              stroke="#000" stroke-width="0.5"
-              stroke-dasharray="10 8"
-              vector-effect="non-scaling-stroke" />
-        <!-- Diagonal dashed line: centre-intersection (105,148.5) → left boundary at floor zone bottom height (0,253.5) [Mirrored] -->
-        <line x1="105" y1="148.5" x2="0" y2="253.5"
-              stroke="#000" stroke-width="0.5"
-              stroke-dasharray="10 8"
-              vector-effect="non-scaling-stroke" />
+    <!-- Download button -->
+    <button id="download-btn" title="Download My View" aria-label="Download Viewport">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" viewBox="0 0 24 24">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="7 10 12 15 17 10" />
+        <line x1="12" y1="15" x2="12" x2="3" />
       </svg>
+    </button>
     </div>
-
   </div>
 
-  <!-- Info Toggle & Panel -->
-  <button id="info-toggle" aria-label="Info">
-    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-      <circle cx="12" cy="12" r="10"/>
-      <line x1="12" y1="16" x2="12" y2="11"/>
-      <line x1="12" y1="8" x2="12.01" y2="8"/>
-    </svg>
-  </button>
-  <div id="info-panel">
-    <button id="info-close" aria-label="Close panel" style="color:#fff;">&times;</button>
-    <div class="tag-header">
-      <span class="tag-title">ABOUT ARCHIVE</span>
-    </div>
-    <div class="tag-body">
-      <div class="tag-row">
-        <p>This archive explores the aesthetic gap between the luxury names given to commercial flooring and their
-          synthetic reality.</p>
-      </div>
-      <div class="tag-row">
-        <strong>Credits</strong>
-        <span>
-          Flooring Data: <a href="https://www.lxhausys.com" target="_blank">LX Hausys</a>, <a href="https://www.kcc.co.kr" target="_blank">KCC</a>, <a href="https://www.hyundailnc.com" target="_blank">Hyundai L&amp;C</a>.<br>
-          Images: <a href="https://commons.wikimedia.org/" target="_blank">Wikimedia Commons</a>
-        </span>
-      </div>
-      <div class="tag-row">
-        <strong>Usage</strong>
-        <span>Click tiles to reveal. Drag to reorder.</span>
-      </div>
+  <canvas id="peel-canvas"></canvas>
+
+  <!-- KOR To be updated Modal -->
+  <div id="kor-modal" class="custom-modal">
+    <div class="modal-content">
+      <h3>Korean Mode</h3>
+      <p>To be updated</p>
+      <button id="kor-modal-close">Close</button>
     </div>
   </div>
-
-  <!-- Download button -->
-  <button id="download-btn" title="Download My View" aria-label="Download Viewport">
-    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-      stroke-linejoin="round" viewBox="0 0 24 24">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-      <polyline points="7 10 12 15 17 10" />
-      <line x1="12" y1="15" x2="12" x2="3" />
-    </svg>
-  </button>
 
   <script>
     // ─────────────────────────────────────────────────────────────
@@ -409,16 +435,44 @@
     const FIELDS = {
       nameKo: "장판 이름 (한글)",
       nameEn: "장판 이름 (영어)",
-      image: "사진",
-      unitSize: "나무판 유닛 1개 너비",
-      maxRepeat: "똑같은 디자인이 반복되지 않는 최대 크기",
-      density: "단위무늬당 유닛 밀도",
-      pattern: "특징",
-      thickness: "두께",
-      softness: "촉감",
-      purpose: "장판의 목적",
-      series: "장판 시리즈 이름",
-      brand: "출시 회사",
+      image: "사진 image",
+      thickness: "두께 Thickness",
+      softness: "촉감 Softness",
+      purpose: "제작 목적 purpose",
+      series: "장판 시리즈 series",
+      brand: "제조사 brand",
+    };
+
+    // Bilingual translations mapping to English
+    const brandMap = {
+      "LX 하우시스": "LX hausys",
+      "현대L&C": "Hyundai L&C",
+      "KCC": "KCC"
+    };
+
+    const seriesMap = {
+      "소리지움": "Sorizium",
+      "도담 Dodam": "Dodam",
+      "엑스컴포트": "X-comfort",
+      "아티움 Artium": "Artium",
+      "지아사랑애": "Zia Sarang-ae",
+      "시니어": "Senior",
+      "숲옥 Sup Auk": "Sup Auk"
+    };
+
+    const softnessMap = {
+      "폭신": "little squishy",
+      "단단": "firm",
+      "푹신푹신": "squishy",
+      "약간 단단": "slightly firm"
+    };
+
+    const purposeMap = {
+      "노년층 Assisted living": "Assisted living",
+      "실내 주거 전반 General residential": "General residential",
+      "아이와 반려동물 Home with pets and kids": "Home with pets and kids",
+      "반려동물 Home with pets": "Home with pets",
+      "층간소음 Apartment noise reduction": "Apartment noise reduction"
     };
 
     let isGlobalRevealed = false;
@@ -492,14 +546,31 @@
       const f = record.fields;
       const name = f[FIELDS.nameEn] || f[FIELDS.nameKo] || "—";
 
+      // Map bilingual fields to English
+      const rawBrand = f[FIELDS.brand] || "";
+      const brand = brandMap[rawBrand] || rawBrand;
+
+      const rawSeries = f[FIELDS.series] || "";
+      const series = seriesMap[rawSeries] || rawSeries;
+
+      const rawSoftness = f[FIELDS.softness] || "";
+      const softness = softnessMap[rawSoftness] || rawSoftness;
+
+      const rawPurpose = f[FIELDS.purpose] || "";
+      const purpose = purposeMap[rawPurpose] || rawPurpose;
+
+      const thickness = f[FIELDS.thickness] || "—";
+
       const card = document.createElement("div");
       card.className = "card";
       card.dataset.id = record.id;
 
-      card.dataset.density = f[FIELDS.density] || "";
-      card.dataset.thickness = f[FIELDS.thickness] || "";
-      card.dataset.softness = f[FIELDS.softness] || "";
-      card.dataset.series = f[FIELDS.series] || "";
+      // Dataset values in English for export tag calculation
+      card.dataset.thickness = thickness;
+      card.dataset.softness = softness;
+      card.dataset.series = series;
+      card.dataset.brand = brand;
+      card.dataset.purpose = purpose;
 
       const imgWrap = document.createElement("div");
       imgWrap.className = "card-img-wrap";
@@ -547,8 +618,6 @@
       imgWrap.appendChild(textLayer);
 
       // Determine how many images to stack based on aspect ratio
-      // Initial plan: allow up to 8 wiki images in a single narrow tile
-      // Refined: making thresholds stricter to avoid overcrowding on moderately tall tiles
       let stackCount = 1;
       if (aspectRatio < 0.15) stackCount = 8;
       else if (aspectRatio < 0.22) stackCount = 6;
@@ -574,28 +643,76 @@
       }
 
       // 3. Hover Overlay (Only visible in revealed state)
-      const nameKo = f[FIELDS.nameKo] || "";
-      const rows = [
-        { label: "시리즈", value: f[FIELDS.series] },
-        { label: "용도", value: f[FIELDS.purpose] },
-        { label: "무늬 너비", value: f[FIELDS.unitSize] },
-        { label: "두께", value: f[FIELDS.thickness] },
-        { label: "촉감", value: f[FIELDS.softness] },
-        { label: "특징", value: f[FIELDS.pattern] },
-      ].filter(r => r.value);
+      // Styled exactly according to Figma specification node 1:363
+      const titleWords = name.split(" ");
+      const firstWord = titleWords[0] || "";
+      const remainingWords = titleWords.slice(1).join(" ");
+      const titleHTML = remainingWords 
+        ? `<span class="title-first">${firstWord}</span> <span class="title-remaining">${remainingWords}</span>`
+        : `<span class="title-first">${firstWord}</span>`;
 
       const overlay = document.createElement("div");
       overlay.className = "card-overlay";
       overlay.innerHTML = `
-        <p class="overlay-title">${name}${nameKo ? `<span class="overlay-name-ko">${nameKo}</span>` : ""}</p>
-        ${f[FIELDS.brand] ? `<p class="overlay-brand">${f[FIELDS.brand]}</p>` : ""}
-        ${rows.length > 0 ? `<dl>${rows.map(r => `<dt>${r.label}</dt><dd>${r.value}</dd>`).join("")}</dl>` : ""}
+        <div class="overlay-title">${titleHTML}</div>
+        <div class="overlay-data">
+          <div class="overlay-labels">
+            <p>brand</p>
+            <p>series</p>
+            <p>thickness</p>
+            <p>softness</p>
+            <p>purpose</p>
+          </div>
+          <div class="overlay-values">
+            <p>${brand || "—"}</p>
+            <p>${series || "—"}</p>
+            <p>${thickness || "—"}</p>
+            <p>${softness || "—"}</p>
+            <p>${purpose || "—"}</p>
+          </div>
+        </div>
       `;
       imgWrap.appendChild(overlay);
 
       card.appendChild(imgWrap);
       return card;
     }
+
+    let cachedPageCanvas = null;
+    let isSnapshotting = false;
+
+    async function updatePageSnapshot() {
+      if (isSnapshotting) return;
+      isSnapshotting = true;
+      try {
+        const webLayer = document.getElementById("web-layer");
+        const rect = webLayer.getBoundingClientRect();
+        const canvas = await html2canvas(webLayer, {
+          y: window.scrollY + rect.top,
+          x: rect.left,
+          width: rect.width,
+          height: rect.height,
+          scrollX: 0,
+          scrollY: window.scrollY,
+          windowWidth: window.innerWidth,
+          windowHeight: window.innerHeight,
+          backgroundColor: "#0a0a0a",
+          useCORS: true,
+          scale: 1
+        });
+        cachedPageCanvas = canvas;
+      } catch (err) {
+        console.error("Snapshot caching failed:", err);
+      } finally {
+        isSnapshotting = false;
+      }
+    }
+
+    let scrollTimeout = null;
+    window.addEventListener("scroll", () => {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(updatePageSnapshot, 200);
+    });
 
     // ─────────────────────────────────────────────────────────────
     // Toggle a single card (reveal ↔ hide)
@@ -604,9 +721,13 @@
       if (card.classList.contains("is-revealed")) {
         // Toggle back: hide this tile again
         card.classList.remove("is-revealed", "is-stable");
+        setTimeout(updatePageSnapshot, 300);
       } else {
         card.classList.add("is-revealed");
-        setTimeout(() => card.classList.add("is-stable"), 700);
+        setTimeout(() => {
+          card.classList.add("is-stable");
+          updatePageSnapshot();
+        }, 700);
         playWalkSound();
       }
     }
@@ -628,11 +749,13 @@
         isGlobalRevealed = true;
         const btn = document.getElementById("reveal-all-btn");
         if (btn) btn.title = "Hide All";
+        setTimeout(updatePageSnapshot, totalMs + 200);
       } else {
         cards.forEach(card => card.classList.remove("is-revealed", "is-stable"));
         isGlobalRevealed = false;
         const btn = document.getElementById("reveal-all-btn");
         if (btn) btn.title = "Reveal All";
+        setTimeout(updatePageSnapshot, 400);
       }
     }
 
@@ -668,31 +791,28 @@
         };
 
         let totalThick = 0, countThick = 0;
-        const softnesses = [], densities = [], series = [];
+        const softnesses = [], series = [];
 
         visibleCards.forEach(c => {
           const t = parseFloat(c.dataset.thickness);
           if (!isNaN(t)) { totalThick += t; countThick++; }
           if (c.dataset.softness) softnesses.push(c.dataset.softness);
-          if (c.dataset.density) densities.push(c.dataset.density);
           if (c.dataset.series) series.push(c.dataset.series);
         });
 
         const avgThick = countThick > 0 ? (totalThick / countThick).toFixed(1) + "mm" : "—";
         const modeSoft = mode(softnesses);
-        const modeDens = mode(densities);
         const modeSeri = mode(series);
 
         tag.innerHTML = `
           <div class="tag-header">
-            <span class="tag-title">나의 장판 모음</span>
+            <span class="tag-title">MY FLOORING COLLECTION</span>
             <span class="tag-id">MIX ${Date.now().toString().slice(-6)}</span>
           </div>
           <div class="tag-body">
-            <div class="tag-row"><strong>평균 두께</strong> <span>${avgThick}</span></div>
-            <div class="tag-row"><strong>촉감</strong> <span>${modeSoft}</span></div>
-            <div class="tag-row"><strong>밀도</strong> <span>${modeDens}</span></div>
-            <div class="tag-row"><strong>메인 시리즈</strong> <span>${modeSeri}</span></div>
+            <div class="tag-row"><strong>Avg Thickness</strong> <span>${avgThick}</span></div>
+            <div class="tag-row"><strong>Softness</strong> <span>${modeSoft}</span></div>
+            <div class="tag-row"><strong>Main Series</strong> <span>${modeSeri}</span></div>
           </div>
         `;
       }
@@ -778,7 +898,10 @@
             if (clone) clone.style.display = "none";
             const target = document.elementFromPoint(ev.clientX, ev.clientY)?.closest(".card");
             if (clone) clone.style.display = "";
-            if (target && target !== dragSrc) swapCards(dragSrc, target);
+            if (target && target !== dragSrc) {
+              swapCards(dragSrc, target);
+              setTimeout(updatePageSnapshot, 50);
+            }
             dragSrc.classList.remove("card-dragging");
             clone?.remove(); clone = null; dragSrc = null;
           } else {
@@ -818,6 +941,33 @@
         e.stopPropagation();
         infoPanel.classList.remove("show");
       };
+
+      // Language Toggle logic
+      const langToggleBtn = document.getElementById("lang-toggle");
+      const korModal = document.getElementById("kor-modal");
+      const korModalClose = document.getElementById("kor-modal-close");
+
+      if (langToggleBtn) {
+        langToggleBtn.onclick = (e) => {
+          e.stopPropagation();
+          korModal.classList.add("show");
+        };
+      }
+
+      if (korModalClose) {
+        korModalClose.onclick = (e) => {
+          e.stopPropagation();
+          korModal.classList.remove("show");
+        };
+      }
+
+      if (korModal) {
+        korModal.onclick = (e) => {
+          if (e.target === korModal) {
+            korModal.classList.remove("show");
+          }
+        };
+      }
 
       // Reveal All button
       const revealAllBtn = document.getElementById("reveal-all-btn");
@@ -919,11 +1069,446 @@
         });
 
         initDragSwap(grid);
+        initPeelEvents();
+        setTimeout(updatePageSnapshot, 1000);
       } catch (err) {
         loading.style.display = "none";
         console.error(err);
       }
     }
+
+    // ─────────────────────────────────────────────────────────────
+    // Rubber Page Peeling Canvas Physics
+    // ─────────────────────────────────────────────────────────────
+    let peelCanvas = null;
+    let peelCtx = null;
+    let peelWidth = 0;
+    let peelHeight = 0;
+
+    const peelCols = 12;
+    const peelRows = 12;
+    const peelPoints = [];
+    const peelSprings = [];
+
+    let draggedNode = null;
+    let isPeelingActive = false;
+    let peelAnimationId = null;
+
+    // Initialize mass-spring physics grid matching #web-layer's actual size
+    function initPeelMesh() {
+      peelPoints.length = 0;
+      peelSprings.length = 0;
+
+      const webLayer = document.getElementById("web-layer");
+      const rect = webLayer.getBoundingClientRect();
+
+      peelWidth = window.innerWidth;
+      peelHeight = window.innerHeight;
+
+      const left = rect.left;
+      const top = rect.top;
+      const w = rect.width;
+      const h = rect.height;
+
+      for (let r = 0; r < peelRows; r++) {
+        for (let c = 0; c < peelCols; c++) {
+          const u = c / (peelCols - 1);
+          const v = r / (peelRows - 1);
+          const x = left + u * w;
+          const y = top + v * h;
+          peelPoints.push({
+            x: x, y: y,
+            ox: x, oy: y, // Rest / original position
+            u: u, v: v,   // Normalized coordinates
+            vx: 0, vy: 0,
+            fx: 0, fy: 0,
+            // Pinned at the four corners
+            fixed: (c === 0 && r === 0) ||
+                   (c === peelCols - 1 && r === 0) ||
+                   (c === 0 && r === peelRows - 1) ||
+                   (c === peelCols - 1 && r === peelRows - 1)
+          });
+        }
+      }
+
+      function addSpring(i1, i2, stiffness) {
+        const p1 = peelPoints[i1];
+        const p2 = peelPoints[i2];
+        const dx = p1.ox - p2.ox;
+        const dy = p1.oy - p2.oy;
+        const restLength = Math.sqrt(dx * dx + dy * dy);
+        peelSprings.push({ i1, i2, restLength, k: stiffness });
+      }
+
+      const kStructural = 0.45;
+      const kShear = 0.25;
+
+      for (let r = 0; r < peelRows; r++) {
+        for (let c = 0; c < peelCols; c++) {
+          const idx = r * peelCols + c;
+          // Horizontal
+          if (c < peelCols - 1) addSpring(idx, idx + 1, kStructural);
+          // Vertical
+          if (r < peelRows - 1) addSpring(idx, idx + peelCols, kStructural);
+          // Diagonal
+          if (c < peelCols - 1 && r < peelRows - 1) {
+            addSpring(idx, idx + peelCols + 1, kShear);
+            addSpring(idx + 1, idx + peelCols, kShear);
+          }
+        }
+      }
+    }
+
+    // Helper to calculate area of a triangle
+    function getTriangleArea(x0, y0, x1, y1, x2, y2) {
+      return 0.5 * Math.abs(x0 * (y1 - y2) + x1 * (y2 - y0) + x2 * (y0 - y1));
+    }
+
+    // Solve affine transform to draw distorted triangles
+    function drawWarpedTriangle(ctx, img, x0, y0, x1, y1, x2, y2, u0, v0, u1, v1, u2, v2) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(x0, y0);
+      ctx.lineTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.closePath();
+      ctx.clip();
+
+      const den = (u1 - u0) * (v2 - v0) - (u2 - u0) * (v1 - v0);
+      if (Math.abs(den) < 0.0001) {
+        ctx.restore();
+        return;
+      }
+
+      const a = ((x1 - x0) * (v2 - v0) - (x2 - x0) * (v1 - v0)) / den;
+      const b = ((y1 - y0) * (v2 - v0) - (y2 - y0) * (v1 - v0)) / den;
+      const c = ((x2 - x0) * (u1 - u0) - (x1 - x0) * (u2 - u0)) / den;
+      const d = ((y2 - y0) * (u1 - u0) - (y1 - y0) * (u2 - u0)) / den;
+      const e = x0 - a * u0 - c * v0;
+      const f = y0 - b * u0 - d * v0;
+
+      ctx.transform(a, b, c, d, e, f);
+      ctx.drawImage(img, 0, 0);
+
+      // Apply dynamic shading for wrinkles / lighting depth
+      const restArea = getTriangleArea(u0, v0, u1, v1, u2, v2);
+      const currentArea = getTriangleArea(x0, y0, x1, y1, x2, y2);
+      const areaRatio = restArea > 0.001 ? currentArea / restArea : 1;
+
+      ctx.restore(); // restore to clip state so shading overlays fit exactly
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(x0, y0);
+      ctx.lineTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.closePath();
+      ctx.clip();
+
+      if (areaRatio < 0.95) {
+        // Compression shading (shadow in folds)
+        const shadow = Math.min(0.42, (1 - areaRatio) * 0.85);
+        ctx.fillStyle = `rgba(0, 0, 0, ${shadow})`;
+        ctx.fill();
+      } else if (areaRatio > 1.05) {
+        // Tension highlight
+        const highlight = Math.min(0.18, (areaRatio - 1) * 0.35);
+        ctx.fillStyle = `rgba(255, 255, 255, ${highlight})`;
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+
+    // Render loop
+    function renderPeel() {
+      if (!isPeelingActive) return;
+
+      // Update physics
+      const springK = 0.22;
+      const anchorK = 0.04;
+      const damping = 0.86;
+
+      // Reset forces
+      for (let i = 0; i < peelPoints.length; i++) {
+        peelPoints[i].fx = 0;
+        peelPoints[i].fy = 0;
+      }
+
+      // Spring forces
+      for (let i = 0; i < peelSprings.length; i++) {
+        const s = peelSprings[i];
+        const p1 = peelPoints[s.i1];
+        const p2 = peelPoints[s.i2];
+        const dx = p2.x - p1.x;
+        const dy = p2.y - p1.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist > 0.01) {
+          const force = (dist - s.restLength) * s.k * springK;
+          const fx = (dx / dist) * force;
+          const fy = (dy / dist) * force;
+          p1.fx += fx;
+          p1.fy += fy;
+          p2.fx -= fx;
+          p2.fy -= fy;
+        }
+      }
+
+      // Restorative anchor force to original rest position
+      for (let i = 0; i < peelPoints.length; i++) {
+        const p = peelPoints[i];
+        if (p.fixed) continue;
+        p.fx += (p.ox - p.x) * anchorK;
+        p.fy += (p.oy - p.y) * anchorK;
+      }
+
+      // Update velocities and positions
+      let maxDistFromRest = 0;
+      let maxVel = 0;
+
+      for (let i = 0; i < peelPoints.length; i++) {
+        const p = peelPoints[i];
+        if (p.fixed) continue;
+        if (p === draggedNode) continue;
+
+        p.vx = (p.vx + p.fx) * damping;
+        p.vy = (p.vy + p.fy) * damping;
+        p.x += p.vx;
+        p.y += p.vy;
+
+        const dist = Math.sqrt((p.x - p.ox)**2 + (p.y - p.oy)**2);
+        const vel = Math.sqrt(p.vx**2 + p.vy**2);
+        if (dist > maxDistFromRest) maxDistFromRest = dist;
+        if (vel > maxVel) maxVel = vel;
+      }
+
+      // Draw mesh
+      peelCtx.clearRect(0, 0, peelWidth, peelHeight);
+
+      const drawSource = cachedPageCanvas || document.getElementById("web-layer");
+      const webLayer = document.getElementById("web-layer");
+      const rect = webLayer.getBoundingClientRect();
+
+      for (let r = 0; r < peelRows - 1; r++) {
+        for (let c = 0; c < peelCols - 1; c++) {
+          const i00 = r * peelCols + c;
+          const i10 = r * peelCols + c + 1;
+          const i01 = (r + 1) * peelCols + c;
+          const i11 = (r + 1) * peelCols + c + 1;
+
+          const p00 = peelPoints[i00];
+          const p10 = peelPoints[i10];
+          const p01 = peelPoints[i01];
+          const p11 = peelPoints[i11];
+
+          // Map relative to actual #web-layer snapshot size
+          const sw = rect.width;
+          const sh = rect.height;
+
+          drawWarpedTriangle(peelCtx, drawSource,
+            p00.x, p00.y, p10.x, p10.y, p01.x, p01.y,
+            p00.u * sw, p00.v * sh, p10.u * sw, p10.v * sh, p01.u * sw, p01.v * sh
+          );
+
+          drawWarpedTriangle(peelCtx, drawSource,
+            p10.x, p10.y, p11.x, p11.y, p01.x, p01.y,
+            p10.u * sw, p10.v * sh, p11.u * sw, p11.v * sh, p01.u * sw, p01.v * sh
+          );
+        }
+      }
+
+      // Check if settled (if not dragging and points have returned to rest position)
+      if (!draggedNode && maxDistFromRest < 0.8 && maxVel < 0.08) {
+        for (let i = 0; i < peelPoints.length; i++) {
+          peelPoints[i].x = peelPoints[i].ox;
+          peelPoints[i].y = peelPoints[i].oy;
+          peelPoints[i].vx = 0;
+          peelPoints[i].vy = 0;
+        }
+        isPeelingActive = false;
+        peelCanvas.style.display = "none";
+        document.getElementById("web-layer").style.visibility = "visible";
+        cancelAnimationFrame(peelAnimationId);
+        return;
+      }
+
+      peelAnimationId = requestAnimationFrame(renderPeel);
+    }
+
+    // Set up peel event listeners
+    function initPeelEvents() {
+      peelCanvas = document.getElementById("peel-canvas");
+      peelCtx = peelCanvas.getContext("2d");
+
+      function resizeCanvas() {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        peelCanvas.width = w;
+        peelCanvas.height = h;
+        initPeelMesh();
+        setTimeout(updatePageSnapshot, 300);
+      }
+
+      window.addEventListener("resize", resizeCanvas);
+      resizeCanvas();
+
+      const edgeThreshold = 45;
+      const cornerThreshold = 80;
+
+      // Visual feedback: show grab cursor when hovering near peelable edges
+      window.addEventListener("pointermove", e => {
+        if (isPeelingActive) return;
+
+        const x = e.clientX;
+        const y = e.clientY;
+        const webLayer = document.getElementById("web-layer");
+        if (!webLayer) return;
+        const rect = webLayer.getBoundingClientRect();
+
+        const w = rect.width;
+        const h = rect.height;
+
+        const rx = x - rect.left;
+        const ry = y - rect.top;
+
+        const isNearTopLeft = rx < cornerThreshold && ry < cornerThreshold;
+        const isNearTopRight = rx > w - cornerThreshold && ry < cornerThreshold;
+        const isNearBottomLeft = rx < cornerThreshold && ry > h - cornerThreshold;
+        const isNearBottomRight = rx > w - cornerThreshold && ry > h - cornerThreshold;
+
+        if (isNearTopLeft || isNearTopRight || isNearBottomLeft || isNearBottomRight) {
+          document.body.style.cursor = "";
+          return;
+        }
+
+        const isNearLeft = rx >= -10 && rx < edgeThreshold;
+        const isNearRight = rx <= w + 10 && rx > w - edgeThreshold;
+        const isNearTop = ry >= -10 && ry < edgeThreshold;
+        const isNearBottom = ry <= h + 10 && ry > h - edgeThreshold;
+
+        // Ignore interactive elements
+        if (e.target.closest("#info-toggle") || e.target.closest("#info-panel") ||
+            e.target.closest("#download-btn") || e.target.closest("#reveal-all-btn") ||
+            e.target.closest("#print-btn") || e.target.closest(".card") ||
+            e.target.closest("#lang-toggle") || e.target.closest("#kor-modal")) {
+          document.body.style.cursor = "";
+          return;
+        }
+
+        if (isNearLeft || isNearRight || isNearTop || isNearBottom) {
+          document.body.style.cursor = "grab";
+        } else {
+          document.body.style.cursor = "";
+        }
+      });
+
+      window.addEventListener("pointerdown", e => {
+        if (isPeelingActive && !draggedNode) return;
+        if (e.pointerType === "mouse" && e.button !== 0) return;
+
+        // Ignore UI overlays and modal content clicks
+        if (e.target.closest("#info-toggle") || e.target.closest("#info-panel") ||
+            e.target.closest("#download-btn") || e.target.closest("#reveal-all-btn") ||
+            e.target.closest("#print-btn") || e.target.closest(".card") ||
+            e.target.closest("#lang-toggle") || e.target.closest("#kor-modal")) return;
+
+        const startX = e.clientX;
+        const startY = e.clientY;
+        const webLayer = document.getElementById("web-layer");
+        if (!webLayer) return;
+        const rect = webLayer.getBoundingClientRect();
+
+        const w = rect.width;
+        const h = rect.height;
+
+        const rx = startX - rect.left;
+        const ry = startY - rect.top;
+
+        const isNearTopLeft = rx < cornerThreshold && ry < cornerThreshold;
+        const isNearTopRight = rx > w - cornerThreshold && ry < cornerThreshold;
+        const isNearBottomLeft = rx < cornerThreshold && ry > h - cornerThreshold;
+        const isNearBottomRight = rx > w - cornerThreshold && ry > h - cornerThreshold;
+
+        if (isNearTopLeft || isNearTopRight || isNearBottomLeft || isNearBottomRight) return;
+
+        const isNearLeft = rx >= -10 && rx < edgeThreshold;
+        const isNearRight = rx <= w + 10 && rx > w - edgeThreshold;
+        const isNearTop = ry >= -10 && ry < edgeThreshold;
+        const isNearBottom = ry <= h + 10 && ry > h - edgeThreshold;
+
+        if (isNearLeft || isNearRight || isNearTop || isNearBottom) {
+          e.preventDefault();
+
+          // Find the closest edge point
+          let minD = Infinity;
+          let closest = null;
+
+          for (let i = 0; i < peelPoints.length; i++) {
+            const p = peelPoints[i];
+            const isEdge = (p.u === 0 || p.u === 1 || p.v === 0 || p.v === 1);
+            if (isEdge && !p.fixed) {
+              const d = Math.sqrt((p.x - startX)**2 + (p.y - startY)**2);
+              if (d < minD) {
+                minD = d;
+                closest = p;
+              }
+            }
+          }
+
+          if (closest) {
+            let dragThresholdPassed = false;
+
+            function onPointerMove(ev) {
+              const dx = ev.clientX - startX;
+              const dy = ev.clientY - startY;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+
+              if (!dragThresholdPassed && dist < 6) return;
+
+              if (!dragThresholdPassed) {
+                dragThresholdPassed = true;
+                draggedNode = closest;
+                
+                // If snapshot is missing, grab it quickly
+                if (!cachedPageCanvas) {
+                  updatePageSnapshot().then(() => {
+                    activatePeelCanvas(ev.clientX, ev.clientY);
+                  });
+                } else {
+                  activatePeelCanvas(ev.clientX, ev.clientY);
+                }
+              } else if (draggedNode) {
+                draggedNode.x = ev.clientX;
+                draggedNode.y = ev.clientY;
+              }
+            }
+
+            function activatePeelCanvas(currX, currY) {
+              if (draggedNode) {
+                draggedNode.x = currX;
+                draggedNode.y = currY;
+              }
+              if (!isPeelingActive) {
+                isPeelingActive = true;
+                peelCanvas.style.display = "block";
+                document.getElementById("web-layer").style.visibility = "hidden";
+                renderPeel();
+              }
+            }
+
+            function onPointerUp() {
+              draggedNode = null;
+              window.removeEventListener("pointermove", onPointerMove);
+              window.removeEventListener("pointerup",   onPointerUp);
+            }
+
+            window.addEventListener("pointermove", onPointerMove);
+            window.addEventListener("pointerup", onPointerUp);
+          }
+        }
+      });
+    }
+
     init();
   </script>
 </body>

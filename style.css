@@ -12,14 +12,201 @@
   --font-main:   'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
 }
 
-html, body {
+html {
   background: var(--bg);
+}
+
+body {
+  background: url('assets/image/old flooring.webp') repeat;
+  background-color: var(--bg);
   color: var(--fg);
   font-family: var(--font-main);
   line-height: 1.4;
   min-height: 100vh;
   word-break: keep-all; /* Korean word-break rule: keep words together */
   overflow-wrap: break-word;
+  margin: 0;
+}
+
+#web-layer-wrap {
+  position: relative;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  filter: drop-shadow(0 12px 35px rgba(0, 0, 0, 0.85));
+}
+
+#web-layer {
+  position: relative;
+  min-height: calc(100vh - 24px);
+  background-color: var(--bg);
+  width: calc(100% - 24px);
+  margin: 12px auto;
+  overflow: hidden;
+  clip-path: polygon(
+    /* Top edge with pixel deviations */
+    calc(0% + 0px) calc(0% + 6px), 
+    calc(15% + 0px) calc(0% + 2px), 
+    calc(30% + 0px) calc(0% + 8px), 
+    calc(45% + 0px) calc(0% + 1px), 
+    calc(60% + 0px) calc(0% + 5px), 
+    calc(75% + 0px) calc(0% + 3px), 
+    calc(90% + 0px) calc(0% + 7px), 
+    calc(100% + 0px) calc(0% + 2px),
+    
+    /* Right edge with pixel deviations */
+    calc(100% - 5px) calc(15% + 0px), 
+    calc(100% - 2px) calc(30% + 0px), 
+    calc(100% - 6px) calc(45% + 0px), 
+    calc(100% - 1px) calc(60% + 0px), 
+    calc(100% - 7px) calc(75% + 0px), 
+    calc(100% - 3px) calc(90% + 0px), 
+    calc(100% - 0px) calc(100% - 4px),
+    
+    /* Bottom edge with pixel deviations */
+    calc(90% + 0px) calc(100% - 6px), 
+    calc(75% + 0px) calc(100% - 2px), 
+    calc(60% + 0px) calc(100% - 8px), 
+    calc(45% + 0px) calc(100% - 1px), 
+    calc(30% + 0px) calc(100% - 7px), 
+    calc(15% + 0px) calc(100% - 4px), 
+    calc(0% + 0px) calc(100% - 2px),
+    
+    /* Left edge with pixel deviations */
+    calc(0% + 5px) calc(90% + 0px), 
+    calc(0% + 2px) calc(75% + 0px), 
+    calc(0% + 7px) calc(60% + 0px), 
+    calc(0% + 1px) calc(45% + 0px), 
+    calc(0% + 6px) calc(30% + 0px), 
+    calc(0% + 3px) calc(15% + 0px)
+  );
+}
+
+@media (max-width: 768px) {
+  #web-layer {
+    min-height: calc(100vh - 16px);
+    width: calc(100% - 16px);
+    margin: 8px auto;
+  }
+}
+
+/* Language toggle button */
+#lang-toggle {
+  position: fixed;
+  top: 1.5rem;
+  right: 4.5rem;
+  width: auto;
+  height: 2.45rem;
+  padding: 0 1rem;
+  background: rgba(240, 237, 232, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: var(--fg);
+  font-family: var(--font-main);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 950;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 0;
+}
+
+#lang-toggle:hover {
+  background: var(--fg);
+  color: var(--bg);
+  transform: translateY(-3px) scale(1.05);
+}
+
+#lang-toggle:active {
+  transform: translateY(0) scale(0.95);
+}
+
+/* Custom modal for language toggle alerts */
+.custom-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.custom-modal.show {
+  display: flex;
+  opacity: 1;
+}
+
+.modal-content {
+  background: #121212;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 2.5rem;
+  text-align: center;
+  max-width: 340px;
+  width: 90%;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.85);
+  font-family: var(--font-main);
+  border-radius: 0;
+}
+
+.modal-content h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.8rem;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.modal-content p {
+  font-size: 0.82rem;
+  color: rgba(240, 237, 232, 0.55);
+  margin-bottom: 1.8rem;
+  line-height: 1.5;
+}
+
+.modal-content button {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #fff;
+  padding: 0.6rem 1.8rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.05em;
+  border-radius: 0;
+}
+
+.modal-content button:hover {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+  transform: translateY(-2px);
+}
+
+.modal-content button:active {
+  transform: translateY(0);
+}
+
+#peel-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1500;
+  pointer-events: none;
+  display: none;
 }
 
 
@@ -312,19 +499,28 @@ body.capturing .card-trait-mark {
 
 /* ── Hover overlay ────────────────────────────────────── */
 .card-overlay {
-  position: relative;
-  flex-grow: 1;
-  width: 100%;
-  background: var(--overlay-bg);
-  color: var(--fg);
-  padding: 1.5rem 1.4rem;
+  position: absolute;
+  inset: 0;
+  background: url('assets/image/back_long.webp') repeat-y center top;
+  background-size: 100% auto;
+  color: rgba(43, 50, 28, 0.68);
+  padding: 24px 12px;
   opacity: 0;
   transition: opacity 0.2s ease;
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
   z-index: 10;
-  font-family: var(--font-main);
+  font-family: 'Bitcount Single', 'Bitcount_Single', 'BitcountSingle-Regular', 'BitcountSingle', 'Bitcount', 'Bitcount Grid Single', var(--font-main);
+  box-sizing: border-box;
+  
+  /* Optical Kerning & Hyphenation */
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  word-break: break-word;
+  font-kerning: normal;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1;
 }
 
 .card.is-revealed.is-stable .card-img-wrap:hover .card-overlay {
@@ -332,56 +528,43 @@ body.capturing .card-trait-mark {
 }
 
 .overlay-title {
-  font-family: var(--font-main);
-  font-size: 1.05rem;
-  font-weight: 700;
-  font-style: normal;
-  color: #fff;
-  margin-bottom: 0.6rem;
-  border-bottom: 1px solid rgba(255,255,255,0.12);
-  padding-bottom: 0.65rem;
-  letter-spacing: -0.01em;
-  line-height: 1.25;
+  font-family: 'Bitcount Single', 'Bitcount_Single', 'BitcountSingle-Regular', 'BitcountSingle', 'Bitcount', 'Bitcount Grid Single', var(--font-main);
+  font-size: 29px;
+  font-weight: 437;
+  line-height: 28px;
+  color: rgba(43, 50, 28, 0.68);
+  margin-bottom: 24px;
+  word-break: break-word;
 }
 
-.overlay-name-ko {
-  display: block;
-  font-size: 0.72rem;
-  font-weight: 400;
-  color: rgba(255,255,255,0.55);
-  margin-top: 0.2rem;
-  letter-spacing: 0;
-}
-
-.overlay-brand {
-  font-size: 0.68rem;
-  color: var(--fg-muted);
-  letter-spacing: 0.03em;
-  margin-bottom: 0.15rem;
-}
-
-/* Specifications description list */
-.card-overlay dl {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.35rem 0.7rem;
-  font-size: 0.68rem;
+.overlay-data {
+  display: flex;
+  gap: 19px;
+  font-family: 'Bitcount Single', 'Bitcount_Single', 'BitcountSingle-Regular', 'BitcountSingle', 'Bitcount', 'Bitcount Grid Single', var(--font-main);
+  font-size: 11px;
+  font-weight: 437;
   line-height: 1.4;
-  margin-top: 0.65rem;
+  color: rgba(43, 50, 28, 0.68);
+  word-break: break-word;
+  align-items: start;
 }
 
-.card-overlay dt {
-  color: rgba(240, 237, 232, 0.42);
+.overlay-labels {
+  flex-shrink: 0;
   white-space: nowrap;
-  font-size: 0.62rem;
-  letter-spacing: 0.05em;
-  font-weight: 500;
+  font-variation-settings: "CRSV" 0.58, "ELSH" 0, "ELXP" 0;
+  font-feature-settings: "ss01", "ss02", "ss03";
 }
 
-.card-overlay dd {
-  color: var(--fg);
-  font-family: 'JetBrains Mono', 'Courier New', Courier, monospace;
-  font-size: 0.65rem;
+.overlay-values {
+  flex-grow: 1;
+  font-variation-settings: "CRSV" 0.58, "ELSH" 0, "ELXP" 0;
+  font-feature-settings: "ss01", "ss02", "ss03";
+}
+
+.overlay-labels p, .overlay-values p {
+  margin: 0;
+  margin-bottom: 0px;
 }
 
 /* ── No footer ───────────────────────────────────────── */
@@ -628,6 +811,48 @@ body.capturing .card-trait-mark {
 
 #export-tag .tag-row span {
   color: #444;
+}
+
+
+/* ── Trapped air bubbles & wrinkles ── */
+.bubble-spot {
+  position: absolute;
+  width: 140px;
+  height: 90px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.18) 50%, rgba(0,0,0,0.42) 100%);
+  box-shadow: inset -4px -4px 12px rgba(0,0,0,0.55), inset 4px 4px 12px rgba(255,255,255,0.08), 0 8px 20px rgba(0,0,0,0.45);
+  pointer-events: none;
+  z-index: 100;
+  mix-blend-mode: overlay;
+}
+
+.wrinkle-mark {
+  position: absolute;
+  height: 14px;
+  background: linear-gradient(to bottom, 
+    rgba(255,255,255,0) 0%, 
+    rgba(255,255,255,0.18) 35%, 
+    rgba(0,0,0,0.4) 65%, 
+    rgba(0,0,0,0) 100%
+  );
+  filter: blur(0.5px);
+  pointer-events: none;
+  z-index: 100;
+  mix-blend-mode: overlay;
+}
+
+/* ── Split Title typography ── */
+.title-first {
+  font-style: normal;
+  font-variation-settings: "CRSV" 0.58, "ELSH" 0, "ELXP" 0;
+  font-feature-settings: "kern" 1, "zero", "ss02", "ss01", "ss08", "ss03";
+}
+
+.title-remaining {
+  font-style: italic;
+  font-variation-settings: "CRSV" 0, "ELSH" 0, "ELXP" 0;
+  font-feature-settings: "kern" 1, "zero", "ss02", "ss01", "ss08", "ss03";
 }
 
 
