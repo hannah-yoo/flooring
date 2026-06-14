@@ -18,6 +18,13 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'HYThickRoundGothic';
+  src: url('assets/font/hy%20thick%20round%20gothic.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
 :root {
   --bg:          #0a0a0a;
   --fg:          #f0ede8;
@@ -399,7 +406,7 @@ body.capturing .card-trait-mark {
   font-family: 'Bitcount Single', 'Bitcount_Single:Regular', 'Bitcount_Single', var(--font-main);
   font-size: 29px;
   font-weight: 437;
-  line-height: 28px;
+  line-height: 56px; /* Doubled line-height from 28px */
   color: rgba(43, 50, 28, 0.68);
   margin-bottom: 24px;
   word-break: break-word;
@@ -454,15 +461,32 @@ body.capturing .card-trait-mark {
 
 /* ── Korean Mode Font Overrides ────────────────────────── */
 body.lang-ko .card-overlay,
-body.lang-ko .overlay-title,
 body.lang-ko .overlay-data,
 body.lang-ko .overlay-labels,
-body.lang-ko .overlay-values,
-body.lang-ko .title-cursive,
-body.lang-ko .title-straight {
+body.lang-ko .overlay-values {
   font-family: 'ChosunGulim', 'GulimWeb', 'Gulim', '굴림', sans-serif;
   font-variation-settings: normal;
   font-feature-settings: normal;
+  word-break: keep-all; /* Keep Korean words together */
+  overflow-wrap: break-word;
+}
+
+/* Korean Title Override: HY Thick Round Gothic with 60% line height */
+body.lang-ko .overlay-title,
+body.lang-ko .title-cursive,
+body.lang-ko .title-straight {
+  font-family: 'HYThickRoundGothic', 'ChosunGulim', 'GulimWeb', 'Gulim', '굴림', sans-serif;
+  font-variation-settings: normal;
+  font-feature-settings: normal;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-height: 34px; /* ~60% of 56px */
+}
+
+/* Fluid Typography for Korean mode detailed info data to scale gradually */
+body.lang-ko .overlay-data {
+  font-size: clamp(11px, 1.1vw + 5px, 20px);
+  gap: clamp(19px, 0.6vw + 12px, 24px);
 }
 
 /* ── No footer ───────────────────────────────────────── */

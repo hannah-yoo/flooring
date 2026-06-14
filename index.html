@@ -13,8 +13,11 @@
     content="An archive of fake wood-grain flooring units collected from Korean residential and commercial product lines." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Bitcount+Single:CRSV,ELSH,ELXP,slnt,wght@0..1,0..1,0..1,-8..0,300..700&family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bitcount+Single:CRSV,ELSH,ELXP,slnt,wght@0..1,0..1,0..1,-8..0,300..700&family=Jua&family=Gowun+Dodum&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="print.css" media="print" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -53,28 +56,20 @@
       <div class="print-page" id="print-page-front">
         <!-- Single SVG covers full A4 — SVG strokes always print,
              unlike CSS background-color which browsers may strip.   -->
-        <svg id="print-lines" class="print-lines" viewBox="0 0 210 297"
-             xmlns="http://www.w3.org/2000/svg"
-             preserveAspectRatio="none">
+        <svg id="print-lines" class="print-lines" viewBox="0 0 210 297" xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="none">
           <!-- Vertical dashed line at top half (x=105, y=0 to y=148.5) -->
-          <line x1="105" y1="0" x2="105" y2="148.5"
-                stroke="#000" stroke-width="0.5"
-                stroke-dasharray="10 8"
-                vector-effect="non-scaling-stroke" />
+          <line x1="105" y1="0" x2="105" y2="148.5" stroke="#000" stroke-width="0.5" stroke-dasharray="10 8"
+            vector-effect="non-scaling-stroke" />
           <!-- Vertical solid line at bottom half (x=105, y=148.5 to y=297) -->
-          <line x1="105" y1="148.5" x2="105" y2="297"
-                stroke="#000" stroke-width="0.5"
-                vector-effect="non-scaling-stroke" />
+          <line x1="105" y1="148.5" x2="105" y2="297" stroke="#000" stroke-width="0.5"
+            vector-effect="non-scaling-stroke" />
           <!-- Horizontal dashed line at y=148.5 (x=0 to x=210) -->
-          <line x1="0" y1="148.5" x2="210" y2="148.5"
-                stroke="#000" stroke-width="0.5"
-                stroke-dasharray="10 8"
-                vector-effect="non-scaling-stroke" />
+          <line x1="0" y1="148.5" x2="210" y2="148.5" stroke="#000" stroke-width="0.5" stroke-dasharray="10 8"
+            vector-effect="non-scaling-stroke" />
           <!-- Diagonal dashed line: centre-intersection (105,148.5) → right boundary at floor zone bottom height (210,253.5) -->
-          <line x1="105" y1="148.5" x2="210" y2="253.5"
-                stroke="#000" stroke-width="0.5"
-                stroke-dasharray="10 8"
-                vector-effect="non-scaling-stroke" />
+          <line x1="105" y1="148.5" x2="210" y2="253.5" stroke="#000" stroke-width="0.5" stroke-dasharray="10 8"
+            vector-effect="non-scaling-stroke" />
         </svg>
 
         <!-- Floor zone: square area bottom-left of the divider lines -->
@@ -104,28 +99,20 @@
         </div>
 
         <!-- SVG matching folding lines on front, mirrored horizontally -->
-        <svg id="print-lines-back" class="print-lines" viewBox="0 0 210 297"
-             xmlns="http://www.w3.org/2000/svg"
-             preserveAspectRatio="none">
+        <svg id="print-lines-back" class="print-lines" viewBox="0 0 210 297" xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="none">
           <!-- Vertical dashed line at top half (x=105, y=0 to y=148.5) -->
-          <line x1="105" y1="0" x2="105" y2="148.5"
-                stroke="#000" stroke-width="0.5"
-                stroke-dasharray="10 8"
-                vector-effect="non-scaling-stroke" />
+          <line x1="105" y1="0" x2="105" y2="148.5" stroke="#000" stroke-width="0.5" stroke-dasharray="10 8"
+            vector-effect="non-scaling-stroke" />
           <!-- Vertical solid line at bottom half (x=105, y=148.5 to y=297) -->
-          <line x1="105" y1="148.5" x2="105" y2="297"
-                stroke="#000" stroke-width="0.5"
-                vector-effect="non-scaling-stroke" />
+          <line x1="105" y1="148.5" x2="105" y2="297" stroke="#000" stroke-width="0.5"
+            vector-effect="non-scaling-stroke" />
           <!-- Horizontal dashed line at y=148.5 (x=0 to x=210) -->
-          <line x1="0" y1="148.5" x2="210" y2="148.5"
-                stroke="#000" stroke-width="0.5"
-                stroke-dasharray="10 8"
-                vector-effect="non-scaling-stroke" />
+          <line x1="0" y1="148.5" x2="210" y2="148.5" stroke="#000" stroke-width="0.5" stroke-dasharray="10 8"
+            vector-effect="non-scaling-stroke" />
           <!-- Diagonal dashed line: centre-intersection (105,148.5) → left boundary at floor zone bottom height (0,253.5) [Mirrored] -->
-          <line x1="105" y1="148.5" x2="0" y2="253.5"
-                stroke="#000" stroke-width="0.5"
-                stroke-dasharray="10 8"
-                vector-effect="non-scaling-stroke" />
+          <line x1="105" y1="148.5" x2="0" y2="253.5" stroke="#000" stroke-width="0.5" stroke-dasharray="10 8"
+            vector-effect="non-scaling-stroke" />
         </svg>
       </div>
 
@@ -133,10 +120,11 @@
 
     <!-- Info Toggle & Panel -->
     <button id="info-toggle" aria-label="Info">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="10"/>
-        <line x1="12" y1="16" x2="12" y2="11"/>
-        <line x1="12" y1="8" x2="12.01" y2="8"/>
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="16" x2="12" y2="11" />
+        <line x1="12" y1="8" x2="12.01" y2="8" />
       </svg>
     </button>
     <div id="info-panel">
@@ -152,13 +140,16 @@
           </div>
         </div>
         <div class="tag-row">
-          <p id="info-about-desc">This archive explores the aesthetic gap between the luxury names given to commercial flooring and their
+          <p id="info-about-desc">This archive explores the aesthetic gap between the luxury names given to commercial
+            flooring and their
             synthetic reality.</p>
         </div>
         <div class="tag-row" id="info-about-credits">
           <strong>Credits</strong>
           <span>
-            Flooring Data: <a href="https://www.lxhausys.com" target="_blank">LX Hausys</a>, <a href="https://www.kcc.co.kr" target="_blank">KCC</a>, <a href="https://www.hyundailnc.com" target="_blank">Hyundai L&amp;C</a>.<br>
+            Flooring Data: <a href="https://www.lxhausys.com" target="_blank">LX Hausys</a>, <a
+              href="https://www.kcc.co.kr" target="_blank">KCC</a>, <a href="https://www.hyundailnc.com"
+              target="_blank">Hyundai L&amp;C</a>.<br>
             Images: <a href="https://commons.wikimedia.org/" target="_blank">Wikimedia Commons</a>
           </span>
         </div>
@@ -200,7 +191,7 @@
             return r.top < vh && r.bottom > 0 && r.left < vw && r.right > 0;
           })
           .map(card => {
-            const img  = card.querySelector('.card-wood-img');
+            const img = card.querySelector('.card-wood-img');
             if (!img) return null;
             const src = img.getAttribute('src');
             if (!src || src.trim() === '') return null;
@@ -215,7 +206,7 @@
 
       // ── Step 2: build the flooring mosaic in the print zone ─────────────────
       function buildFloorGrid(tiles) {
-        const zone   = document.getElementById('print-floor-zone');
+        const zone = document.getElementById('print-floor-zone');
         const gridEl = document.getElementById('print-floor-grid');
         if (!zone || !gridEl) return;
         gridEl.innerHTML = '';
@@ -271,7 +262,7 @@
         // Deterministic LCG seeded random number generator
         function seededRandomGenerator(seed) {
           let s = seed;
-          return function() {
+          return function () {
             s = (s * 9301 + 49297) % 233280;
             return s / 233280;
           };
@@ -295,10 +286,10 @@
               // 1. Full adjacency constraints (vertical + horizontal + diagonal)
               for (let i = poolIdx; i < pool.length; i++) {
                 const t = pool[i];
-                const isVerticalRepeat   = row > 0            && selectedGrid[col][row - 1] === t;
-                const isHorizontalRepeat = col > 0            && selectedGrid[col - 1][row] === t;
-                const isDiagLeft         = col > 0 && row > 0 && selectedGrid[col - 1][row - 1] === t;
-                const isDiagRight        = col < NUM_COLS - 1 && row > 0 && selectedGrid[col + 1][row - 1] === t;
+                const isVerticalRepeat = row > 0 && selectedGrid[col][row - 1] === t;
+                const isHorizontalRepeat = col > 0 && selectedGrid[col - 1][row] === t;
+                const isDiagLeft = col > 0 && row > 0 && selectedGrid[col - 1][row - 1] === t;
+                const isDiagRight = col < NUM_COLS - 1 && row > 0 && selectedGrid[col + 1][row - 1] === t;
 
                 if (!isVerticalRepeat && !isHorizontalRepeat && !isDiagLeft && !isDiagRight) {
                   chosenIdx = i;
@@ -310,7 +301,7 @@
               if (chosenIdx === -1) {
                 for (let i = poolIdx; i < pool.length; i++) {
                   const t = pool[i];
-                  const isVerticalRepeat   = row > 0 && selectedGrid[col][row - 1] === t;
+                  const isVerticalRepeat = row > 0 && selectedGrid[col][row - 1] === t;
                   const isHorizontalRepeat = col > 0 && selectedGrid[col - 1][row] === t;
                   if (!isVerticalRepeat && !isHorizontalRepeat) { chosenIdx = i; break; }
                 }
@@ -366,8 +357,8 @@
             plank.style.cssText = `flex-shrink:0; width:100%; height:${plankH_mm.toFixed(3)}mm; overflow:hidden;`;
 
             const img = document.createElement('img');
-            img.src         = tile.src;
-            img.alt         = tile.alt || '';
+            img.src = tile.src;
+            img.alt = tile.alt || '';
             img.crossOrigin = 'anonymous';
             img.style.cssText = 'display:block; width:100%; height:100%; object-fit:cover; object-position:center;';
 
@@ -472,9 +463,9 @@
         },
         exportTag: {
           title: "My Flooring Collection",
-          avgThickness: "Avg Thickness",
+          avgThickness: "Thickness",
           softness: "Softness",
-          mainSeries: "Main Series"
+          mainSeries: "Series"
         }
       },
       ko: {
@@ -493,11 +484,14 @@
         series: {
           "소리지움": "소리지움",
           "도담 Dodam": "도담",
+          "도담": "도담",
           "엑스컴포트": "엑스컴포트",
           "아티움 Artium": "아티움",
+          "아티움": "아티움",
           "지아사랑애": "지아사랑애",
           "시니어": "시니어",
-          "숲옥 Sup Auk": "숲옥"
+          "숲옥 Sup Auk": "숲옥",
+          "숲옥": "숲옥"
         },
         softness: {
           "폭신": "폭신",
@@ -507,23 +501,27 @@
         },
         purpose: {
           "노년층 Assisted living": "노년층",
+          "노년층": "노년층",
           "실내 주거 전반 General residential": "실내 주거 전반",
+          "실내 주거 전반": "실내 주거 전반",
           "아이와 반려동물 Home with pets and kids": "아이와 반려동물",
+          "아이와 반려동물": "아이와 반려동물",
           "반려동물 Home with pets": "반려동물",
+          "반려동물": "반려동물",
           "층간소음": "층간소음",
           "층간소음 Apartment noise reduction": "층간소음"
         },
         infoPanel: {
-          aboutArchive: "아카이브 소개",
-          description: "이 아카이브는 상업용 장판에 부여된 고급스러운 이름과 그 인공적인 실체 사이의 미학적 간극을 탐구합니다.",
+          aboutArchive: "소개",
+          description: "이 아카이브는 일상적인 장판에 부여된 고급스러운 이름과 밍숭맹숭하고 비슷비슷한 실체 사이의 간극을 수집합니다.",
           creditsText: "장판 데이터: <a href=\"https://www.lxhausys.com\" target=\"_blank\">LX 하우시스</a>, <a href=\"https://www.kcc.co.kr\" target=\"_blank\">KCC</a>, <a href=\"https://www.hyundailnc.com\" target=\"_blank\">현대 L&amp;C</a>.<br>이미지: <a href=\"https://commons.wikimedia.org/\" target=\"_blank\">위키미디어 커먼즈</a>",
-          usageText: "타일을 클릭해 공개하세요. 드래그해서 순서를 바꿀 수 있습니다."
+          usageText: "타일을 클릭해 열어보세요. 드래그해서 순서를 바꾸고, 원하는 대로 배치할 수 있습니다."
         },
         exportTag: {
           title: "나의 장판 모음",
-          avgThickness: "평균 두께",
+          avgThickness: "두께",
           softness: "촉감",
-          mainSeries: "메인 시리즈"
+          mainSeries: "시리즈"
         }
       }
     };
@@ -535,7 +533,7 @@
       const snd = document.getElementById("walk-sound");
       if (!snd) return;
       snd.currentTime = 0;
-      snd.play().catch(() => {});
+      snd.play().catch(() => { });
     }
 
     // Walking sound helper — rapid staccato for reveal-all
@@ -550,7 +548,7 @@
         setTimeout(() => {
           const clone = snd.cloneNode();
           clone.volume = 0.4;
-          clone.play().catch(() => {});
+          clone.play().catch(() => { });
         }, i * interval);
       }
     }
@@ -610,8 +608,8 @@
     function getOverlayHTML(record) {
       const f = record.fields;
       const isEn = activeLang === 'en';
-      
-      const name = isEn 
+
+      const name = isEn
         ? (f[FIELDS.nameEn] || f[FIELDS.nameKo] || "—")
         : (f[FIELDS.nameKo] || f[FIELDS.nameEn] || "—");
 
@@ -973,8 +971,8 @@
       grid.addEventListener("pointerdown", e => {
         if (e.pointerType === "mouse" && e.button !== 0) return;
         if (e.target.closest("#info-toggle") || e.target.closest("#info-panel") ||
-            e.target.closest("#download-btn") || e.target.closest("#reveal-all-btn") ||
-            e.target.closest("#print-btn")) return;
+          e.target.closest("#download-btn") || e.target.closest("#reveal-all-btn") ||
+          e.target.closest("#print-btn")) return;
 
         const card = e.target.closest(".card");
         if (!card) return;
@@ -998,7 +996,7 @@
           ev.preventDefault();
           if (clone) {
             clone.style.left = (ev.clientX - cloneOffX) + "px";
-            clone.style.top  = (ev.clientY - cloneOffY) + "px";
+            clone.style.top = (ev.clientY - cloneOffY) + "px";
           }
           // Highlight target
           grid.querySelectorAll(".card-ghost").forEach(c => c.classList.remove("card-ghost"));
@@ -1010,7 +1008,7 @@
 
         function onUp(ev) {
           window.removeEventListener("pointermove", onMove);
-          window.removeEventListener("pointerup",   onUp);
+          window.removeEventListener("pointerup", onUp);
           if (dragStarted) {
             grid.querySelectorAll(".card-ghost").forEach(c => c.classList.remove("card-ghost"));
             if (clone) clone.style.display = "none";
@@ -1028,7 +1026,7 @@
           }
         }
         window.addEventListener("pointermove", onMove, { passive: false });
-        window.addEventListener("pointerup",   onUp);
+        window.addEventListener("pointerup", onUp);
       });
     }
 
@@ -1168,10 +1166,10 @@
           const bSeries = b.fields[FIELDS.series] || "";
           const aIsHiRes = hiResSeries.some(s => aSeries.includes(s));
           const bIsHiRes = hiResSeries.some(s => bSeries.includes(s));
-          
+
           if (aIsHiRes && !bIsHiRes) return -1;
           if (!aIsHiRes && bIsHiRes) return 1;
-          
+
           // Maintain randomness within groups
           return Math.random() - 0.5;
         });
@@ -1233,9 +1231,9 @@
             fx: 0, fy: 0,
             // Pinned at the four corners
             fixed: (c === 0 && r === 0) ||
-                   (c === peelCols - 1 && r === 0) ||
-                   (c === 0 && r === peelRows - 1) ||
-                   (c === peelCols - 1 && r === peelRows - 1)
+              (c === peelCols - 1 && r === 0) ||
+              (c === 0 && r === peelRows - 1) ||
+              (c === peelCols - 1 && r === peelRows - 1)
           });
         }
       }
@@ -1352,8 +1350,8 @@
         p.x += p.vx;
         p.y += p.vy;
 
-        const dist = Math.sqrt((p.x - p.ox)**2 + (p.y - p.oy)**2);
-        const vel = Math.sqrt(p.vx**2 + p.vy**2);
+        const dist = Math.sqrt((p.x - p.ox) ** 2 + (p.y - p.oy) ** 2);
+        const vel = Math.sqrt(p.vx ** 2 + p.vy ** 2);
         if (dist > maxDistFromRest) maxDistFromRest = dist;
         if (vel > maxVel) maxVel = vel;
       }
@@ -1435,8 +1433,8 @@
 
         // Ignore UI overlays
         if (e.target.closest("#info-toggle") || e.target.closest("#info-panel") ||
-            e.target.closest("#download-btn") || e.target.closest("#reveal-all-btn") ||
-            e.target.closest("#print-btn") || e.target.closest(".card")) return;
+          e.target.closest("#download-btn") || e.target.closest("#reveal-all-btn") ||
+          e.target.closest("#print-btn") || e.target.closest(".card")) return;
 
         const x = e.clientX;
         const y = e.clientY;
@@ -1474,7 +1472,7 @@
           const p = peelPoints[i];
           const isEdge = (p.u === 0 || p.u === 1 || p.v === 0 || p.v === 1);
           if (isEdge && !p.fixed) {
-            const d = Math.sqrt((p.x - startX)**2 + (p.y - startY)**2);
+            const d = Math.sqrt((p.x - startX) ** 2 + (p.y - startY) ** 2);
             if (d < minD) {
               minD = d;
               closest = p;
@@ -1504,7 +1502,7 @@
           function onPointerUp() {
             draggedNode = null;
             window.removeEventListener("pointermove", onPointerMove);
-            window.removeEventListener("pointerup",   onPointerUp);
+            window.removeEventListener("pointerup", onPointerUp);
           }
 
           window.addEventListener("pointermove", onPointerMove);
