@@ -14,7 +14,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/bitcount-grid-single/index.css">
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="print.css" media="print" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -22,19 +21,8 @@
 
 <body>
 
-  <div id="web-layer-wrap">
-    <div id="web-layer">
-      <!-- Trapped air bubbles (들뜬 자국) and floor wrinkles (장판이 일부분 울어서 일어난 주름 자국) -->
-      <div class="bubble-spot" style="top: 15%; left: 20%; transform: rotate(10deg) scale(0.9);"></div>
-      <div class="bubble-spot" style="top: 65%; left: 75%; transform: rotate(-15deg) scale(1.1);"></div>
-      <div class="bubble-spot" style="top: 40%; left: 5%; transform: rotate(45deg) scale(0.75);"></div>
-      <div class="bubble-spot" style="top: 80%; left: 30%; transform: rotate(5deg) scale(1.0);"></div>
-      
-      <div class="wrinkle-mark" style="top: 25%; left: 45%; transform: rotate(-12deg); width: 280px;"></div>
-      <div class="wrinkle-mark" style="top: 55%; left: 15%; transform: rotate(8deg); width: 340px;"></div>
-      <div class="wrinkle-mark" style="top: 72%; left: 60%; transform: rotate(-25deg); width: 220px;"></div>
-
-      <section class="works">
+  <div id="web-layer">
+    <section class="works">
       <div id="grid"></div>
     </section>
 
@@ -142,9 +130,6 @@
 
     </div>
 
-    <!-- Language Toggle Button -->
-    <button id="lang-toggle" aria-label="Language Toggle">ENG / KOR</button>
-
     <!-- Info Toggle & Panel -->
     <button id="info-toggle" aria-label="Info">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -172,7 +157,7 @@
         </div>
         <div class="tag-row">
           <strong>Usage</strong>
-          <span>Click tiles to reveal. Drag to reorder. Drag page edges to peel sheet.</span>
+          <span>Click tiles to reveal. Drag to reorder.</span>
         </div>
       </div>
     </div>
@@ -186,19 +171,9 @@
         <line x1="12" y1="15" x2="12" x2="3" />
       </svg>
     </button>
-    </div>
   </div>
 
   <canvas id="peel-canvas"></canvas>
-
-  <!-- KOR To be updated Modal -->
-  <div id="kor-modal" class="custom-modal">
-    <div class="modal-content">
-      <h3>Korean Mode</h3>
-      <p>To be updated</p>
-      <button id="kor-modal-close">Close</button>
-    </div>
-  </div>
 
   <script>
     // ─────────────────────────────────────────────────────────────
@@ -644,17 +619,10 @@
 
       // 3. Hover Overlay (Only visible in revealed state)
       // Styled exactly according to Figma specification node 1:363
-      const titleWords = name.split(" ");
-      const firstWord = titleWords[0] || "";
-      const remainingWords = titleWords.slice(1).join(" ");
-      const titleHTML = remainingWords 
-        ? `<span class="title-first">${firstWord}</span> <span class="title-remaining">${remainingWords}</span>`
-        : `<span class="title-first">${firstWord}</span>`;
-
       const overlay = document.createElement("div");
       overlay.className = "card-overlay";
       overlay.innerHTML = `
-        <div class="overlay-title">${titleHTML}</div>
+        <div class="overlay-title">${name}</div>
         <div class="overlay-data">
           <div class="overlay-labels">
             <p>brand</p>
@@ -686,12 +654,11 @@
       isSnapshotting = true;
       try {
         const webLayer = document.getElementById("web-layer");
-        const rect = webLayer.getBoundingClientRect();
         const canvas = await html2canvas(webLayer, {
-          y: window.scrollY + rect.top,
-          x: rect.left,
-          width: rect.width,
-          height: rect.height,
+          y: window.scrollY,
+          x: 0,
+          width: window.innerWidth,
+          height: window.innerHeight,
           scrollX: 0,
           scrollY: window.scrollY,
           windowWidth: window.innerWidth,
@@ -942,33 +909,6 @@
         infoPanel.classList.remove("show");
       };
 
-      // Language Toggle logic
-      const langToggleBtn = document.getElementById("lang-toggle");
-      const korModal = document.getElementById("kor-modal");
-      const korModalClose = document.getElementById("kor-modal-close");
-
-      if (langToggleBtn) {
-        langToggleBtn.onclick = (e) => {
-          e.stopPropagation();
-          korModal.classList.add("show");
-        };
-      }
-
-      if (korModalClose) {
-        korModalClose.onclick = (e) => {
-          e.stopPropagation();
-          korModal.classList.remove("show");
-        };
-      }
-
-      if (korModal) {
-        korModal.onclick = (e) => {
-          if (e.target === korModal) {
-            korModal.classList.remove("show");
-          }
-        };
-      }
-
       // Reveal All button
       const revealAllBtn = document.getElementById("reveal-all-btn");
       if (revealAllBtn) {
@@ -1094,28 +1034,19 @@
     let isPeelingActive = false;
     let peelAnimationId = null;
 
-    // Initialize mass-spring physics grid matching #web-layer's actual size
-    function initPeelMesh() {
+    // Initialize mass-spring physics grid
+    function initPeelMesh(w, h) {
       peelPoints.length = 0;
       peelSprings.length = 0;
-
-      const webLayer = document.getElementById("web-layer");
-      const rect = webLayer.getBoundingClientRect();
-
-      peelWidth = window.innerWidth;
-      peelHeight = window.innerHeight;
-
-      const left = rect.left;
-      const top = rect.top;
-      const w = rect.width;
-      const h = rect.height;
+      peelWidth = w;
+      peelHeight = h;
 
       for (let r = 0; r < peelRows; r++) {
         for (let c = 0; c < peelCols; c++) {
           const u = c / (peelCols - 1);
           const v = r / (peelRows - 1);
-          const x = left + u * w;
-          const y = top + v * h;
+          const x = u * w;
+          const y = v * h;
           peelPoints.push({
             x: x, y: y,
             ox: x, oy: y, // Rest / original position
@@ -1159,11 +1090,6 @@
       }
     }
 
-    // Helper to calculate area of a triangle
-    function getTriangleArea(x0, y0, x1, y1, x2, y2) {
-      return 0.5 * Math.abs(x0 * (y1 - y2) + x1 * (y2 - y0) + x2 * (y0 - y1));
-    }
-
     // Solve affine transform to draw distorted triangles
     function drawWarpedTriangle(ctx, img, x0, y0, x1, y1, x2, y2, u0, v0, u1, v1, u2, v2) {
       ctx.save();
@@ -1189,34 +1115,6 @@
 
       ctx.transform(a, b, c, d, e, f);
       ctx.drawImage(img, 0, 0);
-
-      // Apply dynamic shading for wrinkles / lighting depth
-      const restArea = getTriangleArea(u0, v0, u1, v1, u2, v2);
-      const currentArea = getTriangleArea(x0, y0, x1, y1, x2, y2);
-      const areaRatio = restArea > 0.001 ? currentArea / restArea : 1;
-
-      ctx.restore(); // restore to clip state so shading overlays fit exactly
-
-      ctx.save();
-      ctx.beginPath();
-      ctx.moveTo(x0, y0);
-      ctx.lineTo(x1, y1);
-      ctx.lineTo(x2, y2);
-      ctx.closePath();
-      ctx.clip();
-
-      if (areaRatio < 0.95) {
-        // Compression shading (shadow in folds)
-        const shadow = Math.min(0.42, (1 - areaRatio) * 0.85);
-        ctx.fillStyle = `rgba(0, 0, 0, ${shadow})`;
-        ctx.fill();
-      } else if (areaRatio > 1.05) {
-        // Tension highlight
-        const highlight = Math.min(0.18, (areaRatio - 1) * 0.35);
-        ctx.fillStyle = `rgba(255, 255, 255, ${highlight})`;
-        ctx.fill();
-      }
-
       ctx.restore();
     }
 
@@ -1286,8 +1184,6 @@
       peelCtx.clearRect(0, 0, peelWidth, peelHeight);
 
       const drawSource = cachedPageCanvas || document.getElementById("web-layer");
-      const webLayer = document.getElementById("web-layer");
-      const rect = webLayer.getBoundingClientRect();
 
       for (let r = 0; r < peelRows - 1; r++) {
         for (let c = 0; c < peelCols - 1; c++) {
@@ -1301,9 +1197,8 @@
           const p01 = peelPoints[i01];
           const p11 = peelPoints[i11];
 
-          // Map relative to actual #web-layer snapshot size
-          const sw = rect.width;
-          const sh = rect.height;
+          const sw = peelWidth;
+          const sh = peelHeight;
 
           drawWarpedTriangle(peelCtx, drawSource,
             p00.x, p00.y, p10.x, p10.y, p01.x, p01.y,
@@ -1319,6 +1214,7 @@
 
       // Check if settled (if not dragging and points have returned to rest position)
       if (!draggedNode && maxDistFromRest < 0.8 && maxVel < 0.08) {
+        // Reset everything back to exact rest positions
         for (let i = 0; i < peelPoints.length; i++) {
           peelPoints[i].x = peelPoints[i].ox;
           peelPoints[i].y = peelPoints[i].oy;
@@ -1345,7 +1241,7 @@
         const h = window.innerHeight;
         peelCanvas.width = w;
         peelCanvas.height = h;
-        initPeelMesh();
+        initPeelMesh(w, h);
         setTimeout(updatePageSnapshot, 300);
       }
 
@@ -1355,158 +1251,88 @@
       const edgeThreshold = 45;
       const cornerThreshold = 80;
 
-      // Visual feedback: show grab cursor when hovering near peelable edges
-      window.addEventListener("pointermove", e => {
-        if (isPeelingActive) return;
-
-        const x = e.clientX;
-        const y = e.clientY;
-        const webLayer = document.getElementById("web-layer");
-        if (!webLayer) return;
-        const rect = webLayer.getBoundingClientRect();
-
-        const w = rect.width;
-        const h = rect.height;
-
-        const rx = x - rect.left;
-        const ry = y - rect.top;
-
-        const isNearTopLeft = rx < cornerThreshold && ry < cornerThreshold;
-        const isNearTopRight = rx > w - cornerThreshold && ry < cornerThreshold;
-        const isNearBottomLeft = rx < cornerThreshold && ry > h - cornerThreshold;
-        const isNearBottomRight = rx > w - cornerThreshold && ry > h - cornerThreshold;
-
-        if (isNearTopLeft || isNearTopRight || isNearBottomLeft || isNearBottomRight) {
-          document.body.style.cursor = "";
-          return;
-        }
-
-        const isNearLeft = rx >= -10 && rx < edgeThreshold;
-        const isNearRight = rx <= w + 10 && rx > w - edgeThreshold;
-        const isNearTop = ry >= -10 && ry < edgeThreshold;
-        const isNearBottom = ry <= h + 10 && ry > h - edgeThreshold;
-
-        // Ignore interactive elements
-        if (e.target.closest("#info-toggle") || e.target.closest("#info-panel") ||
-            e.target.closest("#download-btn") || e.target.closest("#reveal-all-btn") ||
-            e.target.closest("#print-btn") || e.target.closest(".card") ||
-            e.target.closest("#lang-toggle") || e.target.closest("#kor-modal")) {
-          document.body.style.cursor = "";
-          return;
-        }
-
-        if (isNearLeft || isNearRight || isNearTop || isNearBottom) {
-          document.body.style.cursor = "grab";
-        } else {
-          document.body.style.cursor = "";
-        }
-      });
-
       window.addEventListener("pointerdown", e => {
         if (isPeelingActive && !draggedNode) return;
         if (e.pointerType === "mouse" && e.button !== 0) return;
 
-        // Ignore UI overlays and modal content clicks
+        // Ignore UI overlays
         if (e.target.closest("#info-toggle") || e.target.closest("#info-panel") ||
             e.target.closest("#download-btn") || e.target.closest("#reveal-all-btn") ||
-            e.target.closest("#print-btn") || e.target.closest(".card") ||
-            e.target.closest("#lang-toggle") || e.target.closest("#kor-modal")) return;
+            e.target.closest("#print-btn") || e.target.closest(".card")) return;
 
-        const startX = e.clientX;
-        const startY = e.clientY;
-        const webLayer = document.getElementById("web-layer");
-        if (!webLayer) return;
-        const rect = webLayer.getBoundingClientRect();
+        const x = e.clientX;
+        const y = e.clientY;
+        const w = window.innerWidth;
+        const h = window.innerHeight;
 
-        const w = rect.width;
-        const h = rect.height;
-
-        const rx = startX - rect.left;
-        const ry = startY - rect.top;
-
-        const isNearTopLeft = rx < cornerThreshold && ry < cornerThreshold;
-        const isNearTopRight = rx > w - cornerThreshold && ry < cornerThreshold;
-        const isNearBottomLeft = rx < cornerThreshold && ry > h - cornerThreshold;
-        const isNearBottomRight = rx > w - cornerThreshold && ry > h - cornerThreshold;
+        const isNearTopLeft = x < cornerThreshold && y < cornerThreshold;
+        const isNearTopRight = x > w - cornerThreshold && y < cornerThreshold;
+        const isNearBottomLeft = x < cornerThreshold && y > h - cornerThreshold;
+        const isNearBottomRight = x > w - cornerThreshold && y > h - cornerThreshold;
 
         if (isNearTopLeft || isNearTopRight || isNearBottomLeft || isNearBottomRight) return;
 
-        const isNearLeft = rx >= -10 && rx < edgeThreshold;
-        const isNearRight = rx <= w + 10 && rx > w - edgeThreshold;
-        const isNearTop = ry >= -10 && ry < edgeThreshold;
-        const isNearBottom = ry <= h + 10 && ry > h - edgeThreshold;
+        const isNearLeft = x < edgeThreshold;
+        const isNearRight = x > w - edgeThreshold;
+        const isNearTop = y < edgeThreshold;
+        const isNearBottom = y > h - edgeThreshold;
 
         if (isNearLeft || isNearRight || isNearTop || isNearBottom) {
           e.preventDefault();
 
-          // Find the closest edge point
-          let minD = Infinity;
-          let closest = null;
-
-          for (let i = 0; i < peelPoints.length; i++) {
-            const p = peelPoints[i];
-            const isEdge = (p.u === 0 || p.u === 1 || p.v === 0 || p.v === 1);
-            if (isEdge && !p.fixed) {
-              const d = Math.sqrt((p.x - startX)**2 + (p.y - startY)**2);
-              if (d < minD) {
-                minD = d;
-                closest = p;
-              }
-            }
-          }
-
-          if (closest) {
-            let dragThresholdPassed = false;
-
-            function onPointerMove(ev) {
-              const dx = ev.clientX - startX;
-              const dy = ev.clientY - startY;
-              const dist = Math.sqrt(dx * dx + dy * dy);
-
-              if (!dragThresholdPassed && dist < 6) return;
-
-              if (!dragThresholdPassed) {
-                dragThresholdPassed = true;
-                draggedNode = closest;
-                
-                // If snapshot is missing, grab it quickly
-                if (!cachedPageCanvas) {
-                  updatePageSnapshot().then(() => {
-                    activatePeelCanvas(ev.clientX, ev.clientY);
-                  });
-                } else {
-                  activatePeelCanvas(ev.clientX, ev.clientY);
-                }
-              } else if (draggedNode) {
-                draggedNode.x = ev.clientX;
-                draggedNode.y = ev.clientY;
-              }
-            }
-
-            function activatePeelCanvas(currX, currY) {
-              if (draggedNode) {
-                draggedNode.x = currX;
-                draggedNode.y = currY;
-              }
-              if (!isPeelingActive) {
-                isPeelingActive = true;
-                peelCanvas.style.display = "block";
-                document.getElementById("web-layer").style.visibility = "hidden";
-                renderPeel();
-              }
-            }
-
-            function onPointerUp() {
-              draggedNode = null;
-              window.removeEventListener("pointermove", onPointerMove);
-              window.removeEventListener("pointerup",   onPointerUp);
-            }
-
-            window.addEventListener("pointermove", onPointerMove);
-            window.addEventListener("pointerup", onPointerUp);
+          if (!cachedPageCanvas) {
+            updatePageSnapshot().then(() => startPeelDrag(x, y));
+          } else {
+            startPeelDrag(x, y);
           }
         }
       });
+
+      function startPeelDrag(startX, startY) {
+        let minD = Infinity;
+        let closest = null;
+
+        for (let i = 0; i < peelPoints.length; i++) {
+          const p = peelPoints[i];
+          const isEdge = (p.u === 0 || p.u === 1 || p.v === 0 || p.v === 1);
+          if (isEdge && !p.fixed) {
+            const d = Math.sqrt((p.x - startX)**2 + (p.y - startY)**2);
+            if (d < minD) {
+              minD = d;
+              closest = p;
+            }
+          }
+        }
+
+        if (closest) {
+          draggedNode = closest;
+          draggedNode.x = startX;
+          draggedNode.y = startY;
+
+          if (!isPeelingActive) {
+            isPeelingActive = true;
+            peelCanvas.style.display = "block";
+            document.getElementById("web-layer").style.visibility = "hidden";
+            renderPeel();
+          }
+
+          function onPointerMove(ev) {
+            if (draggedNode) {
+              draggedNode.x = ev.clientX;
+              draggedNode.y = ev.clientY;
+            }
+          }
+
+          function onPointerUp() {
+            draggedNode = null;
+            window.removeEventListener("pointermove", onPointerMove);
+            window.removeEventListener("pointerup",   onPointerUp);
+          }
+
+          window.addEventListener("pointermove", onPointerMove);
+          window.addEventListener("pointerup", onPointerUp);
+        }
+      }
     }
 
     init();
