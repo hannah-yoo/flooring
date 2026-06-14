@@ -14,6 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Bitcount+Single:CRSV,ELSH,ELXP,slnt,wght@0..1,0..1,0..1,-8..0,300..700&family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="print.css" media="print" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -141,21 +142,27 @@
     <div id="info-panel">
       <button id="info-close" aria-label="Close panel" style="color:#fff;">&times;</button>
       <div class="tag-header">
-        <span class="tag-title">ABOUT ARCHIVE</span>
+        <span class="tag-title" id="info-about-title">ABOUT ARCHIVE</span>
       </div>
       <div class="tag-body">
-        <div class="tag-row">
-          <p>This archive explores the aesthetic gap between the luxury names given to commercial flooring and their
-            synthetic reality.</p>
+        <div class="tag-row" id="info-about-lang">
+          <strong>Language / 언어</strong>
+          <div style="margin-top: 4px;">
+            <button id="lang-toggle" class="popup-lang-btn" aria-label="Toggle Language">EN</button>
+          </div>
         </div>
         <div class="tag-row">
+          <p id="info-about-desc">This archive explores the aesthetic gap between the luxury names given to commercial flooring and their
+            synthetic reality.</p>
+        </div>
+        <div class="tag-row" id="info-about-credits">
           <strong>Credits</strong>
           <span>
             Flooring Data: <a href="https://www.lxhausys.com" target="_blank">LX Hausys</a>, <a href="https://www.kcc.co.kr" target="_blank">KCC</a>, <a href="https://www.hyundailnc.com" target="_blank">Hyundai L&amp;C</a>.<br>
             Images: <a href="https://commons.wikimedia.org/" target="_blank">Wikimedia Commons</a>
           </span>
         </div>
-        <div class="tag-row">
+        <div class="tag-row" id="info-about-usage">
           <strong>Usage</strong>
           <span>Click tiles to reveal. Drag to reorder.</span>
         </div>
@@ -418,36 +425,107 @@
       brand: "제조사 brand",
     };
 
-    // Bilingual translations mapping to English
-    const brandMap = {
-      "LX 하우시스": "LX hausys",
-      "현대L&C": "Hyundai L&C",
-      "KCC": "KCC"
-    };
+    let activeLang = 'en'; // default: EN
 
-    const seriesMap = {
-      "소리지움": "Sorizium",
-      "도담 Dodam": "Dodam",
-      "엑스컴포트": "X-comfort",
-      "아티움 Artium": "Artium",
-      "지아사랑애": "Zia Sarang-ae",
-      "시니어": "Senior",
-      "숲옥 Sup Auk": "Sup Auk"
-    };
-
-    const softnessMap = {
-      "폭신": "little squishy",
-      "단단": "firm",
-      "푹신푹신": "squishy",
-      "약간 단단": "slightly firm"
-    };
-
-    const purposeMap = {
-      "노년층 Assisted living": "Assisted living",
-      "실내 주거 전반 General residential": "General residential",
-      "아이와 반려동물 Home with pets and kids": "Home with pets and kids",
-      "반려동물 Home with pets": "Home with pets",
-      "층간소음 Apartment noise reduction": "Apartment noise reduction"
+    const TRANSLATIONS = {
+      en: {
+        labels: {
+          brand: "brand",
+          series: "series",
+          thickness: "thickness",
+          softness: "softness",
+          purpose: "purpose"
+        },
+        brand: {
+          "LX 하우시스": "LX hausys",
+          "현대L&C": "Hyundai L&C",
+          "KCC": "KCC"
+        },
+        series: {
+          "소리지움": "Sorizium",
+          "도담 Dodam": "Dodam",
+          "엑스컴포트": "X-comfort",
+          "아티움 Artium": "Artium",
+          "지아사랑애": "Zia Sarang-ae",
+          "시니어": "Senior",
+          "숲옥 Sup Auk": "Sup Auk"
+        },
+        softness: {
+          "폭신": "little squishy",
+          "단단": "firm",
+          "푹신푹신": "squishy",
+          "약간 단단": "slightly firm"
+        },
+        purpose: {
+          "노년층 Assisted living": "Assisted living",
+          "실내 주거 전반 General residential": "General residential",
+          "아이와 반려동물 Home with pets and kids": "Home with pets and kids",
+          "반려동물 Home with pets": "Home with pets",
+          "층간소음": "Apartment noise reduction",
+          "층간소음 Apartment noise reduction": "Apartment noise reduction"
+        },
+        infoPanel: {
+          aboutArchive: "ABOUT ARCHIVE",
+          description: "This archive explores the aesthetic gap between the luxury names given to commercial flooring and their synthetic reality.",
+          creditsText: "Flooring Data: <a href=\"https://www.lxhausys.com\" target=\"_blank\">LX Hausys</a>, <a href=\"https://www.kcc.co.kr\" target=\"_blank\">KCC</a>, <a href=\"https://www.hyundailnc.com\" target=\"_blank\">Hyundai L&amp;C</a>.<br>Images: <a href=\"https://commons.wikimedia.org/\" target=\"_blank\">Wikimedia Commons</a>",
+          usageText: "Click tiles to reveal. Drag to reorder."
+        },
+        exportTag: {
+          title: "My Flooring Collection",
+          avgThickness: "Avg Thickness",
+          softness: "Softness",
+          mainSeries: "Main Series"
+        }
+      },
+      ko: {
+        labels: {
+          brand: "제조사",
+          series: "시리즈",
+          thickness: "두께",
+          softness: "촉감",
+          purpose: "목적"
+        },
+        brand: {
+          "LX 하우시스": "LX 하우시스",
+          "현대L&C": "현대L&C",
+          "KCC": "KCC"
+        },
+        series: {
+          "소리지움": "소리지움",
+          "도담 Dodam": "도담",
+          "엑스컴포트": "엑스컴포트",
+          "아티움 Artium": "아티움",
+          "지아사랑애": "지아사랑애",
+          "시니어": "시니어",
+          "숲옥 Sup Auk": "숲옥"
+        },
+        softness: {
+          "폭신": "폭신",
+          "단단": "단단",
+          "푹신푹신": "푹신푹신",
+          "약간 단단": "약간 단단"
+        },
+        purpose: {
+          "노년층 Assisted living": "노년층",
+          "실내 주거 전반 General residential": "실내 주거 전반",
+          "아이와 반려동물 Home with pets and kids": "아이와 반려동물",
+          "반려동물 Home with pets": "반려동물",
+          "층간소음": "층간소음",
+          "층간소음 Apartment noise reduction": "층간소음"
+        },
+        infoPanel: {
+          aboutArchive: "아카이브 소개",
+          description: "이 아카이브는 상업용 장판에 부여된 고급스러운 이름과 그 인공적인 실체 사이의 미학적 간극을 탐구합니다.",
+          creditsText: "장판 데이터: <a href=\"https://www.lxhausys.com\" target=\"_blank\">LX 하우시스</a>, <a href=\"https://www.kcc.co.kr\" target=\"_blank\">KCC</a>, <a href=\"https://www.hyundailnc.com\" target=\"_blank\">현대 L&amp;C</a>.<br>이미지: <a href=\"https://commons.wikimedia.org/\" target=\"_blank\">위키미디어 커먼즈</a>",
+          usageText: "타일을 클릭해 공개하세요. 드래그해서 순서를 바꿀 수 있습니다."
+        },
+        exportTag: {
+          title: "나의 장판 모음",
+          avgThickness: "평균 두께",
+          softness: "촉감",
+          mainSeries: "메인 시리즈"
+        }
+      }
     };
 
     let isGlobalRevealed = false;
@@ -514,6 +592,89 @@
       return [];
     }
 
+    // Helper to format English title into cursive (first word) and straight (rest)
+    function formatTitleEn(titleText) {
+      if (!titleText || titleText === "—") return "—";
+      const words = titleText.trim().split(/\s+/);
+      if (words.length <= 1) {
+        return `<span class="title-cursive">${titleText}</span>`;
+      }
+      const firstWord = words[0];
+      const restWords = words.slice(1).join(" ");
+      return `<span class="title-cursive">${firstWord} </span><span class="title-straight">${restWords}</span>`;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // Generate overlay HTML dynamically based on active language
+    // ─────────────────────────────────────────────────────────────
+    function getOverlayHTML(record) {
+      const f = record.fields;
+      const isEn = activeLang === 'en';
+      
+      const name = isEn 
+        ? (f[FIELDS.nameEn] || f[FIELDS.nameKo] || "—")
+        : (f[FIELDS.nameKo] || f[FIELDS.nameEn] || "—");
+
+      const formattedTitle = isEn ? formatTitleEn(name) : name;
+
+      const rawBrand = f[FIELDS.brand] || "";
+      const brand = TRANSLATIONS[activeLang].brand[rawBrand] || rawBrand || "—";
+
+      const rawSeries = f[FIELDS.series] || "";
+      const series = TRANSLATIONS[activeLang].series[rawSeries] || rawSeries || "—";
+
+      const rawSoftness = f[FIELDS.softness] || "";
+      const softness = TRANSLATIONS[activeLang].softness[rawSoftness] || rawSoftness || "—";
+
+      const rawPurpose = f[FIELDS.purpose] || "";
+      const purpose = TRANSLATIONS[activeLang].purpose[rawPurpose] || rawPurpose || "—";
+
+      const thickness = f[FIELDS.thickness] || "—";
+      const t = TRANSLATIONS[activeLang].labels;
+
+      return `
+        <div class="overlay-title">${formattedTitle}</div>
+        <div class="overlay-data">
+          <div class="overlay-labels">
+            <p>${t.brand}</p>
+            <p>${t.series}</p>
+            <p>${t.thickness}</p>
+            <p>${t.softness}</p>
+            <p>${t.purpose}</p>
+          </div>
+          <div class="overlay-values">
+            <p>${brand}</p>
+            <p>${series}</p>
+            <p>${thickness}</p>
+            <p>${softness}</p>
+            <p>${purpose}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    // Update all card overlays on language toggle
+    function updateAllOverlays() {
+      const cards = document.querySelectorAll(".card");
+      cards.forEach(card => {
+        if (card.record) {
+          const overlay = card.querySelector(".card-overlay");
+          if (overlay) {
+            overlay.innerHTML = getOverlayHTML(card.record);
+          }
+        }
+      });
+    }
+
+    // Update static info panel translations
+    function updateInfoPanelText() {
+      const t = TRANSLATIONS[activeLang].infoPanel;
+      document.getElementById("info-about-title").textContent = t.aboutArchive;
+      document.getElementById("info-about-desc").textContent = t.description;
+      document.getElementById("info-about-credits").innerHTML = `<strong>${activeLang === 'en' ? 'Credits' : '크레딧'}</strong><span>${t.creditsText}</span>`;
+      document.getElementById("info-about-usage").innerHTML = `<strong>${activeLang === 'en' ? 'Usage' : '사용법'}</strong><span>${t.usageText}</span>`;
+    }
+
     // ─────────────────────────────────────────────────────────────
     // Build a single card element
     // ─────────────────────────────────────────────────────────────
@@ -521,24 +682,24 @@
       const f = record.fields;
       const name = f[FIELDS.nameEn] || f[FIELDS.nameKo] || "—";
 
-      // Map bilingual fields to English
       const rawBrand = f[FIELDS.brand] || "";
-      const brand = brandMap[rawBrand] || rawBrand;
+      const brand = TRANSLATIONS.en.brand[rawBrand] || rawBrand;
 
       const rawSeries = f[FIELDS.series] || "";
-      const series = seriesMap[rawSeries] || rawSeries;
+      const series = TRANSLATIONS.en.series[rawSeries] || rawSeries;
 
       const rawSoftness = f[FIELDS.softness] || "";
-      const softness = softnessMap[rawSoftness] || rawSoftness;
+      const softness = TRANSLATIONS.en.softness[rawSoftness] || rawSoftness;
 
       const rawPurpose = f[FIELDS.purpose] || "";
-      const purpose = purposeMap[rawPurpose] || rawPurpose;
+      const purpose = TRANSLATIONS.en.purpose[rawPurpose] || rawPurpose;
 
       const thickness = f[FIELDS.thickness] || "—";
 
       const card = document.createElement("div");
       card.className = "card";
       card.dataset.id = record.id;
+      card.record = record; // Save reference for overlay regeneration
 
       // Dataset values in English for export tag calculation
       card.dataset.thickness = thickness;
@@ -621,25 +782,7 @@
       // Styled exactly according to Figma specification node 1:363
       const overlay = document.createElement("div");
       overlay.className = "card-overlay";
-      overlay.innerHTML = `
-        <div class="overlay-title">${name}</div>
-        <div class="overlay-data">
-          <div class="overlay-labels">
-            <p>brand</p>
-            <p>series</p>
-            <p>thickness</p>
-            <p>softness</p>
-            <p>purpose</p>
-          </div>
-          <div class="overlay-values">
-            <p>${brand || "—"}</p>
-            <p>${series || "—"}</p>
-            <p>${thickness || "—"}</p>
-            <p>${softness || "—"}</p>
-            <p>${purpose || "—"}</p>
-          </div>
-        </div>
-      `;
+      overlay.innerHTML = getOverlayHTML(record);
       imgWrap.appendChild(overlay);
 
       card.appendChild(imgWrap);
@@ -768,18 +911,26 @@
         });
 
         const avgThick = countThick > 0 ? (totalThick / countThick).toFixed(1) + "mm" : "—";
-        const modeSoft = mode(softnesses);
-        const modeSeri = mode(series);
+        const rawSoft = mode(softnesses);
+        const rawSeri = mode(series);
+
+        const keySoft = Object.keys(TRANSLATIONS.en.softness).find(k => TRANSLATIONS.en.softness[k] === rawSoft) || rawSoft;
+        const modeSoft = TRANSLATIONS[activeLang].softness[keySoft] || keySoft;
+
+        const keySeri = Object.keys(TRANSLATIONS.en.series).find(k => TRANSLATIONS.en.series[k] === rawSeri) || rawSeri;
+        const modeSeri = TRANSLATIONS[activeLang].series[keySeri] || keySeri;
+
+        const t = TRANSLATIONS[activeLang].exportTag;
 
         tag.innerHTML = `
           <div class="tag-header">
-            <span class="tag-title">MY FLOORING COLLECTION</span>
+            <span class="tag-title">${t.title.toUpperCase()}</span>
             <span class="tag-id">MIX ${Date.now().toString().slice(-6)}</span>
           </div>
           <div class="tag-body">
-            <div class="tag-row"><strong>Avg Thickness</strong> <span>${avgThick}</span></div>
-            <div class="tag-row"><strong>Softness</strong> <span>${modeSoft}</span></div>
-            <div class="tag-row"><strong>Main Series</strong> <span>${modeSeri}</span></div>
+            <div class="tag-row"><strong>${t.avgThickness}</strong> <span>${avgThick}</span></div>
+            <div class="tag-row"><strong>${t.softness}</strong> <span>${modeSoft}</span></div>
+            <div class="tag-row"><strong>${t.mainSeries}</strong> <span>${modeSeri}</span></div>
           </div>
         `;
       }
@@ -895,6 +1046,9 @@
       const grid = document.getElementById("grid");
       const loading = document.getElementById("loading");
 
+      // Default body class
+      document.body.classList.add("lang-en");
+
       // Info Panel logic
       const infoBtn = document.getElementById("info-toggle");
       const infoPanel = document.getElementById("info-panel");
@@ -908,6 +1062,30 @@
         e.stopPropagation();
         infoPanel.classList.remove("show");
       };
+
+      // Language Toggle logic
+      const langToggleBtn = document.getElementById("lang-toggle");
+      if (langToggleBtn) {
+        langToggleBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          activeLang = activeLang === 'en' ? 'ko' : 'en';
+
+          // Toggle class on body
+          document.body.className = `lang-${activeLang}`;
+
+          // Update button text
+          langToggleBtn.textContent = activeLang === 'en' ? 'EN' : '한';
+
+          // Update all overlays
+          updateAllOverlays();
+
+          // Update info panel text
+          updateInfoPanelText();
+
+          // Update snapshot
+          setTimeout(updatePageSnapshot, 100);
+        });
+      }
 
       // Reveal All button
       const revealAllBtn = document.getElementById("reveal-all-btn");

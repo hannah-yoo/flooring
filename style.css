@@ -4,6 +4,20 @@
   padding: 0;
 }
 
+@font-face {
+  font-family: 'GulimWeb';
+  src: url('https://cdn.jsdelivr.net/gh/googlefonts/gulim@main/fonts/ttf/hinted/gulim-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ChosunGulim';
+  src: url('assets/font/Chosun%20Gulim.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
 :root {
   --bg:          #0a0a0a;
   --fg:          #f0ede8;
@@ -321,6 +335,32 @@ body.capturing .card-trait-mark {
   box-shadow: none !important; /* Shadows removed per request */
 }
 
+/* Language Toggle Button in Popup */
+.popup-lang-btn {
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  color: #000;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.05em;
+  border-radius: 0;
+  display: inline-block;
+  font-family: var(--font-main);
+}
+
+.popup-lang-btn:hover {
+  background: #000;
+  color: #fff;
+  border-color: #000;
+}
+
+.popup-lang-btn:active {
+  transform: scale(0.95);
+}
+
 /* Placeholder (no image) */
 .card-img-wrap:not(:has(img)) {
   display: flex;
@@ -347,7 +387,7 @@ body.capturing .card-trait-mark {
   display: flex;
   flex-direction: column;
   z-index: 10;
-  font-family: 'Bitcount_Single:Regular', 'Bitcount Single', var(--font-main);
+  font-family: 'Bitcount Single', 'Bitcount_Single:Regular', 'Bitcount_Single', var(--font-main);
   box-sizing: border-box;
 }
 
@@ -356,45 +396,73 @@ body.capturing .card-trait-mark {
 }
 
 .overlay-title {
-  font-family: 'Bitcount_Single:Regular', 'Bitcount Single', var(--font-main);
+  font-family: 'Bitcount Single', 'Bitcount_Single:Regular', 'Bitcount_Single', var(--font-main);
   font-size: 29px;
   font-weight: 437;
   line-height: 28px;
   color: rgba(43, 50, 28, 0.68);
   margin-bottom: 24px;
   word-break: break-word;
-  font-variation-settings: "CRSV" 0.58, "ELSH" 0, "ELXP" 0;
-  font-feature-settings: "zero", "ss02", "ss01", "ss08", "ss03";
+  font-style: italic; /* Trigger slant */
+  font-kerning: normal;
+  text-rendering: optimizeLegibility;
+}
+
+.title-cursive {
+  font-variation-settings: "CRSV" 0.58, "ELSH" 0, "ELXP" 0, "slnt" -8;
+  font-feature-settings: "zero", "ss02", "ss01", "ss08", "ss03", "kern";
+  font-style: italic;
+}
+
+.title-straight {
+  font-variation-settings: "CRSV" 0, "ELSH" 0, "ELXP" 0, "slnt" -8;
+  font-feature-settings: "zero", "ss02", "ss01", "ss08", "ss03", "kern";
+  font-style: italic;
 }
 
 .overlay-data {
   display: flex;
   gap: 19px;
-  font-family: 'Bitcount_Single:Regular', 'Bitcount Single', var(--font-main);
+  font-family: 'Bitcount Single', 'Bitcount_Single:Regular', 'Bitcount_Single', var(--font-main);
   font-size: 11px;
   font-weight: 437;
   line-height: 1.4;
   color: rgba(43, 50, 28, 0.68);
   word-break: break-word;
   align-items: start;
+  font-kerning: normal;
+  text-rendering: optimizeLegibility;
 }
 
 .overlay-labels {
   flex-shrink: 0;
   white-space: nowrap;
   font-variation-settings: "CRSV" 0.58, "ELSH" 0, "ELXP" 0;
-  font-feature-settings: "ss01", "ss02", "ss03";
+  font-feature-settings: "ss01", "ss02", "ss03", "kern";
 }
 
 .overlay-values {
   flex-grow: 1;
   font-variation-settings: "CRSV" 0.58, "ELSH" 0, "ELXP" 0;
-  font-feature-settings: "ss01", "ss02", "ss03";
+  font-feature-settings: "ss01", "ss02", "ss03", "kern";
 }
 
 .overlay-labels p, .overlay-values p {
   margin: 0;
   margin-bottom: 0px;
+}
+
+/* ── Korean Mode Font Overrides ────────────────────────── */
+body.lang-ko .card-overlay,
+body.lang-ko .overlay-title,
+body.lang-ko .overlay-data,
+body.lang-ko .overlay-labels,
+body.lang-ko .overlay-values,
+body.lang-ko .title-cursive,
+body.lang-ko .title-straight {
+  font-family: 'ChosunGulim', 'GulimWeb', 'Gulim', '굴림', sans-serif;
+  font-variation-settings: normal;
+  font-feature-settings: normal;
 }
 
 /* ── No footer ───────────────────────────────────────── */
