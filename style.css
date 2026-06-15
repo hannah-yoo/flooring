@@ -113,8 +113,8 @@ body.revealed .card:active {
 /* ── Info Panel (Sticker Format) ──────── */
 #info-panel {
   position: fixed;
-  bottom: 6rem;
-  left: 2.5rem;
+  bottom: 6.5rem;
+  right: 1.5rem;
   width: 280px;
   background: transparent;
   z-index: 2000;
@@ -296,51 +296,51 @@ body.capturing .card-trait-mark {
 
 /* ── Click hint (removed) ─────────────────────────────── */
 
-/* ── BUTTON AFFORDANCE (Square look) ────────────────── */
-#info-toggle, #download-btn {
-  position: fixed;
-  background: rgba(240, 237, 232, 0.2);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: var(--fg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 950;
-  box-shadow: none !important; /* Shadows removed per request */
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
+/* ── BUTTON AFFORDANCE (Info Button) ────────────────── */
 #info-toggle {
-  top: 1.5rem; /* Moved to top corner */
-  right: 1.5rem;
-  width: 2.45rem;
-  height: 2.45rem;
-  border-radius: 0;
-  font-weight: 400;
-  font-size: 0.7rem;
-}
-
-#download-btn {
+  position: fixed;
   bottom: 1.5rem;
   right: 1.5rem;
-  width: 2.45rem;
-  height: 2.45rem;
-  border-radius: 0;
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  width: 88px;
+  height: auto;
+  cursor: pointer;
+  z-index: 950;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-#info-toggle:hover, #download-btn:hover {
-  background: var(--fg);
-  color: var(--bg);
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: none !important; /* Shadows removed per request */
+#info-toggle:hover {
+  transform: translateY(-2px) scale(1.05);
 }
 
-#info-toggle:active, #download-btn:active {
+#info-toggle:active {
   transform: translateY(0) scale(0.95);
-  box-shadow: none !important; /* Shadows removed per request */
+}
+
+.info-btn-img {
+  width: 88px;
+  height: 53px;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  transition: filter 0.2s ease;
+  animation: idleWiggle 6s infinite ease-in-out 1.5s;
+}
+
+#info-toggle:hover .info-btn-img {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.45));
+  animation: hoverWiggle 0.6s ease-in-out;
 }
 
 /* Language Toggle Button in Popup */
@@ -483,7 +483,11 @@ body.lang-ko .overlay-row,
 body.lang-ko .overlay-label,
 body.lang-ko .overlay-value,
 body.lang-ko #loading,
-body.lang-ko #error {
+body.lang-ko #error,
+body.lang-ko .btn-label,
+body.lang-ko .print-menu-title,
+body.lang-ko .print-menu-opt-btn,
+body.lang-ko .mini-tag-footer span {
   font-family: 'ChosunGulim', 'GulimWeb', 'Gulim', '굴림', sans-serif;
   font-variation-settings: normal;
   font-feature-settings: normal;
@@ -522,12 +526,30 @@ body.lang-ko .overlay-label {
   display: block;
   width: 100%;
   text-align: left; /* Ensure labels are left-aligned */
+  font-weight: bold;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cpattern id='p' width='200' height='200' patternUnits='userSpaceOnUse' patternTransform='rotate(23) skewX(5)'%3E%3Ccircle cx='30' cy='40' r='28' fill='rgba(43, 50, 28, 1.0)'/%3E%3Ccircle cx='170' cy='110' r='44' fill='rgba(43, 50, 28, 1.0)'/%3E%3Ccircle cx='95' cy='75' r='30' fill='rgba(43, 50, 28, 1.0)'/%3E%3Ccircle cx='15' cy='105' r='40' fill='rgba(43, 50, 28, 0.95)'/%3E%3Ccircle cx='140' cy='35' r='36' fill='rgba(43, 50, 28, 0.70)'/%3E%3Ccircle cx='60' cy='150' r='24' fill='rgba(43, 50, 28, 0.80)'/%3E%3Ccircle cx='185' cy='185' r='24' fill='rgba(43, 50, 28, 0.90)'/%3E%3Ccircle cx='85' cy='95' r='20' fill='rgba(43, 50, 28, 0.40)'/%3E%3Ccircle cx='110' cy='165' r='32' fill='rgba(43, 50, 28, 0.40)'/%3E%3Ccircle cx='25' cy='180' r='16' fill='rgba(43, 50, 28, 0.50)'/%3E%3Ccircle cx='105' cy='25' r='14' fill='rgba(43, 50, 28, 0.60)'/%3E%3Ccircle cx='150' cy='160' r='18' fill='rgba(43, 50, 28, 0.40)'/%3E%3C/pattern%3E%3Crect width='100%25' height='100%25' fill='url(%23p)'/%3E%3C/svg%3E");
+  background-size: 0.32em 0.32em;
+  background-repeat: repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter: url(#ink-bleed);
 }
 
 body.lang-ko .overlay-value {
   display: block;
   width: 100%;
   text-align: left; /* Ensure values are left-aligned */
+  font-weight: bold;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cpattern id='p' width='200' height='200' patternUnits='userSpaceOnUse' patternTransform='rotate(23) skewX(5)'%3E%3Ccircle cx='30' cy='40' r='28' fill='rgba(43, 50, 28, 1.0)'/%3E%3Ccircle cx='170' cy='110' r='44' fill='rgba(43, 50, 28, 1.0)'/%3E%3Ccircle cx='95' cy='75' r='30' fill='rgba(43, 50, 28, 1.0)'/%3E%3Ccircle cx='15' cy='105' r='40' fill='rgba(43, 50, 28, 0.95)'/%3E%3Ccircle cx='140' cy='35' r='36' fill='rgba(43, 50, 28, 0.70)'/%3E%3Ccircle cx='60' cy='150' r='24' fill='rgba(43, 50, 28, 0.80)'/%3E%3Ccircle cx='185' cy='185' r='24' fill='rgba(43, 50, 28, 0.90)'/%3E%3Ccircle cx='85' cy='95' r='20' fill='rgba(43, 50, 28, 0.40)'/%3E%3Ccircle cx='110' cy='165' r='32' fill='rgba(43, 50, 28, 0.40)'/%3E%3Ccircle cx='25' cy='180' r='16' fill='rgba(43, 50, 28, 0.50)'/%3E%3Ccircle cx='105' cy='25' r='14' fill='rgba(43, 50, 28, 0.60)'/%3E%3Ccircle cx='150' cy='160' r='18' fill='rgba(43, 50, 28, 0.40)'/%3E%3C/pattern%3E%3Crect width='100%25' height='100%25' fill='url(%23p)'/%3E%3C/svg%3E");
+  background-size: 0.32em 0.32em;
+  background-repeat: repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter: url(#ink-bleed);
 }
 
 body.lang-ko .overlay-row {
@@ -583,11 +605,12 @@ body.lang-ko .overlay-data {
   background: none !important;
   border: none !important;
   padding: 0 !important;
-  width: 73px;
-  height: 44px;
+  width: 88px;
+  height: auto;
   cursor: pointer;
   z-index: 950;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   outline: none;
@@ -608,16 +631,18 @@ body.lang-ko .overlay-data {
   transform: translateX(-50%) translateY(0) scale(0.95);
 }
 .knife-img {
-  width: 100%;
-  height: 100%;
+  width: 88px;
+  height: 53px;
   object-fit: contain;
   display: block;
   pointer-events: none;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
   transition: filter 0.2s ease;
+  animation: idleWiggle 6s infinite ease-in-out;
 }
 #reveal-all-btn:hover .knife-img {
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.45));
+  animation: hoverWiggle 0.6s ease-in-out;
 }
 
 /* ── Print Button (Flooring layout design) ───────────── */
@@ -628,11 +653,12 @@ body.lang-ko .overlay-data {
   background: none !important;
   border: none !important;
   padding: 0 !important;
-  width: 73px;
-  height: 44px;
+  width: 88px;
+  height: auto;
   cursor: pointer;
   z-index: 950;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   outline: none;
@@ -648,16 +674,122 @@ body.lang-ko .overlay-data {
   transform: translateY(0) scale(0.95);
 }
 .print-btn-img {
-  width: 100%;
-  height: 100%;
+  width: 88px;
+  height: 53px;
   object-fit: contain;
   display: block;
   pointer-events: none;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
   transition: filter 0.2s ease;
+  animation: idleWiggle 6s infinite ease-in-out 3s; /* stagger idle wiggles */
 }
 .print-btn-custom:hover .print-btn-img {
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.45));
+  animation: hoverWiggle 0.6s ease-in-out;
+}
+
+/* ── Button Text Labels ──────────────────────────────── */
+.btn-label {
+  font-family: var(--font-main);
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: #ffffff;
+  margin-top: 0.45rem;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.95);
+}
+#reveal-all-btn:hover .btn-label,
+.print-btn-custom:hover .btn-label,
+#info-toggle:hover .btn-label {
+  color: #ffffff;
+}
+
+/* ── Print Popover Menu ──────────────────────────────── */
+.print-menu-popover {
+  position: fixed;
+  bottom: 6.5rem;
+  left: 1.5rem;
+  background: rgba(18, 18, 18, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  padding: 1.1rem;
+  width: 240px;
+  z-index: 2000;
+  transform: translateY(10px) scale(0.95);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+}
+.print-menu-popover.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+.print-menu-title {
+  font-family: var(--font-main);
+  font-size: 0.75rem;
+  color: #fff;
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+}
+.print-menu-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.print-menu-opt-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #e8e8e8;
+  padding: 0.6rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-main);
+  font-size: 0.72rem;
+  text-align: left;
+  width: 100%;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.1s;
+}
+.print-menu-opt-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
+  transform: translateY(-1px);
+}
+.print-menu-opt-btn:active {
+  transform: translateY(0);
+}
+.print-menu-opt-btn svg {
+  width: 13px;
+  height: 13px;
+  opacity: 0.8;
+  stroke: currentColor;
+}
+
+/* ── Affordance Keyframe Animations ──────────────────── */
+@keyframes hoverWiggle {
+  0% { transform: rotate(0deg) scale(1); }
+  15% { transform: rotate(8deg) scale(1.1); }
+  30% { transform: rotate(-8deg) scale(1.1); }
+  45% { transform: rotate(6deg) scale(1.1); }
+  60% { transform: rotate(-6deg) scale(1.1); }
+  75% { transform: rotate(3deg) scale(1.1); }
+  90% { transform: rotate(-3deg) scale(1.1); }
+  100% { transform: rotate(0deg) scale(1.1); }
+}
+
+@keyframes idleWiggle {
+  0%, 88%, 100% { transform: rotate(0deg); }
+  90%, 94%, 98% { transform: rotate(5deg) scale(1.05); }
+  92%, 96% { transform: rotate(-5deg) scale(1.05); }
 }
 
 
@@ -747,8 +879,8 @@ body.lang-ko .overlay-data {
 /* ── Export Tag (Screenshot Only) ─────────────────────── */
 #export-tag {
   position: fixed;
-  bottom: 6rem;
-  right: 2.5rem;
+  bottom: 6.5rem;
+  left: 17.5rem;
   width: 155px;
   border-radius: 4px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.5);
@@ -815,6 +947,114 @@ body.lang-ko .overlay-data {
 
 #export-tag .tag-row span {
   color: #444;
+}
+
+
+/* ── Print Preview Card (Hover on 인쇄하기) ───────────── */
+.print-preview-popover {
+  position: fixed;
+  bottom: 6.5rem;
+  left: 17.5rem;
+  width: 155px;
+  background: #2a2a2d;
+  border-radius: 4px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  z-index: 9999;
+  font-family: var(--font-main);
+  transform: rotate(3deg) scale(0.9);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1), transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.print-preview-popover.show {
+  opacity: 1;
+  transform: rotate(3deg) scale(1);
+}
+
+.mini-a4 {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 210 / 297;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.mini-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.mini-floor-zone {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 50%;
+  height: 35.3535%;
+  background: #f0ece6;
+  overflow: hidden;
+  z-index: 2;
+}
+
+#mini-floor-grid {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.mini-concrete-zone {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 50%;
+  height: 50%;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.mini-concrete-zone img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mini-doormat-zone {
+  position: absolute;
+  left: 0;
+  top: 85.3535%;
+  width: 50%;
+  height: 14.6465%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.mini-doormat-zone img {
+  display: block;
+  width: 50%;
+  height: auto;
+}
+
+.mini-tag-footer {
+  background: #2a2a2d;
+  color: #fff;
+  padding: 0.5rem;
+  text-align: center;
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 
