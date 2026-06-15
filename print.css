@@ -166,42 +166,38 @@ html, body {
 /* ── Purple zone: doormat area below floor zone ───────────────  */
 /*    x: 0–105mm  (left half)                                     */
 /*    y: 253.5mm–297mm  (43.5mm tall)                                 */
-#print-doormat-zone {
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
+/* ── Door shadow (general) ───────────────────────────────────── */
+.print-door {
+  position: absolute;
+  top: 54.7mm;
+  width: 42.7mm;
+  height: 94.9mm;
+  background: rgba(255, 255, 255, 0.2);
+  border: 0.8mm solid rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 2mm 3mm rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  z-index: 5;
+  filter: blur(0.5px);
+}
+.print-door-inner {
   position: absolute;
   left: 0;
-  top: 253.5mm;
-  width: 105mm;
-  height: 43.5mm;
-  overflow: hidden;
-  z-index: 2;
+  top: 0;
+  width: 4.2mm;
+  height: 94.9mm;
+  border-right: 0.8mm solid rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
 }
 
-/* ── Green doormat: Figma-exported SVG loaded as img ──────────── */
-#print-doormat-zone img {
-  display: block !important;
-  width: 50%;
-  height: auto;
-}
-
-/* ── Page 2: Back Side (Yellow Flooring, Spotlight, Shadows) ── */
-#print-page-back {
-  background: #fff !important;
-  display: block !important;
-}
-
-/* Window shadow (top-left) */
-#print-page-back .print-window {
+/* ── Window shadow (general) ─────────────────────────────────── */
+.print-window {
   position: absolute;
-  left: 20.5mm;
   top: 15.9mm;
   display: flex;
   gap: 0;
   z-index: 3;
 }
-#print-page-back .print-window-pane {
+.print-window-pane {
   position: relative;
   width: 33.2mm;
   height: 49mm;
@@ -214,7 +210,7 @@ html, body {
   justify-content: center;
   filter: blur(0.5px);
 }
-#print-page-back .print-window-inner {
+.print-window-inner {
   width: 25mm;
   height: 42.7mm;
   border: 0.8mm solid rgba(0, 0, 0, 0.05);
@@ -222,28 +218,26 @@ html, body {
   box-sizing: border-box;
 }
 
-/* Door shadow (top-right) */
-#print-page-back .print-door {
-  position: absolute;
-  left: 154.8mm;
-  top: 54.7mm;
-  width: 42.7mm;
-  height: 94.9mm;
-  background: rgba(255, 255, 255, 0.2);
-  border: 0.8mm solid rgba(0, 0, 0, 0.05);
-  box-shadow: inset 0 2mm 3mm rgba(0, 0, 0, 0.1);
-  box-sizing: border-box;
-  z-index: 5;
-  filter: blur(0.5px);
+/* Page 1 (Front Side) Door & Window positions */
+#print-page-front .print-door {
+  left: 12.3mm; /* top-left */
 }
-#print-page-back .print-door-inner {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 4.2mm;
-  height: 94.9mm;
-  border-right: 0.8mm solid rgba(0, 0, 0, 0.05);
-  box-sizing: border-box;
+#print-page-front .print-window {
+  left: 123.1mm; /* top-right */
+}
+
+/* Page 2 (Back Side) Door & Window positions */
+#print-page-back .print-door {
+  left: 154.8mm; /* top-right */
+}
+#print-page-back .print-window {
+  left: 20.5mm; /* top-left */
+}
+
+/* ── Page 2 specific background & spotlight ──────────────────── */
+#print-page-back {
+  background: #fff !important;
+  display: block !important;
 }
 
 /* Yellow flooring (bottom half) */
@@ -278,4 +272,45 @@ html, body {
   display: block !important;
   width: 100%;
   height: 100%;
+}
+
+/* ── Page 1: Folding Instructions ────────────────────────────── */
+#print-instructions {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 210mm;
+  height: 297mm;
+  pointer-events: none;
+  z-index: 8;
+  font-family: 'Pretendard', sans-serif;
+  color: #000;
+}
+.instruction-item {
+  position: absolute;
+  font-size: 8.5pt; /* ~10px */
+  line-height: 1.35;
+  transform: translateY(-50%);
+}
+.instruction-item.tip {
+  font-size: 7.5pt; /* ~9px */
+  color: #444;
+  line-height: 1.3;
+}
+.instruction-item .num {
+  position: absolute;
+  left: 0;
+  font-weight: bold;
+}
+.instruction-item .text {
+  display: block;
+  padding-left: 4mm;
+}
+.underline-dotted {
+  text-decoration: underline dotted;
+  text-underline-offset: 2px;
+}
+.underline-solid {
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
