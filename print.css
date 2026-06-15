@@ -195,6 +195,8 @@ html, body {
   border-radius: 1mm;
   overflow: hidden;
   position: relative;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
 }
 
 .doormat-text {
@@ -224,4 +226,6 @@ html, body {
   height: 1.8mm;
   background: #1a3a12; /* Dark green/black stripe */
   border-radius: 0.3mm;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
 }
