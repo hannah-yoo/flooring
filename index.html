@@ -234,8 +234,6 @@
     </div>
   </div>
 
-  <canvas id="peel-canvas"></canvas>
-
   <script>
     // ─────────────────────────────────────────────────────────────
     // Print: populate floor mosaic before printing, clean up after
@@ -254,7 +252,7 @@
             return r.top < vh && r.bottom > 0 && r.left < vw && r.right > 0;
           })
           .map(card => {
-            const img = card.querySelector('.card-wood-img');
+            const img  = card.querySelector('.card-wood-img');
             if (!img) return null;
             const src = img.getAttribute('src');
             if (!src || src.trim() === '') return null;
@@ -268,8 +266,9 @@
       }
 
       // ── Step 2: build the flooring mosaic in the print zone ─────────────────
+      // Layout: narrow vertical plank columns with staggered start offsets.
       function buildFloorGrid(tiles) {
-        const zone = document.getElementById('print-floor-zone');
+        const zone   = document.getElementById('print-floor-zone');
         const gridEl = document.getElementById('print-floor-grid');
         if (!zone || !gridEl) return;
         gridEl.innerHTML = '';
@@ -279,59 +278,35 @@
         const grid = document.getElementById('grid');
         const numCols = grid ? (parseInt(window.getComputedStyle(grid).columnCount) || 8) : 8;
         const NUM_COLS = numCols * 2;
-
-        // Zone is 105mm × 105mm (fixed in print.css)
         const ZONE_H_MM = 105;
-
-        // Column width in mm (zone width is 105mm)
         const colW_mm = 105 / NUM_COLS;
 
-        // Calculate average aspect ratio of visible tiles, scale it up to be long
         let totalAR = 0;
         tiles.forEach(t => { totalAR += t.ar || 2.5; });
         const avgAR = tiles.length > 0 ? (totalAR / tiles.length) : 2.5;
-
-        // Make the planks tall for a realistic wood plank look
         const arFactor = Math.max(avgAR * 2.8, 8.0);
-
-        // Plank height in mm
         const plankH_mm = colW_mm * arFactor;
 
         gridEl.style.cssText = 'position:relative; width:100%; height:100%; overflow:hidden;';
 
-        // Stagger stair: each successive column shifts up by 0.25 * plankH, cycling [0, 0.25, 0.5, 0.75]
         const STAIR_STEP = 0.25;
-
-        // Maximum upward shift any column will get (0.75 * plankH for col index 3, 7, 11, 15)
         const maxStagger_mm = 0.75 * plankH_mm;
-
-        // planksNeeded must cover the full zone height PLUS the maximum stagger shift
-        // so even the most-shifted column reaches the bottom of the zone.
         const planksNeeded = Math.ceil((ZONE_H_MM + maxStagger_mm) / plankH_mm) + 2;
 
-        // Pre-calculate tile selection grid to avoid horizontal, vertical, and diagonal repeats
         const selectedGrid = [];
-        for (let col = 0; col < NUM_COLS; col++) {
-          selectedGrid[col] = [];
-        }
+        for (let col = 0; col < NUM_COLS; col++) { selectedGrid[col] = []; }
 
-        // Build a balanced pool: every tile index appears the same number of times (±1)
         const totalCells = NUM_COLS * planksNeeded;
         const pool = [];
-        for (let i = 0; i < totalCells; i++) {
-          pool.push(i % tiles.length);
-        }
+        for (let i = 0; i < totalCells; i++) { pool.push(i % tiles.length); }
 
-        // Deterministic LCG seeded random number generator
         function seededRandomGenerator(seed) {
           let s = seed;
-          return function () {
+          return function() {
             s = (s * 9301 + 49297) % 233280;
             return s / 233280;
           };
         }
-
-        // Deterministically shuffle the pool using LCG
         const rand = seededRandomGenerator(12345);
         for (let i = pool.length - 1; i > 0; i--) {
           const j = Math.floor(rand() * (i + 1));
@@ -344,91 +319,61 @@
         for (let row = 0; row < planksNeeded; row++) {
           for (let col = 0; col < NUM_COLS; col++) {
             let chosenIdx = -1;
-
             if (tiles.length > 1) {
-              // 1. Full adjacency constraints (vertical + horizontal + diagonal)
               for (let i = poolIdx; i < pool.length; i++) {
                 const t = pool[i];
-                const isVerticalRepeat = row > 0 && selectedGrid[col][row - 1] === t;
+                const isVerticalRepeat   = row > 0 && selectedGrid[col][row - 1] === t;
                 const isHorizontalRepeat = col > 0 && selectedGrid[col - 1][row] === t;
-                const isDiagLeft = col > 0 && row > 0 && selectedGrid[col - 1][row - 1] === t;
-                const isDiagRight = col < NUM_COLS - 1 && row > 0 && selectedGrid[col + 1][row - 1] === t;
+                const isDiagLeft         = col > 0 && row > 0 && selectedGrid[col - 1][row - 1] === t;
+                const isDiagRight        = col < NUM_COLS - 1 && row > 0 && selectedGrid[col + 1][row - 1] === t;
 
                 if (!isVerticalRepeat && !isHorizontalRepeat && !isDiagLeft && !isDiagRight) {
-                  chosenIdx = i;
-                  break;
+                  chosenIdx = i; break;
                 }
               }
-
-              // 2. Relax diagonal constraints
               if (chosenIdx === -1) {
                 for (let i = poolIdx; i < pool.length; i++) {
                   const t = pool[i];
-                  const isVerticalRepeat = row > 0 && selectedGrid[col][row - 1] === t;
+                  const isVerticalRepeat   = row > 0 && selectedGrid[col][row - 1] === t;
                   const isHorizontalRepeat = col > 0 && selectedGrid[col - 1][row] === t;
                   if (!isVerticalRepeat && !isHorizontalRepeat) { chosenIdx = i; break; }
                 }
               }
-
-              // 3. Only vertical constraint
               if (chosenIdx === -1) {
                 for (let i = poolIdx; i < pool.length; i++) {
                   if (row === 0 || selectedGrid[col][row - 1] !== pool[i]) { chosenIdx = i; break; }
                 }
               }
-
-              // 4. Fallback
               if (chosenIdx === -1) chosenIdx = poolIdx;
-
-              // Commit: swap chosen to front, record assignment
-              const temp = pool[poolIdx];
-              pool[poolIdx] = pool[chosenIdx];
-              pool[chosenIdx] = temp;
+              const temp = pool[poolIdx]; pool[poolIdx] = pool[chosenIdx]; pool[chosenIdx] = temp;
               selectedGrid[col][row] = pool[poolIdx];
-            } else {
-              selectedGrid[col][row] = 0;
-            }
+            } else { selectedGrid[col][row] = 0; }
             poolIdx++;
           }
         }
 
-        // Render columns with mm-based sizing (avoids print % resolution bugs)
-        const colWidth_mm = 105 / NUM_COLS;
-        const totalColH_mm = plankH_mm * planksNeeded;
-
         for (let col = 0; col < NUM_COLS; col++) {
-          const colLeft_mm = col * colWidth_mm;
+          const colLeft_mm = col * colW_mm;
           const topOffset_mm = -((col * STAIR_STEP) % 1) * plankH_mm;
-
+          const totalColH_mm = plankH_mm * planksNeeded;
           const colEl = document.createElement('div');
           colEl.style.cssText = [
-            'position:absolute',
-            `left:${colLeft_mm.toFixed(3)}mm`,
-            `width:${colWidth_mm.toFixed(3)}mm`,
-            `top:${topOffset_mm.toFixed(3)}mm`,
-            `height:${totalColH_mm.toFixed(3)}mm`,
-            'display:flex',
-            'flex-direction:column',
-            'align-items:stretch',
-            'overflow:visible',
+            'position:absolute', `left:${colLeft_mm.toFixed(3)}mm`, `width:${colW_mm.toFixed(3)}mm`,
+            `top:${topOffset_mm.toFixed(3)}mm`, `height:${totalColH_mm.toFixed(3)}mm`,
+            'display:flex', 'flex-direction:column', 'align-items:stretch', 'overflow:visible'
           ].join(';');
 
           for (let i = 0; i < planksNeeded; i++) {
             const tile = tiles[selectedGrid[col][i]];
-
             const plank = document.createElement('div');
             plank.style.cssText = `flex-shrink:0; width:100%; height:${plankH_mm.toFixed(3)}mm; overflow:hidden;`;
-
             const img = document.createElement('img');
-            img.src = tile.src;
-            img.alt = tile.alt || '';
-            img.crossOrigin = 'anonymous';
+            img.src         = tile.src;
+            img.alt         = tile.alt || '';
             img.style.cssText = 'display:block; width:100%; height:100%; object-fit:cover; object-position:center;';
-
             plank.appendChild(img);
             colEl.appendChild(plank);
           }
-
           gridEl.appendChild(colEl);
         }
       }
@@ -436,76 +381,51 @@
       window.addEventListener('beforeprint', () => {
         const tiles = getVisibleTileSrcs();
         buildFloorGrid(tiles);
-
-        // Randomly pick green or red doormat
         const doormatImg = document.getElementById('print-doormat-img');
         if (doormatImg) {
-          const doormats = [
-            'assets/image/green doormat.jpg',
-            'assets/image/red doormat.jpg'
-          ];
-          const chosen = doormats[Math.floor(Math.random() * doormats.length)];
-          doormatImg.src = chosen;
+          const doormats = ['assets/image/green doormat.jpg', 'assets/image/red doormat.jpg'];
+          doormatImg.src = doormats[Math.floor(Math.random() * doormats.length)];
         }
       });
 
       window.addEventListener('afterprint', () => {
         const gridEl = document.getElementById('print-floor-grid');
         if (gridEl) { gridEl.innerHTML = ''; gridEl.removeAttribute('style'); }
-
         const doormatImg = document.getElementById('print-doormat-img');
         if (doormatImg) { doormatImg.src = ''; }
       });
 
-      // ── Step 3: build the flooring mosaic in the print preview zone ───────────────
       function buildMiniFloorGrid(tiles) {
         const gridEl = document.getElementById('mini-floor-grid');
         if (!gridEl) return;
         gridEl.innerHTML = '';
         if (tiles.length === 0) return;
-
         const NUM_COLS = 8;
         const STAIR_STEP = 0.25;
-
         let totalAR = 0;
         tiles.forEach(t => { totalAR += t.ar || 2.5; });
         const avgAR = tiles.length > 0 ? (totalAR / tiles.length) : 2.5;
         const arFactor = Math.max(avgAR * 2.8, 8.0);
-
         const colW_pct = 100 / NUM_COLS;
         const containerWidth = gridEl.getBoundingClientRect().width || 77.5;
         const colWidth_px = containerWidth / NUM_COLS;
         const plankH_px = colWidth_px * arFactor;
         const planksNeeded = Math.ceil((gridEl.getBoundingClientRect().height || 77.5) / plankH_px) + 2;
-
         gridEl.style.cssText = 'position:relative; width:100%; height:100%; overflow:hidden;';
-
         const selectedGrid = [];
-        for (let col = 0; col < NUM_COLS; col++) {
-          selectedGrid[col] = [];
-        }
-
+        for (let col = 0; col < NUM_COLS; col++) { selectedGrid[col] = []; }
         const totalCells = NUM_COLS * planksNeeded;
         const pool = [];
-        for (let i = 0; i < totalCells; i++) {
-          pool.push(i % tiles.length);
-        }
-
+        for (let i = 0; i < totalCells; i++) { pool.push(i % tiles.length); }
         function seededRandomGenerator(seed) {
           let s = seed;
-          return function () {
-            s = (s * 9301 + 49297) % 233280;
-            return s / 233280;
-          };
+          return function() { s = (s * 9301 + 49297) % 233280; return s / 233280; };
         }
         const rand = seededRandomGenerator(12345);
         for (let i = pool.length - 1; i > 0; i--) {
           const j = Math.floor(rand() * (i + 1));
-          const temp = pool[i];
-          pool[i] = pool[j];
-          pool[j] = temp;
+          const temp = pool[i]; pool[i] = pool[j]; pool[j] = temp;
         }
-
         let poolIdx = 0;
         for (let row = 0; row < planksNeeded; row++) {
           for (let col = 0; col < NUM_COLS; col++) {
@@ -517,11 +437,7 @@
                 const isHorizontalRepeat = col > 0 && selectedGrid[col - 1][row] === t;
                 const isDiagLeft = col > 0 && row > 0 && selectedGrid[col - 1][row - 1] === t;
                 const isDiagRight = col < NUM_COLS - 1 && row > 0 && selectedGrid[col + 1][row - 1] === t;
-
-                if (!isVerticalRepeat && !isHorizontalRepeat && !isDiagLeft && !isDiagRight) {
-                  chosenIdx = i;
-                  break;
-                }
+                if (!isVerticalRepeat && !isHorizontalRepeat && !isDiagLeft && !isDiagRight) { chosenIdx = i; break; }
               }
               if (chosenIdx === -1) {
                 for (let i = poolIdx; i < pool.length; i++) {
@@ -537,55 +453,37 @@
                 }
               }
               if (chosenIdx === -1) chosenIdx = poolIdx;
-
-              const temp = pool[poolIdx];
-              pool[poolIdx] = pool[chosenIdx];
-              pool[chosenIdx] = temp;
+              const temp = pool[poolIdx]; pool[poolIdx] = pool[chosenIdx]; pool[chosenIdx] = temp;
               selectedGrid[col][row] = pool[poolIdx];
-            } else {
-              selectedGrid[col][row] = 0;
-            }
+            } else { selectedGrid[col][row] = 0; }
             poolIdx++;
           }
         }
-
         for (let col = 0; col < NUM_COLS; col++) {
           const colLeft_pct = col * colW_pct;
           const topOffset_px = -((col * STAIR_STEP) % 1) * plankH_px;
           const totalColH_px = plankH_px * planksNeeded;
-
           const colEl = document.createElement('div');
           colEl.style.cssText = [
-            'position:absolute',
-            `left:${colLeft_pct.toFixed(3)}%`,
-            `width:${colW_pct.toFixed(3)}%`,
-            `top:${topOffset_px.toFixed(3)}px`,
-            `height:${totalColH_px.toFixed(3)}px`,
-            'display:flex',
-            'flex-direction:column',
-            'align-items:stretch',
-            'overflow:visible',
+            'position:absolute', `left:${colLeft_pct.toFixed(3)}%`, `width:${colW_pct.toFixed(3)}%`,
+            `top:${topOffset_px.toFixed(3)}px`, `height:${totalColH_px.toFixed(3)}px`,
+            'display:flex', 'flex-direction:column', 'align-items:stretch', 'overflow:visible'
           ].join(';');
-
           for (let i = 0; i < planksNeeded; i++) {
             const tile = tiles[selectedGrid[col][i]];
-
             const plank = document.createElement('div');
             plank.style.cssText = `flex-shrink:0; width:100%; height:${plankH_px.toFixed(3)}px; overflow:hidden;`;
-
             const img = document.createElement('img');
-            img.src = tile.src;
-            img.alt = tile.alt || '';
+            img.src = tile.src; img.alt = tile.alt || '';
             img.style.cssText = 'display:block; width:100%; height:100%; object-fit:cover; object-position:center;';
-
-            plank.appendChild(img);
-            colEl.appendChild(plank);
+            plank.appendChild(img); colEl.appendChild(plank);
           }
           gridEl.appendChild(colEl);
         }
       }
 
       window.getVisibleTileSrcs = getVisibleTileSrcs;
+      window.buildFloorGrid = buildFloorGrid;
       window.buildMiniFloorGrid = buildMiniFloorGrid;
 
     })();
@@ -987,40 +885,7 @@
       return card;
     }
 
-    let cachedPageCanvas = null;
-    let isSnapshotting = false;
-
-    async function updatePageSnapshot() {
-      if (isSnapshotting) return;
-      isSnapshotting = true;
-      try {
-        const webLayer = document.getElementById("web-layer");
-        const canvas = await html2canvas(webLayer, {
-          y: window.scrollY,
-          x: 0,
-          width: window.innerWidth,
-          height: window.innerHeight,
-          scrollX: 0,
-          scrollY: window.scrollY,
-          windowWidth: window.innerWidth,
-          windowHeight: window.innerHeight,
-          backgroundColor: "#0a0a0a",
-          useCORS: true,
-          scale: 1
-        });
-        cachedPageCanvas = canvas;
-      } catch (err) {
-        console.error("Snapshot caching failed:", err);
-      } finally {
-        isSnapshotting = false;
-      }
-    }
-
-    let scrollTimeout = null;
-    window.addEventListener("scroll", () => {
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(updatePageSnapshot, 200);
-    });
+    function updatePageSnapshot() {}
 
     // ─────────────────────────────────────────────────────────────
     // Toggle a single card (reveal ↔ hide)
@@ -1361,6 +1226,25 @@
           e.stopPropagation();
           if (printMenu) printMenu.classList.remove("show");
           if (printPreviewCard) printPreviewCard.classList.remove("show");
+
+          // Pre-build the floor grid BEFORE window.print()
+          // so tiles are guaranteed to be populated while #grid is still visible on screen
+          if (typeof window.getVisibleTileSrcs === 'function' && typeof window.buildFloorGrid === 'function') {
+            const tiles = window.getVisibleTileSrcs();
+            console.log('[Print] Pre-building floor grid with', tiles.length, 'tiles');
+            window.buildFloorGrid(tiles);
+          }
+
+          // Set doormat image
+          const doormatImg = document.getElementById('print-doormat-img');
+          if (doormatImg && !doormatImg.getAttribute('src')) {
+            const doormats = [
+              'assets/image/green doormat.jpg',
+              'assets/image/red doormat.jpg'
+            ];
+            doormatImg.src = doormats[Math.floor(Math.random() * doormats.length)];
+          }
+
           window.print();
         });
       }
@@ -1489,329 +1373,9 @@
         });
 
         initDragSwap(grid);
-        initPeelEvents();
-        setTimeout(updatePageSnapshot, 1000);
       } catch (err) {
         loading.style.display = "none";
         console.error(err);
-      }
-    }
-
-    // ─────────────────────────────────────────────────────────────
-    // Rubber Page Peeling Canvas Physics
-    // ─────────────────────────────────────────────────────────────
-    let peelCanvas = null;
-    let peelCtx = null;
-    let peelWidth = 0;
-    let peelHeight = 0;
-
-    const peelCols = 12;
-    const peelRows = 12;
-    const peelPoints = [];
-    const peelSprings = [];
-
-    let draggedNode = null;
-    let isPeelingActive = false;
-    let peelAnimationId = null;
-
-    // Initialize mass-spring physics grid
-    function initPeelMesh(w, h) {
-      peelPoints.length = 0;
-      peelSprings.length = 0;
-      peelWidth = w;
-      peelHeight = h;
-
-      for (let r = 0; r < peelRows; r++) {
-        for (let c = 0; c < peelCols; c++) {
-          const u = c / (peelCols - 1);
-          const v = r / (peelRows - 1);
-          const x = u * w;
-          const y = v * h;
-          peelPoints.push({
-            x: x, y: y,
-            ox: x, oy: y, // Rest / original position
-            u: u, v: v,   // Normalized coordinates
-            vx: 0, vy: 0,
-            fx: 0, fy: 0,
-            // Pinned at the four corners
-            fixed: (c === 0 && r === 0) ||
-              (c === peelCols - 1 && r === 0) ||
-              (c === 0 && r === peelRows - 1) ||
-              (c === peelCols - 1 && r === peelRows - 1)
-          });
-        }
-      }
-
-      function addSpring(i1, i2, stiffness) {
-        const p1 = peelPoints[i1];
-        const p2 = peelPoints[i2];
-        const dx = p1.ox - p2.ox;
-        const dy = p1.oy - p2.oy;
-        const restLength = Math.sqrt(dx * dx + dy * dy);
-        peelSprings.push({ i1, i2, restLength, k: stiffness });
-      }
-
-      const kStructural = 0.45;
-      const kShear = 0.25;
-
-      for (let r = 0; r < peelRows; r++) {
-        for (let c = 0; c < peelCols; c++) {
-          const idx = r * peelCols + c;
-          // Horizontal
-          if (c < peelCols - 1) addSpring(idx, idx + 1, kStructural);
-          // Vertical
-          if (r < peelRows - 1) addSpring(idx, idx + peelCols, kStructural);
-          // Diagonal
-          if (c < peelCols - 1 && r < peelRows - 1) {
-            addSpring(idx, idx + peelCols + 1, kShear);
-            addSpring(idx + 1, idx + peelCols, kShear);
-          }
-        }
-      }
-    }
-
-    // Solve affine transform to draw distorted triangles
-    function drawWarpedTriangle(ctx, img, x0, y0, x1, y1, x2, y2, u0, v0, u1, v1, u2, v2) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.moveTo(x0, y0);
-      ctx.lineTo(x1, y1);
-      ctx.lineTo(x2, y2);
-      ctx.closePath();
-      ctx.clip();
-
-      const den = (u1 - u0) * (v2 - v0) - (u2 - u0) * (v1 - v0);
-      if (Math.abs(den) < 0.0001) {
-        ctx.restore();
-        return;
-      }
-
-      const a = ((x1 - x0) * (v2 - v0) - (x2 - x0) * (v1 - v0)) / den;
-      const b = ((y1 - y0) * (v2 - v0) - (y2 - y0) * (v1 - v0)) / den;
-      const c = ((x2 - x0) * (u1 - u0) - (x1 - x0) * (u2 - u0)) / den;
-      const d = ((y2 - y0) * (u1 - u0) - (y1 - y0) * (u2 - u0)) / den;
-      const e = x0 - a * u0 - c * v0;
-      const f = y0 - b * u0 - d * v0;
-
-      ctx.transform(a, b, c, d, e, f);
-      ctx.drawImage(img, 0, 0);
-      ctx.restore();
-    }
-
-    // Render loop
-    function renderPeel() {
-      if (!isPeelingActive) return;
-
-      // Update physics
-      const springK = 0.22;
-      const anchorK = 0.04;
-      const damping = 0.86;
-
-      // Reset forces
-      for (let i = 0; i < peelPoints.length; i++) {
-        peelPoints[i].fx = 0;
-        peelPoints[i].fy = 0;
-      }
-
-      // Spring forces
-      for (let i = 0; i < peelSprings.length; i++) {
-        const s = peelSprings[i];
-        const p1 = peelPoints[s.i1];
-        const p2 = peelPoints[s.i2];
-        const dx = p2.x - p1.x;
-        const dy = p2.y - p1.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist > 0.01) {
-          const force = (dist - s.restLength) * s.k * springK;
-          const fx = (dx / dist) * force;
-          const fy = (dy / dist) * force;
-          p1.fx += fx;
-          p1.fy += fy;
-          p2.fx -= fx;
-          p2.fy -= fy;
-        }
-      }
-
-      // Restorative anchor force to original rest position
-      for (let i = 0; i < peelPoints.length; i++) {
-        const p = peelPoints[i];
-        if (p.fixed) continue;
-        p.fx += (p.ox - p.x) * anchorK;
-        p.fy += (p.oy - p.y) * anchorK;
-      }
-
-      // Update velocities and positions
-      let maxDistFromRest = 0;
-      let maxVel = 0;
-
-      for (let i = 0; i < peelPoints.length; i++) {
-        const p = peelPoints[i];
-        if (p.fixed) continue;
-        if (p === draggedNode) continue;
-
-        p.vx = (p.vx + p.fx) * damping;
-        p.vy = (p.vy + p.fy) * damping;
-        p.x += p.vx;
-        p.y += p.vy;
-
-        const dist = Math.sqrt((p.x - p.ox) ** 2 + (p.y - p.oy) ** 2);
-        const vel = Math.sqrt(p.vx ** 2 + p.vy ** 2);
-        if (dist > maxDistFromRest) maxDistFromRest = dist;
-        if (vel > maxVel) maxVel = vel;
-      }
-
-      // Draw mesh
-      peelCtx.clearRect(0, 0, peelWidth, peelHeight);
-
-      const drawSource = cachedPageCanvas || document.getElementById("web-layer");
-
-      for (let r = 0; r < peelRows - 1; r++) {
-        for (let c = 0; c < peelCols - 1; c++) {
-          const i00 = r * peelCols + c;
-          const i10 = r * peelCols + c + 1;
-          const i01 = (r + 1) * peelCols + c;
-          const i11 = (r + 1) * peelCols + c + 1;
-
-          const p00 = peelPoints[i00];
-          const p10 = peelPoints[i10];
-          const p01 = peelPoints[i01];
-          const p11 = peelPoints[i11];
-
-          const sw = peelWidth;
-          const sh = peelHeight;
-
-          drawWarpedTriangle(peelCtx, drawSource,
-            p00.x, p00.y, p10.x, p10.y, p01.x, p01.y,
-            p00.u * sw, p00.v * sh, p10.u * sw, p10.v * sh, p01.u * sw, p01.v * sh
-          );
-
-          drawWarpedTriangle(peelCtx, drawSource,
-            p10.x, p10.y, p11.x, p11.y, p01.x, p01.y,
-            p10.u * sw, p10.v * sh, p11.u * sw, p11.v * sh, p01.u * sw, p01.v * sh
-          );
-        }
-      }
-
-      // Check if settled (if not dragging and points have returned to rest position)
-      if (!draggedNode && maxDistFromRest < 0.8 && maxVel < 0.08) {
-        // Reset everything back to exact rest positions
-        for (let i = 0; i < peelPoints.length; i++) {
-          peelPoints[i].x = peelPoints[i].ox;
-          peelPoints[i].y = peelPoints[i].oy;
-          peelPoints[i].vx = 0;
-          peelPoints[i].vy = 0;
-        }
-        isPeelingActive = false;
-        peelCanvas.style.display = "none";
-        document.getElementById("web-layer").style.visibility = "visible";
-        cancelAnimationFrame(peelAnimationId);
-        return;
-      }
-
-      peelAnimationId = requestAnimationFrame(renderPeel);
-    }
-
-    // Set up peel event listeners
-    function initPeelEvents() {
-      peelCanvas = document.getElementById("peel-canvas");
-      peelCtx = peelCanvas.getContext("2d");
-
-      function resizeCanvas() {
-        const w = window.innerWidth;
-        const h = window.innerHeight;
-        peelCanvas.width = w;
-        peelCanvas.height = h;
-        initPeelMesh(w, h);
-        setTimeout(updatePageSnapshot, 300);
-      }
-
-      window.addEventListener("resize", resizeCanvas);
-      resizeCanvas();
-
-      const edgeThreshold = 45;
-      const cornerThreshold = 80;
-
-      window.addEventListener("pointerdown", e => {
-        if (isPeelingActive && !draggedNode) return;
-        if (e.pointerType === "mouse" && e.button !== 0) return;
-
-        // Ignore UI overlays
-        if (e.target.closest("#info-toggle") || e.target.closest("#info-panel") ||
-          e.target.closest("#print-menu") || e.target.closest("#reveal-all-btn") ||
-          e.target.closest("#print-btn") || e.target.closest(".card")) return;
-
-        const x = e.clientX;
-        const y = e.clientY;
-        const w = window.innerWidth;
-        const h = window.innerHeight;
-
-        const isNearTopLeft = x < cornerThreshold && y < cornerThreshold;
-        const isNearTopRight = x > w - cornerThreshold && y < cornerThreshold;
-        const isNearBottomLeft = x < cornerThreshold && y > h - cornerThreshold;
-        const isNearBottomRight = x > w - cornerThreshold && y > h - cornerThreshold;
-
-        if (isNearTopLeft || isNearTopRight || isNearBottomLeft || isNearBottomRight) return;
-
-        const isNearLeft = x < edgeThreshold;
-        const isNearRight = x > w - edgeThreshold;
-        const isNearTop = y < edgeThreshold;
-        const isNearBottom = y > h - edgeThreshold;
-
-        if (isNearLeft || isNearRight || isNearTop || isNearBottom) {
-          e.preventDefault();
-
-          if (!cachedPageCanvas) {
-            updatePageSnapshot().then(() => startPeelDrag(x, y));
-          } else {
-            startPeelDrag(x, y);
-          }
-        }
-      });
-
-      function startPeelDrag(startX, startY) {
-        let minD = Infinity;
-        let closest = null;
-
-        for (let i = 0; i < peelPoints.length; i++) {
-          const p = peelPoints[i];
-          const isEdge = (p.u === 0 || p.u === 1 || p.v === 0 || p.v === 1);
-          if (isEdge && !p.fixed) {
-            const d = Math.sqrt((p.x - startX) ** 2 + (p.y - startY) ** 2);
-            if (d < minD) {
-              minD = d;
-              closest = p;
-            }
-          }
-        }
-
-        if (closest) {
-          draggedNode = closest;
-          draggedNode.x = startX;
-          draggedNode.y = startY;
-
-          if (!isPeelingActive) {
-            isPeelingActive = true;
-            peelCanvas.style.display = "block";
-            document.getElementById("web-layer").style.visibility = "hidden";
-            renderPeel();
-          }
-
-          function onPointerMove(ev) {
-            if (draggedNode) {
-              draggedNode.x = ev.clientX;
-              draggedNode.y = ev.clientY;
-            }
-          }
-
-          function onPointerUp() {
-            draggedNode = null;
-            window.removeEventListener("pointermove", onPointerMove);
-            window.removeEventListener("pointerup", onPointerUp);
-          }
-
-          window.addEventListener("pointermove", onPointerMove);
-          window.addEventListener("pointerup", onPointerUp);
-        }
       }
     }
 
