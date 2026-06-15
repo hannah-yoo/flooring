@@ -183,8 +183,45 @@ html, body {
   z-index: 2;
 }
 
-#print-doormat-zone img {
+/* ── Green doormat: CSS-rendered mat matching Figma node 111:4 ──  */
+#print-doormat-mat {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 40mm;
+  height: 24mm;
+  background: #4a9e3f; /* Green doormat base from Figma */
+  border-radius: 1mm;
+  overflow: hidden;
+  position: relative;
+}
+
+.doormat-text {
   display: block !important;
-  width: 50%;
-  height: auto;
+  font-family: 'HYThickRoundGothic', 'ChosunGulim', sans-serif;
+  font-size: 5.5mm;
+  font-weight: normal;
+  color: #1a3a12; /* Dark green text */
+  text-align: center;
+  letter-spacing: 0.02em;
+  margin-top: 2mm;
+  margin-bottom: auto;
+  z-index: 1;
+}
+
+.doormat-stripes {
+  display: flex !important;
+  flex-direction: column;
+  width: 100%;
+  gap: 1.2mm;
+  padding: 0 2mm 2.5mm;
+}
+
+.doormat-stripe {
+  display: block !important;
+  width: 100%;
+  height: 1.8mm;
+  background: #1a3a12; /* Dark green/black stripe */
+  border-radius: 0.3mm;
 }

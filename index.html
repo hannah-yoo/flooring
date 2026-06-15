@@ -162,9 +162,16 @@
           <img id="print-concrete-img" src="assets/image/concrete.jpg" alt="Concrete" />
         </div>
 
-        <!-- Purple zone: doormat area below floor zone -->
+        <!-- Green doormat zone: CSS-rendered doormat matching Figma node 111:4 -->
         <div id="print-doormat-zone">
-          <img id="print-doormat-img" src="" alt="Doormat" />
+          <div id="print-doormat-mat">
+            <span class="doormat-text">어서오십시오</span>
+            <div class="doormat-stripes">
+              <div class="doormat-stripe"></div>
+              <div class="doormat-stripe"></div>
+              <div class="doormat-stripe"></div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -381,18 +388,11 @@
       window.addEventListener('beforeprint', () => {
         const tiles = getVisibleTileSrcs();
         buildFloorGrid(tiles);
-        const doormatImg = document.getElementById('print-doormat-img');
-        if (doormatImg) {
-          const doormats = ['assets/image/green doormat.jpg', 'assets/image/red doormat.jpg'];
-          doormatImg.src = doormats[Math.floor(Math.random() * doormats.length)];
-        }
       });
 
       window.addEventListener('afterprint', () => {
         const gridEl = document.getElementById('print-floor-grid');
         if (gridEl) { gridEl.innerHTML = ''; gridEl.removeAttribute('style'); }
-        const doormatImg = document.getElementById('print-doormat-img');
-        if (doormatImg) { doormatImg.src = ''; }
       });
 
       function buildMiniFloorGrid(tiles) {
@@ -1235,15 +1235,7 @@
             window.buildFloorGrid(tiles);
           }
 
-          // Set doormat image
-          const doormatImg = document.getElementById('print-doormat-img');
-          if (doormatImg && !doormatImg.getAttribute('src')) {
-            const doormats = [
-              'assets/image/green doormat.jpg',
-              'assets/image/red doormat.jpg'
-            ];
-            doormatImg.src = doormats[Math.floor(Math.random() * doormats.length)];
-          }
+
 
           window.print();
         });
