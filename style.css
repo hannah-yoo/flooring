@@ -551,6 +551,15 @@ body.lang-ko .title-straight {
   margin-left: 4px; /* Visually align the title starting position with the categories */
   word-spacing: -0.3em; /* Further reduce spacing between words to 1/4 of default */
   letter-spacing: -0.08em; /* Tighten gap between letters (approx -80 in graphic design tools) */
+  
+  /* Dotted typeface mask simulation (Rotated high-density halftone dots for maximum legibility and rich texture) */
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Cpattern id='p' width='20' height='20' patternUnits='userSpaceOnUse' patternTransform='rotate(-12)'%3E%3Ccircle cx='10' cy='10' r='7.2' fill='rgba(43, 50, 28, 0.88)'/%3E%3C/pattern%3E%3Crect width='100%25' height='100%25' fill='url(%23p)'/%3E%3C/svg%3E");
+  background-size: 0.07em 0.07em; /* High density halftone pattern to ensure clean text silhouette and readability */
+  background-repeat: repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 /* Fluid Typography for Korean mode detailed info data to scale gradually */
