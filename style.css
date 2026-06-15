@@ -96,6 +96,7 @@ body {
   cursor: pointer;
   position: relative;
   transition: filter 0.15s ease;
+  container-type: inline-size;
 }
 
 /* After reveal, allow drag */
@@ -404,71 +405,128 @@ body.capturing .card-trait-mark {
 
 .overlay-title {
   font-family: 'Bitcount Single', 'Bitcount_Single:Regular', 'Bitcount_Single', var(--font-main);
-  font-size: 29px;
+  font-size: clamp(18px, 13cqw, 38px); /* Fluid size based on container queries */
   font-weight: 437;
-  line-height: 56px; /* Doubled line-height from 28px */
+  line-height: 1.3;
   color: rgba(43, 50, 28, 0.68);
-  margin-bottom: 24px;
+  margin-bottom: clamp(12px, 10cqw, 24px);
   word-break: break-word;
-  font-style: italic; /* Trigger slant */
+  font-style: oblique 4deg; /* Half slant (4deg instead of 8deg/italic) */
   font-kerning: normal;
   text-rendering: optimizeLegibility;
 }
 
 .title-cursive {
-  font-variation-settings: "CRSV" 0.58, "ELSH" 0, "ELXP" 0, "slnt" -8;
-  font-feature-settings: "zero", "ss02", "ss01", "ss08", "ss03", "kern";
-  font-style: italic;
+  font-variation-settings: "CRSV" 1, "ELSH" 0, "ELXP" 0, "slnt" -4;
+  font-feature-settings: "zero" 1, "ss02" 1, "ss01" 1, "ss08" 1, "ss03" 1, "kern" 1;
+  font-style: oblique 4deg;
 }
 
 .title-straight {
-  font-variation-settings: "CRSV" 0, "ELSH" 0, "ELXP" 0, "slnt" -8;
-  font-feature-settings: "zero", "ss02", "ss01", "ss08", "ss03", "kern";
-  font-style: italic;
+  font-variation-settings: "CRSV" 0, "ELSH" 0, "ELXP" 0, "slnt" -4;
+  font-feature-settings: "zero" 1, "ss02" 1, "ss01" 1, "ss08" 1, "ss03" 1, "kern" 1;
+  font-style: oblique 4deg;
 }
 
 .overlay-data {
   display: flex;
-  gap: 19px;
+  flex-direction: column;
+  gap: clamp(4px, 2.5cqw, 8px); /* vertical space between rows */
   font-family: 'Bitcount Single', 'Bitcount_Single:Regular', 'Bitcount_Single', var(--font-main);
-  font-size: 11px;
+  font-size: clamp(10px, 7cqw, 18px); /* Fluid size based on container queries */
   font-weight: 437;
-  line-height: 1.4;
+  line-height: 1.5; /* Unified to 150% line-height */
   color: rgba(43, 50, 28, 0.68);
   word-break: break-word;
-  align-items: start;
+  align-items: stretch;
   font-kerning: normal;
   text-rendering: optimizeLegibility;
 }
 
-.overlay-labels {
-  flex-shrink: 0;
+.overlay-row {
+  display: grid;
+  --col-gap: clamp(12px, 8cqw, 24px);
+  grid-template-columns: calc(36.8cqw - 12px - (var(--col-gap) / 2)) 1fr; /* Exact alignment with background dotted line at 36.8% width */
+  column-gap: var(--col-gap);
+  align-items: baseline;
+  line-height: 1.5; /* Unified to 150% line-height */
+}
+
+.overlay-label {
+  display: block;
+  width: 100%;
+  text-align: right; /* Category names right-aligned against the center dotted dividing line */
   white-space: nowrap;
   font-variation-settings: "CRSV" 0.58, "ELSH" 0, "ELXP" 0;
-  font-feature-settings: "ss01", "ss02", "ss03", "kern";
+  font-feature-settings: "ss01" 1, "ss02" 1, "ss03" 1, "kern" 1;
+  line-height: 1.5;
 }
 
-.overlay-values {
-  flex-grow: 1;
+.overlay-value {
+  display: block;
+  width: 100%;
+  text-align: left; /* Values left-aligned starting from the center dotted dividing line */
   font-variation-settings: "CRSV" 0.58, "ELSH" 0, "ELXP" 0;
-  font-feature-settings: "ss01", "ss02", "ss03", "kern";
-}
-
-.overlay-labels p, .overlay-values p {
-  margin: 0;
-  margin-bottom: 0px;
+  font-feature-settings: "ss01" 1, "ss02" 1, "ss03" 1, "kern" 1;
+  line-height: 1.5;
 }
 
 /* ── Korean Mode Font Overrides ────────────────────────── */
+/* Set global regular Korean font to ChosunGulim, explicitly targeting ID container components */
+body.lang-ko,
+body.lang-ko #info-panel,
+body.lang-ko #export-tag,
 body.lang-ko .card-overlay,
 body.lang-ko .overlay-data,
-body.lang-ko .overlay-labels,
-body.lang-ko .overlay-values {
+body.lang-ko .overlay-row,
+body.lang-ko .overlay-label,
+body.lang-ko .overlay-value,
+body.lang-ko #loading,
+body.lang-ko #error {
   font-family: 'ChosunGulim', 'GulimWeb', 'Gulim', '굴림', sans-serif;
   font-variation-settings: normal;
   font-feature-settings: normal;
-  word-break: keep-all; /* Keep Korean words together */
+  word-break: break-all; /* Prevent clipping by allowing character-level wrapping */
   overflow-wrap: break-word;
+  line-height: 1.5; /* Unified to 150% line-height */
+}
+
+/* Set global bold/headers Korean font to HYThickRoundGothic, explicitly overriding ID sub-elements */
+body.lang-ko strong,
+body.lang-ko b,
+body.lang-ko h1,
+body.lang-ko h2,
+body.lang-ko h3,
+body.lang-ko h4,
+body.lang-ko h5,
+body.lang-ko h6,
+body.lang-ko th,
+body.lang-ko .tag-title,
+body.lang-ko .tag-id,
+body.lang-ko .popup-lang-btn,
+body.lang-ko .bold-text,
+body.lang-ko #info-panel .tag-title,
+body.lang-ko #info-panel .tag-id,
+body.lang-ko #info-panel strong,
+body.lang-ko #info-panel b,
+body.lang-ko #export-tag .tag-title,
+body.lang-ko #export-tag .tag-id,
+body.lang-ko #export-tag strong,
+body.lang-ko #export-tag b {
+  font-family: 'HYThickRoundGothic', 'ChosunGulim', 'GulimWeb', 'Gulim', '굴림', sans-serif;
+  font-weight: normal; /* Naturally thick/bold and doesn't need synthetic bolding */
+}
+
+body.lang-ko .overlay-label {
+  display: block;
+  width: 100%;
+  text-align: right; /* Ensure labels hug the center dotted dividing line on the left side */
+}
+
+body.lang-ko .overlay-value {
+  display: block;
+  width: 100%;
+  text-align: left; /* Ensure values align from the center dotted dividing line on the right side */
 }
 
 /* Korean Title Override: HY Thick Round Gothic with 60% line height */
@@ -480,13 +538,18 @@ body.lang-ko .title-straight {
   font-feature-settings: normal;
   word-break: keep-all;
   overflow-wrap: break-word;
-  line-height: 34px; /* ~60% of 56px */
+  font-size: clamp(25px, 18cqw, 52px); /* Responsive sizing with card container query */
+  line-height: 1.1; /* ~60% of normal line-height relative to font-size */
+  font-style: normal; /* Disable default oblique skew to avoid double slanting */
+  display: block;
+  transform: skewX(-4deg); /* Exact 4 degree slant for Korean font */
+  transform-origin: left center;
 }
 
 /* Fluid Typography for Korean mode detailed info data to scale gradually */
 body.lang-ko .overlay-data {
-  font-size: clamp(11px, 1.1vw + 5px, 20px);
-  gap: clamp(19px, 0.6vw + 12px, 24px);
+  font-size: clamp(12px, 8cqw, 24px); /* Expanded scale for full screen readability */
+  gap: clamp(4px, 3cqw, 10px);
 }
 
 /* ── No footer ───────────────────────────────────────── */

@@ -3,12 +3,12 @@
   Based on learning from Hongik University Socio-cultural Design Studio, spring semester 2026
   Extended with: Airtable API fetch, masonry grid, hover overlay, pointer drag-to-swap
 -->
-<html lang="en">
+<html lang="ko">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Faux Flooring and Names</title>
+  <title>인조 장판과 이름들</title>
   <meta name="description"
     content="An archive of fake wood-grain flooring units collected from Korean residential and commercial product lines." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -130,32 +130,30 @@
     <div id="info-panel">
       <button id="info-close" aria-label="Close panel" style="color:#fff;">&times;</button>
       <div class="tag-header">
-        <span class="tag-title" id="info-about-title">ABOUT ARCHIVE</span>
+        <span class="tag-title" id="info-about-title">소개</span>
       </div>
       <div class="tag-body">
         <div class="tag-row" id="info-about-lang">
           <strong>Language / 언어</strong>
           <div style="margin-top: 4px;">
-            <button id="lang-toggle" class="popup-lang-btn" aria-label="Toggle Language">EN</button>
+            <button id="lang-toggle" class="popup-lang-btn" aria-label="Toggle Language">한</button>
           </div>
         </div>
         <div class="tag-row">
-          <p id="info-about-desc">This archive explores the aesthetic gap between the luxury names given to commercial
-            flooring and their
-            synthetic reality.</p>
+          <p id="info-about-desc">이 아카이브는 일상적인 장판에 부여된 고급스러운 이름과 밍숭맹숭하고 비슷비슷한 실체 사이의 간극을 수집합니다.</p>
         </div>
         <div class="tag-row" id="info-about-credits">
-          <strong>Credits</strong>
+          <strong>크레딧</strong>
           <span>
-            Flooring Data: <a href="https://www.lxhausys.com" target="_blank">LX Hausys</a>, <a
+            장판 데이터: <a href="https://www.lxhausys.com" target="_blank">LX 하우시스</a>, <a
               href="https://www.kcc.co.kr" target="_blank">KCC</a>, <a href="https://www.hyundailnc.com"
-              target="_blank">Hyundai L&amp;C</a>.<br>
-            Images: <a href="https://commons.wikimedia.org/" target="_blank">Wikimedia Commons</a>
+              target="_blank">현대 L&amp;C</a>.<br>
+            이미지: <a href="https://commons.wikimedia.org/" target="_blank">위키미디어 커먼즈</a>
           </span>
         </div>
         <div class="tag-row" id="info-about-usage">
-          <strong>Usage</strong>
-          <span>Click tiles to reveal. Drag to reorder.</span>
+          <strong>사용법</strong>
+          <span>타일을 클릭해 열어보세요. 드래그해서 순서를 바꾸고, 원하는 대로 배치할 수 있습니다.</span>
         </div>
       </div>
     </div>
@@ -416,7 +414,7 @@
       brand: "제조사 brand",
     };
 
-    let activeLang = 'en'; // default: EN
+    let activeLang = 'ko'; // default: KO
 
     const TRANSLATIONS = {
       en: {
@@ -633,19 +631,25 @@
       return `
         <div class="overlay-title">${formattedTitle}</div>
         <div class="overlay-data">
-          <div class="overlay-labels">
-            <p>${t.brand}</p>
-            <p>${t.series}</p>
-            <p>${t.thickness}</p>
-            <p>${t.softness}</p>
-            <p>${t.purpose}</p>
+          <div class="overlay-row">
+            <span class="overlay-label">${t.brand}</span>
+            <span class="overlay-value">${brand}</span>
           </div>
-          <div class="overlay-values">
-            <p>${brand}</p>
-            <p>${series}</p>
-            <p>${thickness}</p>
-            <p>${softness}</p>
-            <p>${purpose}</p>
+          <div class="overlay-row">
+            <span class="overlay-label">${t.series}</span>
+            <span class="overlay-value">${series}</span>
+          </div>
+          <div class="overlay-row">
+            <span class="overlay-label">${t.thickness}</span>
+            <span class="overlay-value">${thickness}</span>
+          </div>
+          <div class="overlay-row">
+            <span class="overlay-label">${t.softness}</span>
+            <span class="overlay-value">${softness}</span>
+          </div>
+          <div class="overlay-row">
+            <span class="overlay-label">${t.purpose}</span>
+            <span class="overlay-value">${purpose}</span>
           </div>
         </div>
       `;
@@ -1045,7 +1049,10 @@
       const loading = document.getElementById("loading");
 
       // Default body class
-      document.body.classList.add("lang-en");
+      document.body.classList.add("lang-ko");
+
+      // Set initial Info Panel text
+      updateInfoPanelText();
 
       // Info Panel logic
       const infoBtn = document.getElementById("info-toggle");
