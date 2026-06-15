@@ -33,7 +33,6 @@
 .works,
 #grid,
 body > section,
-#print-page-back,
 #print-concrete-zone {
   display: none !important;
 }
@@ -70,10 +69,7 @@ html, body {
   page-break-after: avoid;
   break-after: avoid;
 }
-
-#print-page-back {
-  display: none !important;
-}
+/* #print-page-back is enabled as Page 2 */
 
 /* ── Full-page SVG: vertical + horizontal + diagonal lines ───── */
 /* SVG vector strokes are guaranteed to print (unlike CSS         */
@@ -188,4 +184,98 @@ html, body {
   display: block !important;
   width: 50%;
   height: auto;
+}
+
+/* ── Page 2: Back Side (Yellow Flooring, Spotlight, Shadows) ── */
+#print-page-back {
+  background: #fff !important;
+  display: block !important;
+}
+
+/* Window shadow (top-left) */
+#print-page-back .print-window {
+  position: absolute;
+  left: 20.5mm;
+  top: 15.9mm;
+  display: flex;
+  gap: 0;
+  z-index: 3;
+}
+#print-page-back .print-window-pane {
+  position: relative;
+  width: 33.2mm;
+  height: 49mm;
+  background: rgba(255, 255, 255, 0.2);
+  border: 0.8mm solid rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 2mm 3mm rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: blur(0.5px);
+}
+#print-page-back .print-window-inner {
+  width: 25mm;
+  height: 42.7mm;
+  border: 0.8mm solid rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 2mm 3mm rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+/* Door shadow (top-right) */
+#print-page-back .print-door {
+  position: absolute;
+  left: 154.8mm;
+  top: 54.7mm;
+  width: 42.7mm;
+  height: 94.9mm;
+  background: rgba(255, 255, 255, 0.2);
+  border: 0.8mm solid rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 2mm 3mm rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  z-index: 5;
+  filter: blur(0.5px);
+}
+#print-page-back .print-door-inner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4.2mm;
+  height: 94.9mm;
+  border-right: 0.8mm solid rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+}
+
+/* Yellow flooring (bottom half) */
+#print-yellow-flooring-zone {
+  position: absolute;
+  left: 0;
+  top: 142mm;
+  width: 210mm;
+  height: 155mm;
+  overflow: hidden;
+  z-index: 1;
+}
+#print-yellow-flooring-img {
+  display: block !important;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Spotlight overlay */
+#print-spotlight-zone {
+  position: absolute;
+  left: -5mm;
+  top: 152mm;
+  width: 220mm;
+  height: 151mm;
+  overflow: hidden;
+  z-index: 2;
+  pointer-events: none;
+}
+#print-spotlight-img {
+  display: block !important;
+  width: 100%;
+  height: 100%;
 }
