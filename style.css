@@ -389,7 +389,7 @@ body.capturing .card-trait-mark {
   background: url('assets/image/back_long.webp') repeat-y center top;
   background-size: 100% auto;
   color: rgba(43, 50, 28, 0.68);
-  padding: 24px 12px;
+  padding: 24px 5.5cqw;
   opacity: 0;
   transition: opacity 0.2s ease;
   display: flex;
@@ -432,7 +432,7 @@ body.capturing .card-trait-mark {
   display: flex;
   flex-direction: column;
   --col-gap: 12px; /* Fixed gap to match the 12px outer padding */
-  --col-1-width: calc(36.8cqw - 18px); /* Exact alignment: 36.8% of card width minus 12px outer padding and 6px half-gap */
+  --col-1-width: calc(31.3cqw - 6px); /* Exact alignment: 36.8% of card width minus 5.5cqw left padding and 6px half-gap */
   gap: clamp(4px, 2.5cqw, 8px); /* vertical space between rows */
   font-family: 'Bitcount Single', 'Bitcount_Single:Regular', 'Bitcount_Single', var(--font-main);
   font-size: clamp(10px, 7cqw, 18px); /* Fluid size based on container queries */
@@ -530,6 +530,11 @@ body.lang-ko .overlay-value {
   text-align: left; /* Ensure values are left-aligned */
 }
 
+body.lang-ko .overlay-row {
+  grid-template-columns: 3em 1fr; /* Set left column to exactly 3-character label width (3em) */
+  column-gap: max(4px, calc(2 * (31.3cqw - var(--visual-shift)) - 5.73em)); /* Symmetrical margin calculation around dotted line */
+}
+
 /* Korean Title Override: HY Thick Round Gothic with 60% line height and characters slanted */
 body.lang-ko .overlay-title,
 body.lang-ko .title-cursive,
@@ -539,20 +544,22 @@ body.lang-ko .title-straight {
   font-feature-settings: normal;
   word-break: keep-all;
   overflow-wrap: break-word;
-  font-size: clamp(25px, 18cqw, 52px); /* Responsive sizing with card container query */
+  font-size: clamp(28px, 20cqw, 57px); /* Responsive sizing with card container query (approx 10% larger) */
   line-height: 1.1; /* ~60% of normal line-height relative to font-size */
   font-style: italic; /* Use standard italic to ensure synthetic slant works in all browsers */
   display: block;
   margin-left: 4px; /* Visually align the title starting position with the categories */
+  word-spacing: -0.3em; /* Further reduce spacing between words to 1/4 of default */
+  letter-spacing: -0.08em; /* Tighten gap between letters (approx -80 in graphic design tools) */
 }
 
 /* Fluid Typography for Korean mode detailed info data to scale gradually */
 body.lang-ko .overlay-data {
-  --visual-shift: 8px; /* Shift categories to the right to visually align with slanted title */
+  --visual-shift: 3.7cqw; /* Shift categories to the right to visually align with slanted title */
   margin-left: var(--visual-shift);
-  --col-1-width: calc(36.8cqw - 12px - var(--visual-shift) - (var(--col-gap) / 2)); /* Adjust Column 1 width to maintain dotted line alignment */
-  font-size: clamp(11px, calc(var(--col-1-width) * 0.32), 24px); /* Increased multiplier to 0.32 to fill the column space more tightly */
+  font-size: clamp(8px, 8.6cqw, 24px); /* Optimized container query scale to fill Column 1 with 3-character labels */
   gap: clamp(4px, 3cqw, 10px);
+  word-spacing: -0.08em; /* Reduce spacing between words to 70% of default */
 }
 
 /* ── No footer ───────────────────────────────────────── */
