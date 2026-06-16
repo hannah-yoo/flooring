@@ -201,6 +201,9 @@
           <div id="print-floor-grid"></div>
         </div>
 
+        <!-- Receipt stub for printed flooring selection -->
+        <div id="print-receipt" class="print-receipt" aria-hidden="true"></div>
+
         <!-- 3D shadow overlays at the bottom of the wood tiling -->
         <div class="print-floor-shadow-overlay-1"></div>
         <div class="print-floor-shadow-overlay-2"></div>
@@ -469,14 +472,84 @@
       }
 
 
+      function parseWon(value) {
+        if (value == null) return null;
+        const cleaned = value.toString().replace(/[^0-9]/g, '');
+        return cleaned ? parseInt(cleaned, 10) : null;
+      }
+
+      function formatWon(value) {
+        if (value == null || isNaN(value)) return '0원';
+        return value.toLocaleString('ko-KR') + '원';
+      }
+
+      function getVisibleTileRecords() {
+        const grid = document.getElementById('grid');
+        if (!grid) return [];
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        let cards = Array.from(grid.querySelectorAll('.card'))
+          .filter(card => {
+            const r = card.getBoundingClientRect();
+            return r.top < vh && r.bottom > 0 && r.left < vw && r.right > 0;
+          });
+        if (cards.length < 4) cards = Array.from(grid.querySelectorAll('.card'));
+        return cards.map(card => card.record).filter(Boolean);
+      }
+
+      function buildReceipt() {
+        const receiptEl = document.getElementById('print-receipt');
+        if (!receiptEl) return;
+
+        const records = getVisibleTileRecords();
+        if (records.length === 0) {
+          receiptEl.innerHTML = '<div class="receipt-empty">선택된 장판이 없습니다.</div>';
+          return;
+        }
+
+        const groups = new Map();
+        records.forEach(record => {
+          const rawSeries = record.fields[FIELDS.series] || record.fields['장판 시리즈 series'] || '알 수 없음';
+          const seriesName = TRANSLATIONS.ko.series[rawSeries] || rawSeries;
+          const pricePerPyeong = parseWon(record.fields[FIELDS.price] || record.fields['평당 가격']);
+          const unit3p = pricePerPyeong != null ? pricePerPyeong * 3 : 0;
+          if (!groups.has(seriesName)) {
+            groups.set(seriesName, { count: 0, prices: [] });
+          }
+          const group = groups.get(seriesName);
+          group.count += 1;
+          if (unit3p > 0) {
+            group.prices.push(unit3p);
+          }
+        });
+
+        let subtotal = 0;
+        let linesHtml = '';
+        groups.forEach((group, seriesName) => {
+          const unit3p = group.prices.length > 0 ? Math.round(group.prices.reduce((a, b) => a + b, 0) / group.prices.length) : 0;
+          const lineTotal = unit3p * group.count;
+          subtotal += lineTotal;
+          linesHtml += `\n            <div class="receipt-item">\n              <span class="item-series">${seriesName}</span>\n              <span class="item-details">${group.count}개 ${formatWon(unit3p)}</span>\n              <span class="item-total">${formatWon(lineTotal)}</span>\n            </div>`;
+        });
+
+        const LABOR = 150000;
+        const total = subtotal + LABOR;
+        const date = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
+
+        receiptEl.innerHTML = `\n          <div class="receipt-brand">견적서</div>\n          <div class="receipt-meta">\n            <span>${date}</span>\n            <span>인쇄용 영수증</span>\n          </div>\n          <div class="receipt-lines">${linesHtml}</div>\n          <div class="receipt-summary">\n            <div class="summary-row"><span>노임비</span><span>${formatWon(LABOR)} (3평 고정)</span></div>\n            <div class="summary-row receipt-total"><span>총 합계</span><span>${formatWon(total)}</span></div>\n          </div>\n          <div class="receipt-note">* 3평 단위 가격이며, 실제 시공 면적에 따라 변동될 수 있습니다.</div>`;
+      }
+
       window.addEventListener('beforeprint', () => {
         const tiles = getVisibleTileSrcs();
         buildFloorGrid(tiles);
+        buildReceipt();
       });
 
       window.addEventListener('afterprint', () => {
         const gridEl = document.getElementById('print-floor-grid');
         if (gridEl) { gridEl.innerHTML = ''; gridEl.removeAttribute('style'); }
+        const receiptEl = document.getElementById('print-receipt');
+        if (receiptEl) receiptEl.innerHTML = '';
       });
 
       function buildMiniFloorGrid(tiles) {
@@ -567,9 +640,9 @@
       }
 
       window.getVisibleTileSrcs = getVisibleTileSrcs;
-      window.buildFloorGrid = buildFloorGrid;
-      window.buildMiniFloorGrid = buildMiniFloorGrid;
-
+        window.buildFloorGrid = buildFloorGrid;
+        window.buildReceipt = buildReceipt;
+        window.buildMiniFloorGrid = buildMiniFloorGrid;
     })();
   </script>
 
@@ -590,6 +663,7 @@
       purpose: "제작 목적 purpose",
       series: "장판 시리즈 series",
       brand: "제조사 brand",
+      price: "평당 가격",
     };
 
     let activeLang = 'ko'; // default: KO
