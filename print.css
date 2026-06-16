@@ -32,13 +32,14 @@
 .card-trait-mark,
 .works,
 #grid,
-body > section,
+body>section,
 #print-concrete-zone {
   display: none !important;
 }
 
 /* ── Print canvas root ───────────────────────────────────────── */
-html, body {
+html,
+body {
   background: #fff !important;
   color: #000 !important;
   margin: 0 !important;
@@ -70,6 +71,7 @@ html, body {
   page-break-after: avoid;
   break-after: avoid;
 }
+
 /* #print-page-back is enabled as Page 2 */
 
 /* ── Full-page SVG: vertical + horizontal + diagonal lines ───── */
@@ -83,7 +85,8 @@ html, body {
   width: 210mm;
   height: 297mm;
   pointer-events: none;
-  z-index: 10; /* Guaranteed to print over any background images */
+  z-index: 10;
+  /* Guaranteed to print over any background images */
 }
 
 /* ── Concrete zone: fills the bottom-right quadrant (yellow area) ───── */
@@ -95,7 +98,8 @@ html, body {
   left: 105mm;
   top: 148.5mm;
   width: 105mm;
-  height: 148.5mm; /* fills the remaining height: 297mm - 148.5mm */
+  height: 148.5mm;
+  /* fills the remaining height: 297mm - 148.5mm */
   overflow: hidden;
   z-index: 1;
 }
@@ -105,7 +109,8 @@ html, body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: saturate(0.8); /* higher saturation */
+  filter: saturate(0.8);
+  /* higher saturation */
 }
 
 /* ── Back page concrete grid: fills the entire back page in a 2x2 grid ── */
@@ -126,34 +131,44 @@ html, body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: saturate(0.8); /* higher saturation matching the front */
-  opacity: 0.8; /* lower the opacity to 80% */
+  filter: saturate(0.8);
+  /* higher saturation matching the front */
+  opacity: 0.8;
+  /* lower the opacity to 80% */
 }
 
 /* Mirror adjacent images in the 2x2 grid to make them connect seamlessly */
 #print-back-concrete-grid img:nth-child(2) {
   transform: scaleX(-1);
 }
+
 #print-back-concrete-grid img:nth-child(3) {
   transform: scaleY(-1);
 }
+
 #print-back-concrete-grid img:nth-child(4) {
   transform: scale(-1, -1);
 }
 
 /* ── Floor zone: square, starts at the horizontal divider ─────  */
 /*    x: 0–105mm  (left half)                                     */
-/*    y: 148.5mm–253.5mm  (105mm tall = square)                       */
+/* ── Floor zone: fills the entire left-bottom section ───────────────  */
+/*    x: 0–105mm  (left half)                                     */
+/*    y: 148.5mm–297mm  (148.5mm tall, full height to page bottom) */
 #print-floor-zone {
   display: block !important;
   position: absolute;
   left: 0;
   top: 148.5mm;
   width: 105mm;
-  height: 105mm;
+  height: 148.5mm;
   overflow: hidden;
-  background: #f0ece6; /* warm fallback if images haven't loaded */
+  background: #f0ece6;
+  /* warm fallback if images haven't loaded */
   z-index: 2;
+  /* Ensure background-images on child divs are printed in Chrome */
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
 }
 
 /* Floor grid: JS sets position:relative and builds columns.      */
@@ -180,6 +195,7 @@ html, body {
   z-index: 5;
   filter: blur(0.5px);
 }
+
 .print-door-inner {
   position: absolute;
   left: 0;
@@ -198,6 +214,7 @@ html, body {
   gap: 0;
   z-index: 3;
 }
+
 .print-window-pane {
   position: relative;
   width: 33.2mm;
@@ -211,6 +228,7 @@ html, body {
   justify-content: center;
   filter: blur(0.5px);
 }
+
 .print-window-inner {
   width: 25mm;
   height: 42.7mm;
@@ -221,18 +239,24 @@ html, body {
 
 /* Page 1 (Front Side) Door & Window positions */
 #print-page-front .print-door {
-  left: 12.3mm; /* top-left */
+  left: 12.3mm;
+  /* top-left */
 }
+
 #print-page-front .print-window {
-  left: 123.1mm; /* top-right */
+  left: 123.1mm;
+  /* top-right */
 }
 
 /* Page 2 (Back Side) Door & Window positions */
 #print-page-back .print-door {
-  left: 154.8mm; /* top-right */
+  left: 154.8mm;
+  /* top-right */
 }
+
 #print-page-back .print-window {
-  left: 20.5mm; /* top-left */
+  left: 20.5mm;
+  /* top-left */
 }
 
 /* ── Page 2 specific background & spotlight ──────────────────── */
@@ -251,6 +275,7 @@ html, body {
   overflow: hidden;
   z-index: 1;
 }
+
 #print-yellow-flooring-img {
   display: block !important;
   width: 100%;
@@ -269,6 +294,7 @@ html, body {
   z-index: 2;
   pointer-events: none;
 }
+
 #print-spotlight-img {
   display: block !important;
   width: 100%;
@@ -318,30 +344,38 @@ html, body {
   print-color-adjust: exact;
   -webkit-print-color-adjust: exact;
 }
+
 .instruction-item {
   position: absolute;
-  font-size: 8.5pt; /* ~10px */
+  font-size: 8.5pt;
+  /* ~10px */
   line-height: 1.35;
   transform: translateY(-50%);
 }
+
 .instruction-item.tip {
-  font-size: 7.5pt; /* ~9px */
+  font-size: 7.5pt;
+  /* ~9px */
   color: #444;
   line-height: 1.3;
 }
+
 .instruction-item .num {
   position: absolute;
   left: 0;
   font-weight: bold;
 }
+
 .instruction-item .text {
   display: block;
   padding-left: 4mm;
 }
+
 .underline-dotted {
   text-decoration: underline dotted;
   text-underline-offset: 2px;
 }
+
 .underline-solid {
   text-decoration: underline;
   text-underline-offset: 2px;
