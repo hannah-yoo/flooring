@@ -44,6 +44,7 @@ html, body {
   margin: 0 !important;
   padding: 0 !important;
   width: 210mm;
+  font-family: 'ChosunGulim', 'GulimWeb', 'Gulim', '굴림', sans-serif !important;
 }
 
 /* ── The A4 print layout container ──────────────────────────── */
@@ -283,8 +284,39 @@ html, body {
   height: 297mm;
   pointer-events: none;
   z-index: 8;
-  font-family: 'Pretendard', sans-serif;
+  font-family: 'ChosunGulim', 'GulimWeb', 'Gulim', '굴림', sans-serif;
   color: #000;
+}
+
+/* ── Page 1: 3D Flooring Overlays ────────────────────────────── */
+.print-floor-shadow-overlay-1 {
+  position: absolute;
+  left: 0;
+  top: 251.5mm;
+  width: 105mm;
+  height: 45.5mm;
+  background: #fff !important;
+  filter: blur(2px);
+  box-shadow: inset 0 4px 4px rgba(0, 0, 0, 0.5), inset -4px 0 4px rgba(0, 0, 0, 0.5);
+  mix-blend-mode: color-burn !important;
+  z-index: 6;
+  pointer-events: none;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.print-floor-shadow-overlay-2 {
+  position: absolute;
+  left: 0;
+  top: 252.9mm;
+  width: 105mm;
+  height: 46.5mm;
+  background: #fff !important;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5), inset -2px 0 4px rgba(0, 0, 0, 0.5);
+  z-index: 7;
+  pointer-events: none;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
 }
 .instruction-item {
   position: absolute;

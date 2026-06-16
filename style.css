@@ -1019,24 +1019,7 @@ body.lang-ko .overlay-data {
   object-fit: cover;
 }
 
-.mini-doormat-zone {
-  position: absolute;
-  left: 0;
-  top: 85.3535%;
-  width: 50%;
-  height: 14.6465%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  z-index: 2;
-}
 
-.mini-doormat-zone img {
-  display: block;
-  width: 50%;
-  height: auto;
-}
 
 .mini-tag-footer {
   background: #2a2a2d;
@@ -1057,7 +1040,6 @@ body.lang-ko .overlay-data {
 #print-concrete-zone,
 #print-floor-zone,
 #print-floor-grid,
-#print-doormat-zone,
 #print-back-concrete-grid {
   display: none !important;
 }
