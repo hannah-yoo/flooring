@@ -187,62 +187,89 @@ body {
   position: absolute;
   left: 110.8mm;
   top: 202.0mm;
-  width: 42mm;
-  min-height: 52mm;
-  padding: 2.4mm 2mm 2mm;
-  background: linear-gradient(180deg, #f9f9f5 0%, #fcfcfb 100%);
-  border: none;
-  box-shadow: 0.8mm 1mm 1.8mm rgba(0, 0, 0, 0.12);
+  width: 32mm;
   transform: none;
   z-index: 16;
-  border-radius: 1.4mm;
   font-family: 'ChosunGulim', 'GulimWeb', 'Gulim', sans-serif;
   font-size: 5pt;
   line-height: 1.2;
   color: #0a0a0a;
-  print-color-adjust: exact;
-  -webkit-print-color-adjust: exact;
 }
 
-#print-receipt::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 3.2mm;
-  background: linear-gradient(180deg, rgba(0,0,0,0.06), transparent);
-}
-
+/* Page curl shadows for realistic 3D appearance */
+#print-receipt::before,
 #print-receipt::after {
   content: '';
   position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
+  bottom: 0.2mm;
+  width: 44%;
   height: 4mm;
-  background: linear-gradient(180deg, transparent, rgba(0,0,0,0.06));
+  background: transparent;
+  z-index: 1;
+}
+
+#print-receipt::before {
+  left: 1.2mm;
+  transform: rotate(-5.5deg);
+  box-shadow: -1.2mm 2.4mm 3.2mm rgba(0, 0, 0, 0.28);
+}
+
+#print-receipt::after {
+  right: 1.2mm;
+  transform: rotate(5.5deg);
+  box-shadow: 1.2mm 2.4mm 3.2mm rgba(0, 0, 0, 0.28);
+}
+
+#print-receipt .receipt-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  min-height: 22mm;
+  padding: 2mm 1.8mm 2mm;
+  box-sizing: border-box;
+  
+  /* Curled paper background gradient simulating light angle (top curls under, bottom curls up) */
+  background: linear-gradient(
+    to bottom,
+    #e2e2da 0%,
+    #f7f7f5 3%,
+    #ffffff 8%,
+    #fbfbfa 50%,
+    #f0f0e8 80%,
+    #dcdcd3 92%,
+    #c9c9be 97%,
+    #ffffff 100%
+  );
+  border: 0.15mm solid #dfdfd6;
+  border-bottom: 0.08mm solid #dcdcd2;
+  border-radius: 1.4mm;
+  
+  /* Main contact shadow */
+  box-shadow: 0 0.4mm 1.2mm rgba(0, 0, 0, 0.08);
+  
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
 }
 
 #print-receipt .receipt-brand {
   display: block;
   font-size: 6.4pt;
   font-weight: 700;
-  margin-bottom: 1.2mm;
+  margin-bottom: 0.8mm;
 }
 
 #print-receipt .receipt-meta {
   display: flex;
   justify-content: space-between;
-  font-size: 4.2pt;
+  font-size: 4pt;
   color: #555;
-  margin-bottom: 2mm;
+  margin-bottom: 1.2mm;
 }
 
 #print-receipt .receipt-lines {
   display: grid;
   gap: 0.8mm;
-  margin-bottom: 2mm;
+  margin-bottom: 1.2mm;
 }
 
 #print-receipt .receipt-item {
@@ -255,7 +282,7 @@ body {
 
 #print-receipt .item-series {
   font-weight: 700;
-  min-width: 14mm;
+  min-width: 10mm;
   flex-shrink: 0;
   font-size: 5.2pt;
 }
@@ -263,21 +290,22 @@ body {
 #print-receipt .item-details {
   display: inline;
   font-size: 4.6pt;
-  margin: 0 0.3mm;
+  margin-left: auto;
+  margin-right: 0.5mm;
+  color: #555;
 }
 
 #print-receipt .item-total {
   text-align: right;
   font-size: 5.4pt;
   font-weight: 700;
-  margin-left: auto;
 }
 
 #print-receipt .receipt-summary {
   display: grid;
   gap: 0.6mm;
   border-top: 0.15mm dashed rgba(0,0,0,0.2);
-  padding-top: 1.6mm;
+  padding-top: 1mm;
 }
 
 #print-receipt .summary-row {
@@ -294,7 +322,7 @@ body {
 }
 
 #print-receipt .receipt-note {
-  margin-top: 1.6mm;
+  margin-top: 1.2mm;
   font-size: 4pt;
   color: #555;
   line-height: 1.18;
@@ -440,13 +468,10 @@ body {
 .print-floor-shadow-overlay-1 {
   position: absolute;
   left: 0;
-  top: 251.5mm;
+  top: 253.5mm;
   width: 105mm;
-  height: 45.5mm;
-  background: #fff !important;
-  filter: blur(2px);
-  box-shadow: inset 0 4px 4px rgba(0, 0, 0, 0.5), inset -4px 0 4px rgba(0, 0, 0, 0.5);
-  mix-blend-mode: color-burn !important;
+  height: 43.5mm;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0%, #fff 6mm, #fff 100%) !important;
   z-index: 6;
   pointer-events: none;
   print-color-adjust: exact;
@@ -454,17 +479,7 @@ body {
 }
 
 .print-floor-shadow-overlay-2 {
-  position: absolute;
-  left: 0;
-  top: 252.9mm;
-  width: 105mm;
-  height: 46.5mm;
-  background: #fff !important;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5), inset -2px 0 4px rgba(0, 0, 0, 0.5);
-  z-index: 7;
-  pointer-events: none;
-  print-color-adjust: exact;
-  -webkit-print-color-adjust: exact;
+  display: none !important;
 }
 
 .instruction-item {

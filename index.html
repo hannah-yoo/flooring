@@ -479,7 +479,7 @@
 
         const records = getVisibleTileRecords();
         if (records.length === 0) {
-          receiptEl.innerHTML = '<div class="receipt-empty">선택된 장판이 없습니다.</div>';
+          receiptEl.innerHTML = '<div class="receipt-content"><div class="receipt-empty">선택된 장판이 없습니다.</div></div>';
           return;
         }
 
@@ -505,25 +505,26 @@
           const unit3p = group.prices.length > 0 ? Math.round(group.prices.reduce((a, b) => a + b, 0) / group.prices.length) : 0;
           const lineTotal = unit3p * group.count;
           subtotal += lineTotal;
-          linesHtml += `\n            <div class="receipt-item">\n              <span class="item-series">${seriesName}</span>\n              <span class="item-details">${group.count}종 ${formatWon(unit3p)}</span>\n              <span class="item-total">${formatWon(lineTotal)}</span>\n            </div>`;
+          linesHtml += `\n            <div class="receipt-item">\n              <span class="item-series">${seriesName}</span>\n              <span class="item-details">3평×${group.count}종류</span>\n              <span class="item-total">${formatWon(lineTotal)}</span>\n            </div>`;
         });
 
         const LABOR = 150000;
         const total = subtotal + LABOR;
-        const date = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        const date = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
 
         receiptEl.innerHTML = `
-          <div class="receipt-brand">영수증</div>
-          <div class="receipt-meta">
-            <span>${date}</span>
-            <span>3평당 ${records.length}종류 시공</span>
-          </div>
-          <div class="receipt-lines">${linesHtml}</div>
-          <div class="receipt-summary">
-            <div class="summary-row"><span>노임비</span><span>${formatWon(LABOR)} (3평 고정)</span></div>
-            <div class="summary-row receipt-total"><span>총 합계</span><span>${formatWon(total)}</span></div>
-          </div>
-          <div class="receipt-note">* 3평당 ${records.length}종류의 장판을 혼합 시공한 견적입니다.</div>`;
+          <div class="receipt-content">
+            <div class="receipt-brand">영수증</div>
+            <div class="receipt-meta">
+              <span>${date}</span>
+              <span>시공면적: 3평 원룸</span>
+            </div>
+            <div class="receipt-lines">${linesHtml}</div>
+            <div class="receipt-summary">
+              <div class="summary-row"><span>노임비</span><span>${formatWon(LABOR)} (3평 고정)</span></div>
+              <div class="summary-row receipt-total"><span>총 합계</span><span>${formatWon(total)}</span></div>
+            </div>
+          </div>`;
       }
 
       window.addEventListener('beforeprint', () => {
