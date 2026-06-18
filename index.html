@@ -138,8 +138,8 @@
           <!-- Vertical dashed line at top half (x=105, y=0 to y=148.5) -->
           <line x1="105" y1="0" x2="105" y2="148.5" stroke="#000" stroke-width="0.5" stroke-dasharray="10 8"
             vector-effect="non-scaling-stroke" />
-          <!-- Vertical solid line at bottom half (x=105, y=148.5 to y=297) -->
-          <line x1="105" y1="148.5" x2="105" y2="297" stroke="#000" stroke-width="0.5"
+          <!-- Vertical dashed line at bottom half (x=105, y=148.5 to y=297) -->
+          <line x1="105" y1="148.5" x2="105" y2="297" stroke="#000" stroke-width="0.5" stroke-dasharray="10 8"
             vector-effect="non-scaling-stroke" />
           <!-- Horizontal dashed line at y=148.5 (x=0 to x=210) -->
           <line x1="0" y1="148.5" x2="210" y2="148.5" stroke="#000" stroke-width="0.5" stroke-dasharray="10 8"
@@ -148,37 +148,13 @@
           <line x1="105" y1="148.5" x2="210" y2="253.5" stroke="#000" stroke-width="0.5" stroke-dasharray="10 8"
             vector-effect="non-scaling-stroke" />
 
-          <!-- Thin Vector Guideline Arrows (Figma nodes 121:113 to 121:119) -->
-          <!-- Vector 1 -->
-          <g transform="translate(130.1, 163.87) scale(0.35278)">
-            <path
-              d="M14.8049 1.00026C13.9129 1.26819 11.1453 1.72479 8.44024 4.1125C6.56161 5.77075 5.66614 7.82776 4.6263 9.60824C3.67833 11.5471 2.5988 13.92 1.59837 16.1671C1.41153 16.6806 1.29552 17.1969 1.0002 18.5979"
-              stroke="#000" stroke-width="0.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" />
-          </g>
-          <!-- Vector 2 -->
-          <g transform="translate(129.61, 166.45) scale(0.35278)">
-            <path
-              d="M1 1C1 3.5283 1.45891 9.29988 2.26875 11.3207C3.1825 11.8182 5.5768 11.0521 8.90837 9.52021C10.4327 8.89322 11.6193 8.5716 13.7598 8.00977"
-              stroke="#000" stroke-width="0.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" />
-          </g>
-          <!-- Vector 3 -->
-          <g transform="translate(111.93, 170.96) scale(0.35278)">
-            <path
-              d="M1.00001 5.3564C2.1713 4.29843 5.97102 2.63218 8.21732 2.12482C11.2287 1.44466 15.3048 1.34859 19.7499 1.11029C29.2191 0.602646 31.421 1.95882 33.4677 2.91468C33.9711 3.15664 34.4461 3.40414 34.9387 3.65539C35.4312 3.90664 35.9268 4.15414 36.4375 4.40914"
-              stroke="#000" stroke-width="0.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" />
-          </g>
-          <!-- Vector 4 -->
-          <g transform="translate(121.45, 169.0) scale(0.35278)">
-            <path
-              d="M7.33986 1.00027C7.66277 1.80058 8.6574 4.24429 9.64808 6.77416C10.4688 8.8699 10.6726 10.5029 10.5094 11.3425C7.41334 11.8987 3.23068 12.1855 2.38341 12.8209C1.9422 13.1694 1.47814 13.5709 1.00002 13.9846"
-              stroke="#000" stroke-width="0.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" />
-          </g>
-          <!-- Vector 5 -->
-          <g transform="translate(134.78, 163.37) scale(0.35278)">
-            <path
-              d="M1 1.98828C1.11473 1.98828 2.149 1.98828 3.87437 1.90127C5.1202 1.64023 6.23672 1.30883 7.90847 1.07836C8.97436 1 10.4819 1 12.0352 1"
-              stroke="#000" stroke-width="0.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" />
-          </g>
+          <!-- Thin Vector Guideline Arrow (Cleaned, minimal inflection points) -->
+          <!-- Arrow Shaft (Dashed) -->
+          <path d="M 141 169 Q 133 169 131 174.5" stroke="#000" stroke-width="0.5" stroke-linecap="round"
+            stroke-dasharray="1.5 1.5" fill="none" vector-effect="non-scaling-stroke" />
+          <!-- Arrowhead (Solid) -->
+          <path d="M 131 174.5 L 134 173 M 131 174.5 L 132 170.5" stroke="#000" stroke-width="0.5"
+            stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke" />
         </svg>
 
         <!-- Door shadow on the top-left -->
@@ -215,7 +191,7 @@
 
         <!-- Folding instructions in the bottom-right quadrant -->
         <div id="print-instructions">
-          <div class="instruction-item" style="left: 118.9mm; top: 157.0mm; width: 84.0mm;">
+          <div class="instruction-item" style="left: 118.9mm; top: 154.0mm; width: 68.0mm;">
             <span class="num">1.</span>
             <span class="text"><span class="underline-dotted">점선</span>은 안쪽으로 들어가게, <span
                 class="underline-solid">실선</span>은 바깥쪽으로 튀어나오게 접습니다.</span>
@@ -223,15 +199,15 @@
           <div class="instruction-item tip" style="left: 143.2mm; top: 167.6mm; width: 59.3mm;">
             팁: 접기 안내가 적힌 이곳은 안쪽으로 접혀들어가서 보이지 않는 면적입니다.
           </div>
-          <div class="instruction-item" style="left: 110.8mm; top: 199.3mm; width: 38.8mm;">
+          <div class="instruction-item" style="left: 110.8mm; top: 189.3mm; width: 32.0mm;">
             <span class="num">2.</span>
             <span class="text">내가 선택한 장판들의 총 시공 가격을 확인합니다.</span>
           </div>
-          <div class="instruction-item" style="left: 110.8mm; top: 213.1mm; width: 49.0mm;">
+          <div class="instruction-item" style="left: 157.0mm; top: 226.0mm; width: 45.0mm;">
             <span class="num">3.</span>
-            <span class="text">비싸서 부담된다면 정반대 방향으로 접어서 예전에 살던 사람이 남기고 간 장판을 확인합니다.</span>
+            <span class="text">가격이 부담 된다면 방을 정반대 방향으로 접어서 예전에 살던 사람이 남기고 간 장판을 확인합니다.</span>
           </div>
-          <div class="instruction-item" style="left: 110.8mm; top: 224.7mm; width: 49.0mm;">
+          <div class="instruction-item" style="left: 157.0mm; top: 258.0mm; width: 45.0mm;">
             <span class="num">4.</span>
             <span class="text">이대로 살지 말지 결정해 봅니다.</span>
           </div>
@@ -529,14 +505,25 @@
           const unit3p = group.prices.length > 0 ? Math.round(group.prices.reduce((a, b) => a + b, 0) / group.prices.length) : 0;
           const lineTotal = unit3p * group.count;
           subtotal += lineTotal;
-          linesHtml += `\n            <div class="receipt-item">\n              <span class="item-series">${seriesName}</span>\n              <span class="item-details">${group.count}개 ${formatWon(unit3p)}</span>\n              <span class="item-total">${formatWon(lineTotal)}</span>\n            </div>`;
+          linesHtml += `\n            <div class="receipt-item">\n              <span class="item-series">${seriesName}</span>\n              <span class="item-details">${group.count}종 ${formatWon(unit3p)}</span>\n              <span class="item-total">${formatWon(lineTotal)}</span>\n            </div>`;
         });
 
         const LABOR = 150000;
         const total = subtotal + LABOR;
         const date = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
 
-        receiptEl.innerHTML = `\n          <div class="receipt-brand">견적서</div>\n          <div class="receipt-meta">\n            <span>${date}</span>\n            <span>인쇄용 영수증</span>\n          </div>\n          <div class="receipt-lines">${linesHtml}</div>\n          <div class="receipt-summary">\n            <div class="summary-row"><span>노임비</span><span>${formatWon(LABOR)} (3평 고정)</span></div>\n            <div class="summary-row receipt-total"><span>총 합계</span><span>${formatWon(total)}</span></div>\n          </div>\n          <div class="receipt-note">* 3평 단위 가격이며, 실제 시공 면적에 따라 변동될 수 있습니다.</div>`;
+        receiptEl.innerHTML = `
+          <div class="receipt-brand">영수증</div>
+          <div class="receipt-meta">
+            <span>${date}</span>
+            <span>3평당 ${records.length}종류 시공</span>
+          </div>
+          <div class="receipt-lines">${linesHtml}</div>
+          <div class="receipt-summary">
+            <div class="summary-row"><span>노임비</span><span>${formatWon(LABOR)} (3평 고정)</span></div>
+            <div class="summary-row receipt-total"><span>총 합계</span><span>${formatWon(total)}</span></div>
+          </div>
+          <div class="receipt-note">* 3평당 ${records.length}종류의 장판을 혼합 시공한 견적입니다.</div>`;
       }
 
       window.addEventListener('beforeprint', () => {
