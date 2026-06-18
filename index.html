@@ -275,7 +275,7 @@
         </div>
         <div class="tag-row" id="info-about-usage">
           <strong>사용법</strong>
-          <span>타일을 클릭해 열어보세요. 드래그해서 순서를 바꾸고, 원하는 대로 배치할 수 있습니다.</span>
+          <span>화면을 클릭하거나 굽칼 모양의 버튼을 눌러서 한 꺼풀씩 열어보세요. 드래그해서 순서를 바꾸고, 원하는 대로 배치한 뒤 가져갈 수 있습니다.</span>
         </div>
       </div>
     </div>
@@ -317,18 +317,18 @@
       // the upper plank renders on top, so the overlap is invisible but the
       // seam line between tiles stays visible.
       function buildFloorGrid(tiles) {
-        const zone   = document.getElementById('print-floor-zone');
+        const zone = document.getElementById('print-floor-zone');
         const gridEl = document.getElementById('print-floor-grid');
         if (!zone || !gridEl) return;
         gridEl.innerHTML = '';
         if (tiles.length === 0) return;
 
-        const NUM_COLS   = 16;
-        const ZONE_W_MM  = 105;
-        const ZONE_H_MM  = 148.5;
-        const colW_mm    = ZONE_W_MM / NUM_COLS;  // 6.5625mm per column
-        const PLANK_AR   = 7.0;                   // display height:width ratio
-        const plankH_mm  = colW_mm * PLANK_AR;    // ≈ 45.94mm per plank
+        const NUM_COLS = 16;
+        const ZONE_W_MM = 105;
+        const ZONE_H_MM = 148.5;
+        const colW_mm = ZONE_W_MM / NUM_COLS;  // 6.5625mm per column
+        const PLANK_AR = 7.0;                   // display height:width ratio
+        const plankH_mm = colW_mm * PLANK_AR;    // ≈ 45.94mm per plank
         const STAIR_STEP = 0.25;                  // stagger per column (0, 0.25, 0.5, 0.75…)
 
         // Tiny overlap between vertically adjacent planks.
@@ -401,7 +401,7 @@
 
         // ── Render: one absolutely-positioned div per plank ──────────────────
         for (let col = 0; col < NUM_COLS; col++) {
-          const staggerFrac  = (col * STAIR_STEP) % 1;
+          const staggerFrac = (col * STAIR_STEP) % 1;
           // Negative offset shifts the column's plank stack upward so column
           // starts mid-plank — creating the staircase stagger effect.
           const colOffset_mm = -staggerFrac * plankH_mm;
@@ -628,9 +628,9 @@
       }
 
       window.getVisibleTileSrcs = getVisibleTileSrcs;
-        window.buildFloorGrid = buildFloorGrid;
-        window.buildReceipt = buildReceipt;
-        window.buildMiniFloorGrid = buildMiniFloorGrid;
+      window.buildFloorGrid = buildFloorGrid;
+      window.buildReceipt = buildReceipt;
+      window.buildMiniFloorGrid = buildMiniFloorGrid;
     })();
   </script>
 
@@ -1030,7 +1030,7 @@
       const overlay = document.createElement("div");
       overlay.className = "card-overlay card-back";
       overlay.innerHTML = getOverlayHTML(record);
-      
+
       // 4. Edges for 3D card thickness
       const edgeTop = document.createElement("div");
       edgeTop.className = "card-edge card-edge-top";
@@ -1040,7 +1040,7 @@
       edgeLeft.className = "card-edge card-edge-left";
       const edgeRight = document.createElement("div");
       edgeRight.className = "card-edge card-edge-right";
-      
+
       // Assemble the 3D card structure
       imgWrap.appendChild(cardFront);
       imgWrap.appendChild(overlay);
