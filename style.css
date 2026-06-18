@@ -31,6 +31,8 @@
   --fg-muted:    rgba(240,237,232,0.45);
   --overlay-bg:  rgba(8, 8, 8, 0.55); /* Lightened for better visibility of flooring */
   --font-main:   'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+  --thick:       3.5px;
+  --half-thick:  1.75px;
 }
 
 html {
@@ -52,7 +54,7 @@ body {
 #web-layer {
   position: relative;
   min-height: 100vh;
-  background-color: var(--bg);
+  background-color: transparent;
   width: 100%;
 }
 
@@ -80,14 +82,15 @@ body {
 .card {
   break-inside: avoid;
   margin-bottom: 0;
-  background: #000;
+  background: transparent;
   border: none;
   border-radius: 0;
-  overflow: hidden;
+  overflow: visible;
   cursor: pointer;
   position: relative;
   transition: filter 0.15s ease;
   container-type: inline-size;
+  perspective: 1200px;
 }
 
 /* After reveal, allow drag */
@@ -208,15 +211,87 @@ body.revealed .card:active {
   opacity: 0.6;
 }
 
-/* ── Card image wrap ──────────────────────────────────── */
+/* ── Card image wrap (Acts as 3D Card Inner) ──────────── */
 .card-img-wrap {
   position: relative;
   width: 100%;
-  overflow: hidden;
+  transform-style: preserve-3d;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Card Thickness (Top, Bottom, Left, Right Edges) for 3D realism when flipping vertically */
+.card-edge {
+  position: absolute;
+  backface-visibility: visible;
+  z-index: 5;
+}
+
+.card-edge-top {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--thick);
+  transform: translateZ(calc(-1 * var(--half-thick))) rotateX(90deg);
+  transform-origin: top center;
+  background: linear-gradient(to top, #5e4838 0%, #5e4838 30%, #9c968f 30%, #9c968f 70%, #353e24 70%, #353e24 100%);
+}
+
+.card-edge-bottom {
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: var(--thick);
+  transform: translateZ(calc(-1 * var(--half-thick))) rotateX(-90deg);
+  transform-origin: bottom center;
+  background: linear-gradient(to bottom, #5e4838 0%, #5e4838 30%, #9c968f 30%, #9c968f 70%, #353e24 70%, #353e24 100%);
+}
+
+.card-edge-left {
+  top: 0;
+  left: 0;
+  width: var(--thick);
+  height: 100%;
+  transform: translateZ(calc(-1 * var(--half-thick))) rotateY(-90deg);
+  transform-origin: left center;
+  background: linear-gradient(to left, #5e4838 0%, #5e4838 30%, #9c968f 30%, #9c968f 70%, #353e24 70%, #353e24 100%);
+}
+
+.card-edge-right {
+  top: 0;
+  right: 0;
+  width: var(--thick);
+  height: 100%;
+  transform: translateZ(calc(-1 * var(--half-thick))) rotateY(90deg);
+  transform-origin: right center;
+  background: linear-gradient(to right, #5e4838 0%, #5e4838 30%, #9c968f 30%, #9c968f 70%, #353e24 70%, #353e24 100%);
+}
+
+/* Front & Back Faces for 3D Flip */
+.card-front,
+.card-back {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+.card-front {
+  overflow: hidden; /* Clips the sliding text layer! */
   background: #111;
   border-bottom: 1px solid #000;
   display: flex;
   flex-direction: column;
+  transform: translateZ(var(--half-thick));
+}
+
+.card-back {
+  transform: rotateY(180deg) translateZ(var(--half-thick));
+  z-index: 1;
 }
 
 .card-img-wrap img {
@@ -373,7 +448,7 @@ body.capturing .card-trait-mark {
   letter-spacing: 0.04em;
 }
 
-/* ── Hover overlay ────────────────────────────────────── */
+/* ── Back face card-overlay ───────────────────────────── */
 .card-overlay {
   position: absolute;
   inset: 0;
@@ -381,17 +456,12 @@ body.capturing .card-trait-mark {
   background-size: 100% auto;
   color: rgba(43, 50, 28, 0.68);
   padding: 24px 5.5cqw;
-  opacity: 0;
-  transition: opacity 0.2s ease;
+  opacity: 1;
   display: flex;
   flex-direction: column;
   z-index: 10;
   font-family: 'Bitcount Single', 'Bitcount_Single:Regular', 'Bitcount_Single', var(--font-main);
   box-sizing: border-box;
-}
-
-.card.is-revealed.is-stable .card-img-wrap:hover .card-overlay {
-  opacity: 1;
 }
 
 .overlay-title {
@@ -1042,4 +1112,228 @@ body.lang-ko .overlay-data {
 #print-floor-grid,
 #print-back-concrete-grid {
   display: none !important;
+}
+
+/* ── Canvas 2D page-curl replaces CSS keyframe flip animations ── */
+/* is-flipped / is-unflipped control CSS resting state after canvas animation. */
+.card.is-flipped .card-img-wrap {
+  /* Resting state: back face visible (rotated 180° on Y axis) — snap instantly, no transition */
+  transform: rotateY(180deg);
+  transition: none;
+  box-shadow: none !important;
+}
+
+.card.is-unflipped .card-img-wrap {
+  /* Resting state: front face visible — snap instantly, no transition */
+  transform: rotateY(0deg);
+  transition: none;
+  box-shadow: none !important;
+}
+
+
+/* Placeholder keyframes kept in source for reference, but not used */
+@keyframes flutter-flip-horizontal {
+  0% {
+    transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg) skewY(0deg) scaleX(1) translateZ(0px);
+  }
+  10% {
+    transform: rotateX(1.8deg) rotateY(18deg) rotateZ(1deg) skewY(2deg) scaleX(0.98) translateZ(3.1px);
+  }
+  20% {
+    transform: rotateX(2.9deg) rotateY(36deg) rotateZ(1.5deg) skewY(3.5deg) scaleX(0.96) translateZ(12.4px);
+  }
+  30% {
+    transform: rotateX(2.9deg) rotateY(54deg) rotateZ(1.5deg) skewY(3.5deg) scaleX(0.93) translateZ(26.8px);
+  }
+  40% {
+    transform: rotateX(1.8deg) rotateY(72deg) rotateZ(1deg) skewY(2deg) scaleX(0.91) translateZ(42.1px);
+  }
+  50% {
+    transform: rotateX(0deg) rotateY(90deg) rotateZ(0deg) skewY(0deg) scaleX(0.9) translateZ(50px);
+  }
+  60% {
+    transform: rotateX(-1.8deg) rotateY(108deg) rotateZ(-1deg) skewY(-2deg) scaleX(0.91) translateZ(42.1px);
+  }
+  70% {
+    transform: rotateX(-2.9deg) rotateY(126deg) rotateZ(-1.5deg) skewY(-3.5deg) scaleX(0.93) translateZ(26.8px);
+  }
+  80% {
+    transform: rotateX(-2.9deg) rotateY(144deg) rotateZ(-1.5deg) skewY(-3.5deg) scaleX(0.96) translateZ(12.4px);
+  }
+  90% {
+    transform: rotateX(-1.8deg) rotateY(162deg) rotateZ(-1deg) skewY(-2deg) scaleX(0.98) translateZ(3.1px);
+  }
+  100% {
+    transform: rotateX(0deg) rotateY(180deg) rotateZ(0deg) skewY(0deg) scaleX(1) translateZ(0px);
+  }
+}
+
+@keyframes flutter-unflip-horizontal {
+  0% {
+    transform: rotateX(0deg) rotateY(180deg) rotateZ(0deg) skewY(0deg) scaleX(1) translateZ(0px);
+  }
+  10% {
+    transform: rotateX(-1.8deg) rotateY(162deg) rotateZ(-1deg) skewY(-2deg) scaleX(0.98) translateZ(3.1px);
+  }
+  20% {
+    transform: rotateX(-2.9deg) rotateY(144deg) rotateZ(-1.5deg) skewY(-3.5deg) scaleX(0.96) translateZ(12.4px);
+  }
+  30% {
+    transform: rotateX(-2.9deg) rotateY(126deg) rotateZ(-1.5deg) skewY(-3.5deg) scaleX(0.93) translateZ(26.8px);
+  }
+  40% {
+    transform: rotateX(-1.8deg) rotateY(108deg) rotateZ(-1deg) skewY(-2deg) scaleX(0.91) translateZ(42.1px);
+  }
+  50% {
+    transform: rotateX(0deg) rotateY(90deg) rotateZ(0deg) skewY(0deg) scaleX(0.9) translateZ(50px);
+  }
+  60% {
+    transform: rotateX(1.8deg) rotateY(72deg) rotateZ(1deg) skewY(2deg) scaleX(0.91) translateZ(42.1px);
+  }
+  70% {
+    transform: rotateX(2.9deg) rotateY(54deg) rotateZ(1.5deg) skewY(3.5deg) scaleX(0.93) translateZ(26.8px);
+  }
+  80% {
+    transform: rotateX(2.9deg) rotateY(36deg) rotateZ(1.5deg) skewY(3.5deg) scaleX(0.96) translateZ(12.4px);
+  }
+  90% {
+    transform: rotateX(1.8deg) rotateY(18deg) rotateZ(1deg) skewY(2deg) scaleX(0.98) translateZ(3.1px);
+  }
+  100% {
+    transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg) skewY(0deg) scaleX(1) translateZ(0px);
+  }
+}
+
+/* ── Turnjs-like Corner Curl/Peel Indication (Idle Flutter & Hover Peel) ── */
+.card:not(.is-flipped) .card-front {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 28px), calc(100% - 28px) 100%, 0 100%);
+}
+
+.peel-corner {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 28px;
+  height: 28px;
+  z-index: 15;
+  pointer-events: none;
+  transform-style: preserve-3d;
+  transform: translateZ(var(--half-thick)); /* aligned on the front surface */
+  transition: transform 0.25s ease;
+}
+
+.card.is-flipped .peel-corner {
+  display: none;
+}
+
+.peel-shadow {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.22);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+  filter: blur(1.5px);
+  transform: translate3d(-1.5px, -1.5px, 0px);
+  transition: transform 0.25s ease, background 0.25s ease;
+}
+
+.peel-flap {
+  position: absolute;
+  inset: 0;
+  background-color: #4a7a3a; /* Solid green fallback matching back_long.webp vinyl texture */
+  background-image: url('assets/image/back_long.webp');
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: 250% auto;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+  transform-origin: bottom left;
+  transform: rotate3d(1, 1, 0, 15deg) translateZ(0.5px);
+  animation: corner-peel-flutter 2.2s ease-in-out infinite alternate;
+  box-shadow: -1px -1px 2px rgba(0, 0, 0, 0.15);
+  border-bottom-right-radius: 4px;
+  transition: transform 0.25s ease;
+}
+
+@keyframes corner-peel-flutter {
+  0% {
+    transform: rotate3d(1, 1, 0, 12deg) translate3d(-0.5px, -0.5px, 0.5px);
+  }
+  100% {
+    transform: rotate3d(1, 1, 0, 24deg) translate3d(-2px, -2px, 2px);
+  }
+}
+
+/* Hover peel effect: curl corner up deeper and shift shadow */
+.card:hover:not(.is-flipped) .peel-flap {
+  animation-play-state: paused;
+  transform: rotate3d(1, 1, 0, 35deg) translate3d(-4px, -4px, 5px);
+}
+
+.card:hover:not(.is-flipped) .peel-shadow {
+  transform: translate3d(-3px, -3px, 0px);
+  background: rgba(0, 0, 0, 0.35);
+}
+
+/* ── Page Fold Curve Shadow Overlays for cylindrical bending effect ── */
+.card.is-flipped .card-front::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0) 100%);
+  background-size: 200% 100%;
+  background-position: 0% 0%;
+  animation: sweep-shadow-front 0.42s linear forwards;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.card.is-flipped .card-back::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to left, rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0) 100%);
+  background-size: 200% 100%;
+  background-position: 200% 0%;
+  animation: sweep-shadow-back 0.42s linear forwards;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.card.is-unflipped .card-front::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to left, rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0) 100%);
+  background-size: 200% 100%;
+  background-position: 200% 0%;
+  animation: sweep-shadow-back 0.42s linear forwards;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.card.is-unflipped .card-back::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0) 100%);
+  background-size: 200% 100%;
+  background-position: 0% 0%;
+  animation: sweep-shadow-front 0.42s linear forwards;
+  pointer-events: none;
+  z-index: 20;
+}
+
+@keyframes sweep-shadow-front {
+  0% { background-position: 0% 0%; opacity: 0; }
+  15% { opacity: 0.7; }
+  50% { opacity: 0.8; }
+  85% { opacity: 0.7; }
+  100% { background-position: 200% 0%; opacity: 0; }
+}
+
+@keyframes sweep-shadow-back {
+  0% { background-position: 200% 0%; opacity: 0; }
+  15% { opacity: 0.7; }
+  50% { opacity: 0.8; }
+  85% { opacity: 0.7; }
+  100% { background-position: 0% 0%; opacity: 0; }
 }

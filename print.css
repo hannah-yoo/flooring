@@ -201,23 +201,33 @@ body {
 #print-receipt::after {
   content: '';
   position: absolute;
-  bottom: 0.2mm;
-  width: 44%;
-  height: 4mm;
+  bottom: -1.2mm;
+  width: 48%;
+  height: 4.5mm;
   background: transparent;
   z-index: 1;
 }
 
 #print-receipt::before {
-  left: 1.2mm;
-  transform: rotate(-5.5deg);
-  box-shadow: -1.2mm 2.4mm 3.2mm rgba(0, 0, 0, 0.28);
+  left: 0.6mm;
+  transform: rotate(-5deg);
+  background: radial-gradient(
+    ellipse at bottom left,
+    rgba(0, 0, 0, 0.22) 0%,
+    rgba(0, 0, 0, 0.08) 40%,
+    transparent 85%
+  );
 }
 
 #print-receipt::after {
-  right: 1.2mm;
-  transform: rotate(5.5deg);
-  box-shadow: 1.2mm 2.4mm 3.2mm rgba(0, 0, 0, 0.28);
+  right: 0.6mm;
+  transform: rotate(5deg);
+  background: radial-gradient(
+    ellipse at bottom right,
+    rgba(0, 0, 0, 0.22) 0%,
+    rgba(0, 0, 0, 0.08) 40%,
+    transparent 85%
+  );
 }
 
 #print-receipt .receipt-content {
@@ -241,11 +251,8 @@ body {
     #ffffff 100%
   );
   border: 0.15mm solid #dfdfd6;
-  border-bottom: 0.08mm solid #dcdcd2;
+  border-bottom: 0.4mm solid #b2b2aa; /* thicker bottom border simulating crisp contact shadow */
   border-radius: 1.4mm;
-  
-  /* Main contact shadow */
-  box-shadow: 0 0.4mm 1.2mm rgba(0, 0, 0, 0.08);
   
   print-color-adjust: exact;
   -webkit-print-color-adjust: exact;
