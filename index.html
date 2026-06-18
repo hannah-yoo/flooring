@@ -1041,16 +1041,6 @@
       const edgeRight = document.createElement("div");
       edgeRight.className = "card-edge card-edge-right";
       
-      // 5. Corner peel indicator (indicates next page flip, turnjs-like visual cue)
-      const peelCorner = document.createElement("div");
-      peelCorner.className = "peel-corner";
-      const peelShadow = document.createElement("div");
-      peelShadow.className = "peel-shadow";
-      const peelFlap = document.createElement("div");
-      peelFlap.className = "peel-flap";
-      peelCorner.appendChild(peelShadow);
-      peelCorner.appendChild(peelFlap);
-      
       // Assemble the 3D card structure
       imgWrap.appendChild(cardFront);
       imgWrap.appendChild(overlay);
@@ -1058,7 +1048,7 @@
       imgWrap.appendChild(edgeBottom);
       imgWrap.appendChild(edgeLeft);
       imgWrap.appendChild(edgeRight);
-      imgWrap.appendChild(peelCorner);
+
 
       card.appendChild(imgWrap);
       return card;
@@ -1067,303 +1057,6 @@
     function updatePageSnapshot() { }
 
     // ─────────────────────────────────────────────────────────────
-    // CardCurlEngine — Canvas 2D cylindrical page-curl animator
-    // ─────────────────────────────────────────────────────────────
-    class CardCurlEngine {
-      constructor(card) {
-        this.card = card;
-        this.imgWrap = card.querySelector('.card-img-wrap');
-        this.canvas = null;
-        this.ctx = null;
-        this.frontImageData = null;  // ImageBitmap of card front
-        this.backImageData = null;   // ImageBitmap of card back (green)
-        this.rafId = null;
-        this.animating = false;
-        this.backImg = null; // preloaded back_long.webp Image element
-      }
-
-      // Capture the card front as an ImageBitmap via html2canvas
-      async captureFront() {
-        const cardFront = this.card.querySelector('.card-front');
-        if (!cardFront) return null;
-        try {
-          const canvas = await html2canvas(cardFront, {
-            useCORS: true,
-            allowTaint: false,
-            backgroundColor: '#111',
-            scale: 1,
-            logging: false,
-          });
-          return await createImageBitmap(canvas);
-        } catch (e) {
-          console.warn('[CardCurlEngine] html2canvas failed:', e);
-          return null;
-        }
-      }
-
-      // Load the green backing texture
-      loadBackTexture() {
-        return new Promise((resolve) => {
-          if (this._backBitmap) { resolve(this._backBitmap); return; }
-          const img = new Image();
-          img.crossOrigin = 'anonymous';
-          img.onload = async () => {
-            try {
-              this._backBitmap = await createImageBitmap(img);
-            } catch(e) {
-              this._backBitmap = img; // fallback to HTMLImageElement
-            }
-            resolve(this._backBitmap);
-          };
-          img.onerror = () => resolve(null);
-          img.src = 'assets/image/back_long.webp';
-        });
-      }
-
-      // Create a canvas overlay positioned exactly over the card
-      createOverlay() {
-        const rect = this.imgWrap.getBoundingClientRect();
-        const canvas = document.createElement('canvas');
-        canvas.width  = Math.round(rect.width  * window.devicePixelRatio);
-        canvas.height = Math.round(rect.height * window.devicePixelRatio);
-        canvas.style.cssText = [
-          'position:fixed',
-          `left:${rect.left}px`,
-          `top:${rect.top}px`,
-          `width:${rect.width}px`,
-          `height:${rect.height}px`,
-          'z-index:500',
-          'pointer-events:none',
-          'will-change:transform',
-        ].join(';');
-        document.body.appendChild(canvas);
-        this.canvas = canvas;
-        this.ctx    = canvas.getContext('2d');
-        this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-        this._cardW = rect.width;
-        this._cardH = rect.height;
-      }
-
-      // Render one frame of the cylindrical page-curl
-      // progress: 0.0 = fully showing front, 1.0 = fully showing back
-      renderFrame(progress) {
-        const ctx = this.ctx;
-        const W   = this._cardW;
-        const H   = this._cardH;
-        const front = this.frontImageData;
-        const back  = this.backImageData;
-
-        ctx.clearRect(0, 0, W, H);
-
-        const STRIPS = 100;
-        const CURL_WIDTH = W * 0.28;   // width of the cylindrical bend region
-        const THICK = 3.5;
-
-        // Ease-in-out quad
-        const eased = progress < 0.5
-          ? 2 * progress * progress
-          : 1 - Math.pow(-2 * progress + 2, 2) / 2;
-
-        // The "fold line" moves from x=W (t=0, nothing peeled) to x=-CURL_WIDTH (t=1, fully peeled)
-        const foldCenterX = W - eased * (W + CURL_WIDTH);
-
-        for (let s = 0; s <= STRIPS; s++) {
-          const srcX    = (s / STRIPS) * W;   // x position in source image
-          const destX   = srcX;               // x position on flat surface (before curl)
-
-          // Distance from this strip to the fold centre
-          const distFromFold = destX - foldCenterX;
-
-          // Curl zone half-width
-          const halfCurl = CURL_WIDTH / 2;
-          const cylRadius = CURL_WIDTH / Math.PI; // Cylinder radius from arc length
-
-          if (distFromFold < -halfCurl) {
-            // LEFT of curl: flat, showing FRONT face
-            if (!front) continue;
-            const stripW = W / STRIPS + 0.5;
-            ctx.drawImage(front, srcX, 0, stripW, H, destX, 0, stripW, H);
-
-          } else if (distFromFold > halfCurl) {
-            // RIGHT of curl: already peeled, showing BACK face (mirror)
-            if (!back) continue;
-            const stripW = W / STRIPS + 0.5;
-            // Mirror: the back of strip at destX shows source from (W - destX)
-            const backSrcX = Math.max(0, W - srcX - stripW);
-            const projX = foldCenterX + halfCurl + (destX - foldCenterX - halfCurl);
-
-            ctx.save();
-            // Draw back face — it lays flat to the right of the curl
-            ctx.drawImage(back, backSrcX, 0, stripW, H, projX, 0, stripW, H);
-            // Slight ambient darkening on the back side
-            ctx.fillStyle = 'rgba(0,0,0,0.08)';
-            ctx.fillRect(projX, 0, stripW, H);
-            ctx.restore();
-
-          } else {
-            // CURL ZONE: cylindrical bend
-            // Map distFromFold (-halfCurl..+halfCurl) to angle (0..π)
-            const t = (distFromFold + halfCurl) / CURL_WIDTH; // 0..1
-            const theta = t * Math.PI;                          // 0..π
-            const cosT = Math.cos(theta);
-            const sinT = Math.sin(theta);
-
-            // Projected x on the curl surface
-            const projX = foldCenterX - halfCurl + cylRadius * sinT * (Math.PI / 2);
-
-            // Foreshortened strip width
-            const srcStripW = W / STRIPS;
-            const projStripW = srcStripW * Math.abs(cosT) + 0.5;
-
-            if (theta < Math.PI / 2) {
-              // Front face still visible in curl zone
-              if (!front) continue;
-              const shade = Math.max(0, cosT);
-              ctx.save();
-              ctx.beginPath();
-              ctx.rect(projX, 0, projStripW + 1, H);
-              ctx.clip();
-              ctx.drawImage(front, srcX, 0, srcStripW, H, projX, 0, srcStripW, H);
-              // Shadow toward the fold
-              ctx.fillStyle = `rgba(0,0,0,${0.65 * (1 - shade)})`;
-              ctx.fillRect(projX, 0, projStripW, H);
-              ctx.restore();
-            } else {
-              // Back face appears from behind in curl zone (mirrored)
-              if (!back) continue;
-              const backShade = Math.max(0, -cosT);
-              const backSrcX = Math.max(0, W - srcX - W / STRIPS);
-              ctx.save();
-              ctx.beginPath();
-              ctx.rect(projX, 0, projStripW + 1, H);
-              ctx.clip();
-              ctx.drawImage(back, backSrcX, 0, W / STRIPS, H, projX, 0, W / STRIPS, H);
-              ctx.fillStyle = `rgba(0,0,0,${0.60 * (1 - backShade)})`;
-              ctx.fillRect(projX, 0, projStripW, H);
-              ctx.restore();
-            }
-          }
-        }
-
-        // Draw card edge stripe at the fold apex
-        if (eased > 0.02 && eased < 0.98) {
-          const apexX = foldCenterX;
-          const edgeGrad = ctx.createLinearGradient(apexX - THICK * 2, 0, apexX + THICK * 2, 0);
-          edgeGrad.addColorStop(0,    'rgba(94,72,56,0.0)');
-          edgeGrad.addColorStop(0.25, 'rgba(94,72,56,0.85)');
-          edgeGrad.addColorStop(0.5,  'rgba(200,190,180,1.0)');
-          edgeGrad.addColorStop(0.75, 'rgba(53,62,36,0.85)');
-          edgeGrad.addColorStop(1,    'rgba(53,62,36,0.0)');
-          ctx.fillStyle = edgeGrad;
-          ctx.fillRect(apexX - THICK * 2, 0, THICK * 4, H);
-        }
-
-        // Cast shadow from curl onto the flat surface below
-        if (eased > 0.02) {
-          const shadowStartX = foldCenterX + CURL_WIDTH / 2;
-          const shadowLen = 18;
-          const shadowAlpha = 0.35 * Math.sin(Math.PI * eased);
-          if (shadowStartX < W) {
-            const shadowGrad = ctx.createLinearGradient(shadowStartX, 0, shadowStartX + shadowLen, 0);
-            shadowGrad.addColorStop(0, `rgba(0,0,0,${shadowAlpha})`);
-            shadowGrad.addColorStop(1, 'rgba(0,0,0,0)');
-            ctx.fillStyle = shadowGrad;
-            ctx.fillRect(shadowStartX, 0, Math.min(shadowLen, W - shadowStartX), H);
-          }
-        }
-      }
-
-
-      // Run the flip animation
-      // fromFlipped: current state (false=front showing, true=back showing)
-      animate(fromFlipped, onComplete) {
-        if (this.animating) return;
-        this.animating = true;
-
-        const DURATION = 480; // ms — smooth but not slow
-        const startTime = performance.now();
-
-        const tick = (now) => {
-          const elapsed  = now - startTime;
-          const rawProgress = Math.min(elapsed / DURATION, 1.0);
-
-          // Direction: flip = 0→1, unflip = 1→0
-          const progress = fromFlipped ? 1.0 - rawProgress : rawProgress;
-
-          this.renderFrame(progress);
-
-          if (rawProgress < 1.0) {
-            this.rafId = requestAnimationFrame(tick);
-          } else {
-            this.animating = false;
-            if (onComplete) onComplete();
-          }
-        };
-
-        this.rafId = requestAnimationFrame(tick);
-      }
-
-      // Full flip sequence: capture → overlay → animate → cleanup
-      async flip(toFlipped, onComplete) {
-        // Capture front face
-        const frontBitmap = await this.captureFront();
-        const backBitmap  = await this.loadBackTexture();
-
-        // Create a back canvas from back_long.webp tiled to card size
-        const backCanvas = document.createElement('canvas');
-        backCanvas.width  = Math.round(this._cardW || this.imgWrap.getBoundingClientRect().width);
-        backCanvas.height = Math.round(this._cardH || this.imgWrap.getBoundingClientRect().height);
-        const bCtx = backCanvas.getContext('2d');
-        if (backBitmap) {
-          // Tile/stretch back texture to fill card
-          const pat = bCtx.createPattern(backBitmap, 'repeat-y');
-          if (pat) {
-            const scaleX = backCanvas.width / (backBitmap.width || backBitmap.naturalWidth || 1);
-            const m = new DOMMatrix();
-            m.a = scaleX; // scale to fit card width
-            pat.setTransform(m);
-            bCtx.fillStyle = pat;
-            bCtx.fillRect(0, 0, backCanvas.width, backCanvas.height);
-          } else {
-            bCtx.drawImage(backBitmap, 0, 0, backCanvas.width, backCanvas.height);
-          }
-        } else {
-          // Fallback solid green
-          bCtx.fillStyle = '#4a7a3a';
-          bCtx.fillRect(0, 0, backCanvas.width, backCanvas.height);
-        }
-        const backBitmapFinal = await createImageBitmap(backCanvas).catch(() => backCanvas);
-
-        this.createOverlay();
-        this.frontImageData = frontBitmap;
-        this.backImageData  = backBitmapFinal;
-
-        // Hide the CSS card elements while canvas animates
-        this.imgWrap.style.opacity = '0';
-
-        this.animate(!toFlipped, () => {
-          // Show CSS card in final state
-          this.imgWrap.style.opacity = '';
-          this.destroy();
-          if (onComplete) onComplete();
-        });
-      }
-
-      destroy() {
-        if (this.rafId) cancelAnimationFrame(this.rafId);
-        if (this.canvas) {
-          this.canvas.remove();
-          this.canvas = null;
-        }
-        this.frontImageData = null;
-        this.backImageData  = null;
-        this.animating = false;
-      }
-    }
-
-    // Active flip engines per card (prevent double-flip)
-    const _curlEngines = new WeakMap();
-
     // ─────────────────────────────────────────────────────────────
     // Toggle a single card (reveal ↔ hide / flip ↔ unflip)
     // ─────────────────────────────────────────────────────────────
@@ -1377,34 +1070,16 @@
         }, 700);
         playWalkSound();
       } else {
-        // Subsequent clicks: Canvas cylindrical curl flip
-        if (_curlEngines.has(card)) return; // already animating
-
-        const isFlipped = card.classList.contains("is-flipped");
-        const toFlipped = !isFlipped;
-
-        const engine = new CardCurlEngine(card);
-        _curlEngines.set(card, engine);
-
-        // Pre-size the overlay before capture
-        const rect = card.querySelector('.card-img-wrap').getBoundingClientRect();
-        engine._cardW = rect.width;
-        engine._cardH = rect.height;
-
-        engine.flip(toFlipped, () => {
-          // Update CSS state after animation completes
-          if (toFlipped) {
-            card.classList.add("is-flipped");
-            card.classList.remove("is-unflipped");
-          } else {
-            card.classList.remove("is-flipped");
-            card.classList.add("is-unflipped");
-          }
-          _curlEngines.delete(card);
-          setTimeout(updatePageSnapshot, 50);
-        });
-
+        // Subsequent clicks: CSS rotateY flip (smooth transition set on .card-img-wrap)
+        if (card.classList.contains("is-flipped")) {
+          card.classList.remove("is-flipped");
+          card.classList.add("is-unflipped");
+        } else {
+          card.classList.add("is-flipped");
+          card.classList.remove("is-unflipped");
+        }
         playWalkSound();
+        setTimeout(updatePageSnapshot, 500);
       }
     }
 
@@ -1438,20 +1113,15 @@
         }
         setTimeout(updatePageSnapshot, totalMs + 200);
       } else if (knifeState === 1) {
-        // State 1 -> 2: Flip All with canvas curl, staggered
+        // State 1 -> 2: Flip All — lightweight CSS rotateY (canvas too heavy for mass operations)
         cards.forEach((card, i) => {
           setTimeout(() => {
-            if (_curlEngines.has(card)) return;
-            const engine = new CardCurlEngine(card);
-            _curlEngines.set(card, engine);
-            const rect = card.querySelector('.card-img-wrap').getBoundingClientRect();
-            engine._cardW = rect.width;
-            engine._cardH = rect.height;
-            engine.flip(true, () => {
-              card.classList.remove("is-unflipped");
-              card.classList.add("is-flipped");
-              _curlEngines.delete(card);
-            });
+            if (_curlEngines.has(card)) return; // skip if individual flip in progress
+            const imgWrap = card.querySelector('.card-img-wrap');
+            if (imgWrap) imgWrap.style.transition = 'transform 0.38s ease-in-out';
+            card.classList.remove("is-unflipped");
+            card.classList.add("is-flipped");
+            setTimeout(() => { if (imgWrap) imgWrap.style.transition = ''; }, 500);
           }, i * 25);
         });
         playWalkSoundRapid(cards.length, totalMs);
@@ -1463,22 +1133,17 @@
           label.dataset.en = "Unflip All";
           label.textContent = activeLang === 'en' ? "Unflip All" : "모두 되돌리기";
         }
-        setTimeout(updatePageSnapshot, totalMs + 1000);
+        setTimeout(updatePageSnapshot, totalMs + 600);
       } else if (knifeState === 2) {
-        // State 2 -> 3: Unflip All with canvas curl, staggered
+        // State 2 -> 3: Unflip All — lightweight CSS rotateY
         cards.forEach((card, i) => {
           setTimeout(() => {
             if (_curlEngines.has(card)) return;
-            const engine = new CardCurlEngine(card);
-            _curlEngines.set(card, engine);
-            const rect = card.querySelector('.card-img-wrap').getBoundingClientRect();
-            engine._cardW = rect.width;
-            engine._cardH = rect.height;
-            engine.flip(false, () => {
-              card.classList.remove("is-flipped");
-              card.classList.add("is-unflipped");
-              _curlEngines.delete(card);
-            });
+            const imgWrap = card.querySelector('.card-img-wrap');
+            if (imgWrap) imgWrap.style.transition = 'transform 0.38s ease-in-out';
+            card.classList.remove("is-flipped");
+            card.classList.add("is-unflipped");
+            setTimeout(() => { if (imgWrap) imgWrap.style.transition = ''; }, 500);
           }, i * 25);
         });
         playWalkSoundRapid(cards.length, totalMs);
@@ -1490,7 +1155,7 @@
           label.dataset.en = "Hide All";
           label.textContent = activeLang === 'en' ? "Hide All" : "모두 덮기";
         }
-        setTimeout(updatePageSnapshot, totalMs + 1000);
+        setTimeout(updatePageSnapshot, totalMs + 600);
       } else {
         // State 3 -> 0: Hide All (cover tiles back)
         cards.forEach((card, i) => {
