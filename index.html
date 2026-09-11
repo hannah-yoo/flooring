@@ -635,12 +635,8 @@
   </script>
 
   <script>
-    // ─────────────────────────────────────────────────────────────
-    // Config
-    // ─────────────────────────────────────────────────────────────
-    const AIRTABLE_TOKEN = "patMrJnngETB8Srn9.2291fafcbf0c5009f6cd1bb0fb76f64a4186e03dc379d4ef282b70acd6ed3dea";
-    const AIRTABLE_BASE = "app0gYEl62r82qDqK";
-    const AIRTABLE_TABLE = "CSM용 시트";
+    // Data configuration (Loaded securely from static data/flooring.json)
+    const DATA_URL = "./data/flooring.json";
 
     const FIELDS = {
       nameKo: "장판 이름 (한글)",
@@ -1363,10 +1359,10 @@
     // Init
     // ─────────────────────────────────────────────────────────────
     async function fetchAirtable() {
-      const url = `https://api.airtable.com/v0/${AIRTABLE_BASE}/${encodeURIComponent(AIRTABLE_TABLE)}?pageSize=100`;
-      const res = await fetch(url, { headers: { Authorization: `Bearer ${AIRTABLE_TOKEN}` } });
-      if (!res.ok) throw new Error(`Airtable error ${res.status}`);
-      const data = await res.json(); return data.records;
+      const res = await fetch(DATA_URL);
+      if (!res.ok) throw new Error(`Failed to load flooring data (${res.status})`);
+      const data = await res.json();
+      return data.records;
     }
 
     async function init() {

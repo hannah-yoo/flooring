@@ -1,0 +1,26 @@
+name: Sync Airtable Data
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Run once a day
+  workflow_dispatch: # Allow manual trigger from GitHub UI
+
+jobs:
+  sync-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Fetch Airtable Data
+        run: |
+          mkdir -p data
+          curl -s -H "Authorization: Bearer ${{ secrets.AIRTABLE_TOKEN }}" \
+            "https://api.airtable.com/v0/app0gYEl62r82qDqK/CSM%EC%9A%A9%20%EC%8B%9C%ED%8A%B8?pageSize=100" > data/flooring.json
+
+      - name: Commit and Push if Changed
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add data/flooring.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: auto-update flooring data from Airtable" && git push)
